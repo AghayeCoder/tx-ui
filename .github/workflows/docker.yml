@@ -19,8 +19,8 @@ jobs:
       uses: docker/metadata-action@v5
       with:
         images: |
-          aghayecoder/tx-ui
-          ghcr.io/AghayeCoder/tx-ui
+          Incognito-Coder/tx-ui
+          ghcr.io/Incognito-Coder/tx-ui
         tags: |
           type=ref,event=branch
           type=ref,event=tag

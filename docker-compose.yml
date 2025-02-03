@@ -3,7 +3,7 @@ version: "3"
 
 services:
   tx-ui:
-    image: ghcr.io/AghayeCoder/tx-ui:latest
+    image: ghcr.io/Incognito-Coder/tx-ui:latest
     container_name: tx-ui
     hostname: yourhostname
     volumes:
