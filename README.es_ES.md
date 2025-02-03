@@ -1,7 +1,7 @@
 [English](/README.md) | [中文](/README.zh_CN.md) | [Español](/README.es_ES.md) | [Русский](/README.ru_RU.md)
 
 **Un Panel Web Avanzado • Construido sobre Xray Core** \
-**Este proyecto es una bifurcación del panel tx-ui.**
+**Este proyecto es una bifurcación del panel 3x-ui.**
 
 [![](https://img.shields.io/github/v/release/Incognito-Coder/tx-ui.svg)](https://github.com/Incognito-Coder/tx-ui/releases)
 [![](https://img.shields.io/github/actions/workflow/status/Incognito-Coder/tx-ui/release.yml.svg)](#)

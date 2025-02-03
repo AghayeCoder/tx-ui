@@ -1,7 +1,7 @@
 [English](/README.md) | [中文](/README.zh_CN.md) | [Español](/README.es_ES.md) | [Русский](/README.ru_RU.md)
 
 **一个更好的面板 • 基于Xray Core构建** \
-**该项目是 tx-ui 面板的一个分支。**
+**该项目是 3x-ui 面板的一个分支。**
 
 [![](https://img.shields.io/github/v/release/Incognito-Coder/tx-ui.svg)](https://github.com/Incognito-Coder/tx-ui/releases)
 [![](https://img.shields.io/github/actions/workflow/status/Incognito-Coder/tx-ui/release.yml.svg)](#)
