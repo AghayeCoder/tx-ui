@@ -15,7 +15,7 @@ require (
 	github.com/shirou/gopsutil/v4 v4.25.2
 	github.com/tcnksm/go-latest v0.0.0-20170313132115-e3007ae9052e
 	github.com/valyala/fasthttp v1.59.0
-	github.com/xtls/xray-core v1.8.25-0.20241218133935-cab2fdefd321
+	github.com/xtls/xray-core v1.250306.0
 	go.uber.org/atomic v1.11.0
 	golang.org/x/crypto v0.36.0
 	golang.org/x/text v0.23.0
@@ -26,7 +26,7 @@ require (
 
 require (
 	github.com/andybalholm/brotli v1.1.1 // indirect
-	github.com/bytedance/sonic v1.13.1 // indirect
+	github.com/bytedance/sonic v1.12.10 // indirect
 	github.com/bytedance/sonic/loader v0.2.4 // indirect
 	github.com/cloudflare/circl v1.6.0 // indirect
 	github.com/cloudwego/base64x v0.1.5 // indirect
@@ -97,9 +97,9 @@ require (
 	golang.org/x/tools v0.31.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard v0.0.0-20231211153847-12269c276173 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250313205543-e70fdf4c4cb4 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250303144028-a0af3efb3deb // indirect
 	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gvisor.dev/gvisor v0.0.0-20231202080848-1f7806d17489 // indirect
+	gvisor.dev/gvisor v0.0.0-20240320123526-dc6abceb7ff0 // indirect
 	lukechampine.com/blake3 v1.4.0 // indirect
 )
