@@ -453,6 +453,8 @@
 "enableDesc" = "Включить 6TO4 туннель"
 "ip" = "IP-адрес туннеля"
 "serverIp" = "Имя хост-сервера или ip-адрес без указания http/https"
+"port" = "Порт"
+"serverPort" = "Порт SSH сервера"
 "user" = "Логин"
 "serverUser" = "Логин для входа на сервер"
 "password" = "Пароль"
