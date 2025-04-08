@@ -10,7 +10,7 @@ require (
 	github.com/mymmrac/telego v0.32.0
 	github.com/nicksnyder/go-i18n/v2 v2.6.0
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
-	github.com/pelletier/go-toml/v2 v2.2.3
+	github.com/pelletier/go-toml/v2 v2.2.4
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/shirou/gopsutil/v4 v4.25.3
 	github.com/tcnksm/go-latest v0.0.0-20170313132115-e3007ae9052e
