@@ -495,6 +495,7 @@ than one, Just separate them with ,)
 | `POST` | `"/delDepletedClients/:id"`        | Delete inbound depleted clients (-1: all)   |
 | `POST` | `"/onlines"`                       | Get Online users ( list of emails )         |
 | `POST` | `"/depleted"`                      | Get Depleted users ( list of emails )       |
+| `POST` | `"/disabled"`                      | Получить отключенных пользователей (список адресов электронной почты)       |
 
 \- The field `clientId` should be filled by:
 

@@ -42,6 +42,7 @@ func (a *InboundController) initRouter(g *gin.RouterGroup) {
 	g.POST("/import", a.importInbound)
 	g.POST("/onlines", a.onlines)
 	g.POST("/depleted", a.depleted)
+	g.POST("/disabled", a.disabled)
 }
 
 func (a *InboundController) getInbounds(c *gin.Context) {
@@ -336,4 +337,13 @@ func (a *InboundController) depleted(c *gin.Context) {
 		return
 	}
 	jsonObj(c, depletedClients, nil)
+}
+
+func (a *InboundController) disabled(c *gin.Context) {
+	disabledClients, err := a.inboundService.GetDisabledClients()
+	if err != nil {
+		jsonMsg(c, "Error getting disabled clients", err)
+		return
+	}
+	jsonObj(c, disabledClients, nil)
 }

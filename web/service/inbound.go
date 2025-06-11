@@ -1754,6 +1754,29 @@ func (s *InboundService) GetDepletedClients() ([]string, error) {
 	return emails, nil
 }
 
+func (s *InboundService) GetDisabledClients() ([]string, error) {
+	db := database.GetDB()
+	var inbounds []*model.Inbound
+	err := db.Model(model.Inbound{}).Find(&inbounds).Error
+	if err != nil {
+		return nil, err
+	}
+
+	var emails []string
+	for _, inbound := range inbounds {
+		clients, err := s.GetClients(inbound)
+		if err != nil {
+			continue
+		}
+		for _, client := range clients {
+			if !client.Enable && client.Email != "" {
+				emails = append(emails, client.Email)
+			}
+		}
+	}
+	return emails, nil
+}
+
 func (s *InboundService) GetClientTrafficTgBot(tgId int64) ([]*xray.ClientTraffic, error) {
 	db := database.GetDB()
 	var inbounds []*model.Inbound
