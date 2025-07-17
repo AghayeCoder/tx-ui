@@ -20,7 +20,7 @@ require (
 	go.uber.org/atomic v1.11.0
 	golang.org/x/crypto v0.40.0
 	golang.org/x/text v0.27.0
-	google.golang.org/grpc v1.73.0
+	google.golang.org/grpc v1.74.0
 	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.30.0
 )
