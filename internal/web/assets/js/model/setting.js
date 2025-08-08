@@ -45,6 +45,7 @@ class AllSetting {
         this.subJsonMux = "";
         this.subJsonRules = "";
         this.xrayCronJob = 0;
+        this.autoDeleteDay = 0;
 
         this.timeLocation = "Local";
 

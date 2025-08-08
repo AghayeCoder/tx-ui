@@ -330,6 +330,8 @@
 "directDesc" = "Directly establishes connections with domains or IP ranges of a specific country."
 "xrayCronJob" = "Xray-Core Restart Intervals"
 "xrayCronJobDesc" = "Automatic restart intervals of the Xray-Core. (unit: hour | 0 = disable)"
+"autoDeleteDay" = "Auto Delete Client"
+"autoDeleteDayDesc" = "The client will be automatically deleted this many days after it is depleted. (unit: day | 0 = disable)"
 
 [pages.xray]
 "title" = "Xray Configs"

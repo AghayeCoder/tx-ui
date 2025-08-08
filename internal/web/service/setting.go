@@ -70,6 +70,7 @@ var defaultValueMap = map[string]string{
 	"subJsonMux":         "",
 	"subJsonRules":       "",
 	"datepicker":         "gregorian",
+	"autoDeleteDay":      "0",
 	"warp":               "",
 }
 
@@ -509,6 +510,10 @@ func (s *SettingService) GetDatepicker() (string, error) {
 
 func (s *SettingService) GetWarp() (string, error) {
 	return s.getString("warp")
+}
+
+func (s *SettingService) GetAutoDeleteDay() (int, error) {
+    return s.getInt("autoDeleteDay")
 }
 
 func (s *SettingService) SetWarp(data string) error {

@@ -28,6 +28,7 @@ type AllSetting struct {
 	ExpireDiff       int    `json:"expireDiff" form:"expireDiff"`
 	TrafficDiff      int    `json:"trafficDiff" form:"trafficDiff"`
 	XrayCronJob      int    `json:"xrayCronJob" form:"xrayCronJob"`
+	AutoDeleteDay    int    `json:"autoDeleteDay" form:"autoDeleteDay"`
 	RemarkModel      string `json:"remarkModel" form:"remarkModel"`
 	TgBotEnable      bool   `json:"tgBotEnable" form:"tgBotEnable"`
 	TgBotToken       string `json:"tgBotToken" form:"tgBotToken"`
