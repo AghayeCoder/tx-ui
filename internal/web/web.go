@@ -277,7 +277,7 @@ func (s *Server) startTask() {
 	s.cron.AddJob("@daily", job.NewClearLogsJob())
 
 	// auto delete depleted clients
-	s.cron.AddJob("@daily", job.NewAutoDeleteDepletedClientsJob())
+	s.cron.AddJob("@every 12h", job.NewAutoDeleteDepletedClientsJob())
 
 	// check for panel new version every 8h
 	s.cron.AddJob("@every 8h", job.NewUpdateCheckerJob())
