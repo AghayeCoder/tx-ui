@@ -327,6 +327,8 @@
 "directDesc" = "Trực tiếp thiết lập kết nối với tên miền hoặc dải IP của một quốc gia cụ thể."
 "xrayCronJob" = "Khoảng thời gian khởi động lại Xray-Core"
 "xrayCronJobDesc" = "Khoảng thời gian khởi động lại tự động của Xray-Core. (đơn vị: giờ | 0 = vô hiệu hóa)"
+"autoDeleteDay" = "Tự động xóa máy khách"
+"autoDeleteDayDesc" = "Máy khách sẽ tự động bị xóa sau bao nhiêu ngày kể từ khi hết dung lượng. (đơn vị: ngày | 0 = vô hiệu hóa)"
 
 [pages.xray]
 "title" = "Cài đặt Xray"

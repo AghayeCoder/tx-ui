@@ -327,6 +327,8 @@
 "directDesc" = "直接与特定国家的域或IP范围建立连接"
 "xrayCronJob" = "Xray-Core 重新啟動間隔"
 "xrayCronJobDesc" = "Xray-Core 自動重新啟動間隔。(單位：小時 | 0 = 停用)"
+"autoDeleteDay" = "自动删除客户端"
+"autoDeleteDayDesc" = "客户端将在耗尽后自动删除。（单位：天 | 0 = 禁用）"
 
 [pages.xray]
 "title" = "Xray 配置"

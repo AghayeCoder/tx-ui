@@ -8,36 +8,20 @@ import (
 	"x-ui/internal/logger"
 	"x-ui/internal/web/service"
 	"x-ui/xray"
-
-	"github.com/robfig/cron/v3"
 )
 
 var autoDeleteDepletedClientsJob *AutoDeleteDepletedClientsJob
 
 type AutoDeleteDepletedClientsJob struct {
-	cron           *cron.Cron
 	settingService *service.SettingService
 	inboundService *service.InboundService
 }
 
 func NewAutoDeleteDepletedClientsJob() *AutoDeleteDepletedClientsJob {
 	return &AutoDeleteDepletedClientsJob{
-		cron:           cron.New(),
 		settingService: &service.SettingService{},
 		inboundService: &service.InboundService{},
 	}
-}
-
-func (j *AutoDeleteDepletedClientsJob) Start() {
-	_, err := j.cron.AddFunc("@daily", j.Run)
-	if err != nil {
-		panic(err)
-	}
-	j.cron.Start()
-}
-
-func (j *AutoDeleteDepletedClientsJob) Stop() {
-	j.cron.Stop()
 }
 
 func (j *AutoDeleteDepletedClientsJob) Run() {

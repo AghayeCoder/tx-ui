@@ -329,6 +329,8 @@
 "directDesc" = "Secara langsung membuat koneksi dengan domain atau rentang IP negara tertentu."
 "xrayCronJob" = "Interval Restart Xray-Core"
 "xrayCronJobDesc" = "Interval restart otomatis Xray-Core. (satuan: jam | 0 = nonaktifkan)"
+"autoDeleteDay" = "Hapus Otomatis Klien"
+"autoDeleteDayDesc" = "Klien akan dihapus otomatis setelah jumlah hari habis. (unit: hari | 0 = nonaktifkan)"
 
 [pages.xray]
 "title" = "Konfigurasi Xray"

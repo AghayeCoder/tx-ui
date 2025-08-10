@@ -315,6 +315,8 @@
 "directDesc" = "特定の国のドメインまたはIP範囲に直接接続する"
 "xrayCronJob" = "Xray-Core の再起動間隔"
 "xrayCronJobDesc" = "Xray-Core の自動再起動間隔。(単位: 時間 | 0 = 無効)"
+"autoDeleteDay" = "クライアントの自動削除"
+"autoDeleteDayDesc" = "クライアントは、指定された日数が経過すると自動的に削除されます。(単位: 日 | 0 = 無効)"
 
 [pages.xray]
 "title" = "Xray 設定"

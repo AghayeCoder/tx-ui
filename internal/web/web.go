@@ -238,7 +238,6 @@ func (s *Server) initRouter() (*gin.Engine, error) {
 }
 
 func (s *Server) startTask() {
-	job.NewAutoDeleteDepletedClientsJob().Start()
 	err := s.xrayService.RestartXray(true)
 	if err != nil {
 		logger.Warning("start xray failed:", err)
@@ -277,7 +276,12 @@ func (s *Server) startTask() {
 	s.cron.AddJob("@daily", job.NewClearLogsJob())
 
 	// auto delete depleted clients
-	s.cron.AddJob("@every 12h", job.NewAutoDeleteDepletedClientsJob())
+	autoDeleteJob, err := s.settingService.GetAutoDeleteDay()
+	if err == nil && autoDeleteJob != 0 {
+		s.cron.AddJob(fmt.Sprintf("@every %dd", autoDeleteJob), job.NewAutoDeleteDepletedClientsJob())
+	} else {
+		logger.Debug("Auto delete depleted clients disabled")
+	}
 
 	// check for panel new version every 8h
 	s.cron.AddJob("@every 8h", job.NewUpdateCheckerJob())

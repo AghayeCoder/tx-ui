@@ -327,6 +327,8 @@
 "directDesc" = "Estabelece conexões diretamente com domínios ou intervalos de IP de um país específico."
 "xrayCronJob" = "Intervalos de reinicialização do Xray-Core"
 "xrayCronJobDesc" = "Intervalos de reinicialização automática do Xray-Core. (unidade: hora | 0 = desabilitar)"
+"autoDeleteDay" = "İstemciyi Otomatik Olarak Sil"
+"autoDeleteDayDesc" = "İstemci, tükendikten sonra bu kadar gün sonra otomatik olarak silinecektir. (birim: gün | 0 = devre dışı)"
 
 [pages.xray]
 "title" = "Configurações Xray"
