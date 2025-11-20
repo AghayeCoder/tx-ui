@@ -20,7 +20,7 @@ require (
 	github.com/valyala/fasthttp v1.68.0
 	github.com/xtls/xray-core v1.251015.0
 	go.uber.org/atomic v1.11.0
-	golang.org/x/crypto v0.44.0
+	golang.org/x/crypto v0.45.0
 	golang.org/x/text v0.31.0
 	google.golang.org/grpc v1.76.0
 	gorm.io/driver/sqlite v1.6.0
