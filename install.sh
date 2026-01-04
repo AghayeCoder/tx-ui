@@ -70,37 +70,37 @@ check_glibc_version
 install_base() {
     case "${release}" in
         ubuntu | debian | armbian)
-            apt-get update && apt-get install -y -q wget curl tar tzdata socat
+            apt-get update && apt-get install -y -q wget curl tar tzdata socat openssl
             ;;
         centos | rhel | almalinux | rocky | ol)
-            yum -y update && yum install -y -q wget curl tar tzdata socat
+            yum -y update && yum install -y -q wget curl tar tzdata socat openssl
             ;;
         fedora | amzn)
-            dnf -y update && dnf install -y -q wget curl tar tzdata socat
+            dnf -y update && dnf install -y -q wget curl tar tzdata socat openssl
             ;;
         arch | manjaro | parch)
-            pacman -Syu && pacman -Syu --noconfirm wget curl tar tzdata socat
+            pacman -Syu && pacman -Syu --noconfirm wget curl tar tzdata socat openssl
             ;;
         opensuse-tumbleweed | opensuse)
-            zypper refresh && zypper -q install -y wget curl tar timezone socat
+            zypper refresh && zypper -q install -y wget curl tar timezone socat openssl
             ;;
         alpine)
-            apk update && apk add wget curl tar tzdata socat
+            apk update && apk add wget curl tar tzdata socat openssl
             ;;
         gentoo)
-            emerge --sync && emerge --ask --quiet wget curl tar tzdata socat
+            emerge --sync && emerge --ask --quiet wget curl tar tzdata socat openssl
             ;;
         clearlinux)
-            swupd update && swupd bundle-add wget curl tar tzdata socat
+            swupd update && swupd bundle-add wget curl tar tzdata socat openssl
             ;;
         void)
-            xbps-install -S && xbps-install -y wget curl tar tzdata socat
+            xbps-install -S && xbps-install -y wget curl tar tzdata socat openssl
             ;;
         solus)
-            eopkg update && eopkg install -y wget curl tar tzdata socat
+            eopkg update && eopkg install -y wget curl tar tzdata socat openssl
             ;;
         *)
-            apt-get update && apt install -y -q wget curl tar tzdata socat
+            apt-get update && apt install -y -q wget curl tar tzdata socat openssl
             ;;
     esac
 }
@@ -115,7 +115,7 @@ config_after_install() {
     local existing_hasDefaultCredential=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'hasDefaultCredential: .+' | awk '{print $2}')
     local existing_webBasePath=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'webBasePath: .+' | awk '{print $2}')
     local existing_port=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'port: .+' | awk '{print $2}')
-    local server_ip=$(hostname -I | awk '{print $1}')
+    
     # check for acme.sh first
     if ! command -v ~/.acme.sh/acme.sh &>/dev/null; then
         echo "acme.sh could not be found. we will install it"
@@ -124,7 +124,6 @@ config_after_install() {
         curl -s https://get.acme.sh | sh
         if [ $? -ne 0 ]; then
             LOGE "Installation of acme.sh failed."
-            return 1
         else
             LOGI "Installation of acme.sh succeeded."
         fi
@@ -137,118 +136,95 @@ config_after_install() {
             local config_password=$(gen_random_string 10)
 
             # get the domain here, and we need to verify it
-            local domain=""
-            read -p "Please enter your domain name (or press Enter to skip): " domain
-            if [ -z "$domain" ]; then
-                LOGI "No domain entered. Skipping domain and certificate setup."
+            local server_ip=$(curl -s https://api.ipify.org)
+            local domain="${server_ip}.sslip.io"
+            LOGI "Using domain: ${domain}"
+
+            LOGD "Your domain is: ${domain}, trying to issue a certificate..."
+
+            # create a directory for the certificate
+            certPath="/root/cert/${domain}"
+            if [ ! -d "$certPath" ]; then
+                mkdir -p "$certPath"
             else
-                LOGD "Your domain is: ${domain}, checking it..."
-
-                # check if there already exists a certificate
-                local currentCert=$(~/.acme.sh/acme.sh --list | tail -1 | awk '{print $1}')
-                if [ "${currentCert}" == "${domain}" ]; then
-                    LOGI "System already has certificates for this domain. trying to remove"
-                    rm -rf ~/.acme.sh/${currentCert}*
-                else
-                    LOGI "Your domain is ready for issuing certificates now..."
-                fi
-
-                # create a directory for the certificate
-                certPath="/root/cert/${domain}"
-                if [ ! -d "$certPath" ]; then
-                    mkdir -p "$certPath"
-                else
-                    rm -rf "$certPath"
-                    mkdir -p "$certPath"
-                fi
-
-                # get the port number for the standalone server
-                local WebPort=80
-                read -p "Please choose which port to use (default is 80): " WebPort
-                if [[ ${WebPort} -gt 65535 || ${WebPort} -lt 1 ]]; then
-                    LOGE "Your input ${WebPort} is invalid, will use default port 80."
-                    WebPort=80
-                fi
-                LOGI "Will use port: ${WebPort} to issue certificates. Please make sure this port is open."
-
-                # issue the certificate
-                ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
-                ~/.acme.sh/acme.sh --issue -d ${domain} --listen-v6 --standalone --httpport ${WebPort}
-                if [ $? -ne 0 ]; then
-                    LOGE "Issuing certificate failed, please check logs."
-                    rm -rf ~/.acme.sh/${domain}
-                    exit 1
-                else
-                    LOGE "Issuing certificate succeeded, installing certificates..."
-                fi
-
-                # install the certificate
-                ~/.acme.sh/acme.sh --installcert -d ${domain} \
-                    --key-file /root/cert/${domain}/privkey.pem \
-                    --fullchain-file /root/cert/${domain}/fullchain.pem
-
-                if [ $? -ne 0 ]; then
-                    LOGE "Installing certificate failed, exiting."
-                    rm -rf ~/.acme.sh/${domain}
-                    exit 1
-                else
-                    LOGI "Installing certificate succeeded, enabling auto renew..."
-                fi
-
-                # enable auto-renew
-                ~/.acme.sh/acme.sh --upgrade --auto-upgrade
-                if [ $? -ne 0 ]; then
-                    LOGE "Auto renew failed, certificate details:"
-                    ls -lah cert/*
-                    chmod 755 $certPath/*
-                    exit 1
-                else
-                    LOGI "Auto renew succeeded, certificate details:"
-                    ls -lah cert/*
-                    chmod 755 $certPath/*
-                fi
-
-                # Set panel paths after successful certificate installation
-                local webCertFile="/root/cert/${domain}/fullchain.pem"
-                local webKeyFile="/root/cert/${domain}/privkey.pem"
-
-                if [[ -f "$webCertFile" && -f "$webKeyFile" ]]; then
-                    /usr/local/x-ui/x-ui cert -webCert "$webCertFile" -webCertKey "$webKeyFile"
-                    LOGI "Panel paths set for domain: $domain"
-                    LOGI "  - Certificate File: $webCertFile"
-                    LOGI "  - Private Key File: $webKeyFile"
-                    echo -e "${green}Access URL: https://${domain}:${existing_port}${existing_webBasePath}${plain}"
-                    # restart service if needed
-                else
-                    LOGE "Error: Certificate or private key file not found for domain: $domain."
-                fi
-
-                read -p "Would you like to customize the Panel Port settings? (If not, a random port will be applied) [y/n]: " config_confirm
-                local config_port
-                if [[ "${config_confirm}" == "y" || "${config_confirm}" == "Y" ]]; then
-                    read -p "Please set up the panel port: " config_port
-                    echo -e "${yellow}Your Panel Port is: ${config_port}${plain}"
-                else
-                    config_port=$(shuf -i 1024-62000 -n 1)
-                    echo -e "${yellow}Generated random port: ${config_port}${plain}"
-                fi
-
-                /usr/local/x-ui/x-ui setting -username "${config_username}" -password "${config_password}" -port "${config_port}" -webBasePath "${config_webBasePath}"
-                echo -e "This is a fresh installation, generating random login info for security concerns:"
-                echo -e "###############################################"
-                echo -e "${green}Username: ${config_username}${plain}"
-                echo -e "${green}Password: ${config_password}${plain}"
-                echo -e "${green}Port: ${config_port}${plain}"
-                echo -e "${green}WebBasePath: ${config_webBasePath}${plain}"
-                echo -e "${green}Access URL: https://${domain}:${config_port}/${config_webBasePath}${plain}"
-                echo -e "###############################################"
+                rm -rf "$certPath"
+                mkdir -p "$certPath"
             fi
+
+            # issue the certificate
+            if command -v ~/.acme.sh/acme.sh &>/dev/null; then
+                ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
+                ~/.acme.sh/acme.sh --issue -d ${domain} --listen-v6 --standalone --httpport 80
+                if [ $? -ne 0 ]; then
+                    LOGE "Issuing certificate with acme.sh failed, falling back to self-signed certificate."
+                    rm -rf ~/.acme.sh/${domain}
+                    
+                    # generate self-signed cert
+                    openssl req -x509 -newkey rsa:4096 -keyout /root/cert/${domain}/privkey.pem -out /root/cert/${domain}/fullchain.pem -days 365 -nodes -subj "/CN=${domain}"
+                    if [ $? -ne 0 ]; then
+                        LOGE "Generating self-signed certificate failed."
+                    else
+                        LOGI "Generating self-signed certificate succeeded."
+                    fi
+                else
+                    LOGI "Issuing certificate succeeded, installing certificates..."
+                    # install the certificate
+                    ~/.acme.sh/acme.sh --installcert -d ${domain} \
+                        --key-file /root/cert/${domain}/privkey.pem \
+                        --fullchain-file /root/cert/${domain}/fullchain.pem
+
+                    if [ $? -ne 0 ]; then
+                        LOGE "Installing certificate failed."
+                        rm -rf ~/.acme.sh/${domain}
+                    else
+                        LOGI "Installing certificate succeeded, enabling auto renew..."
+                        # enable auto-renew
+                        ~/.acme.sh/acme.sh --upgrade --auto-upgrade
+                    fi
+                fi
+            else
+                LOGE "acme.sh is not installed, falling back to self-signed certificate."
+                openssl req -x509 -newkey rsa:4096 -keyout /root/cert/${domain}/privkey.pem -out /root/cert/${domain}/fullchain.pem -days 365 -nodes -subj "/CN=${domain}"
+                if [ $? -ne 0 ]; then
+                    LOGE "Generating self-signed certificate failed."
+                else
+                    LOGI "Generating self-signed certificate succeeded."
+                fi
+            fi
+
+            # Set panel paths after successful certificate installation
+            local webCertFile="/root/cert/${domain}/fullchain.pem"
+            local webKeyFile="/root/cert/${domain}/privkey.pem"
+
+            if [[ -f "$webCertFile" && -f "$webKeyFile" ]]; then
+                /usr/local/x-ui/x-ui cert -webCert "$webCertFile" -webCertKey "$webKeyFile"
+                LOGI "Panel paths set for domain: $domain"
+                LOGI "  - Certificate File: $webCertFile"
+                LOGI "  - Private Key File: $webKeyFile"
+            else
+                LOGE "Error: Certificate or private key file not found for domain: $domain."
+            fi
+
+            local config_port
+            config_port=$(shuf -i 1024-62000 -n 1)
+            echo -e "${yellow}Generated random port: ${config_port}${plain}"
+
+            /usr/local/x-ui/x-ui setting -username "${config_username}" -password "${config_password}" -port "${config_port}" -webBasePath "${config_webBasePath}"
+            echo -e "This is a fresh installation, generating random login info for security concerns:"
+            echo -e "###############################################"
+            echo -e "${green}Username: ${config_username}${plain}"
+            echo -e "${green}Password: ${config_password}${plain}"
+            echo -e "${green}Port: ${config_port}${plain}"
+            echo -e "${green}WebBasePath: ${config_webBasePath}${plain}"
+            echo -e "${green}Access URL: https://${domain}:${config_port}/${config_webBasePath}${plain}"
+            echo -e "###############################################"
         else
             local config_webBasePath=$(gen_random_string 15)
             echo -e "${yellow}WebBasePath is missing or too short. Generating a new one...${plain}"
             /usr/local/x-ui/x-ui setting -webBasePath "${config_webBasePath}"
             echo -e "${green}New WebBasePath: ${config_webBasePath}${plain}"
-            echo -e "${green}Access URL: https://${domain}:${existing_port}/${config_webBasePath}${plain}"
+            local server_ip=$(curl -s https://api.ipify.org)
+            echo -e "${green}Access URL: http://${server_ip}:${existing_port}/${config_webBasePath}${plain}"
         fi
     else
         if [[ "$existing_hasDefaultCredential" == "true" ]]; then
