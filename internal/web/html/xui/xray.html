@@ -1883,7 +1883,7 @@
                     Vue.prototype.$message.error('{{ i18n "pages.xray.tunnel.notfilled"}}');
                 } else {
                     this.loading(true, '{{ i18n "pages.index.dontRefresh"}}');
-                    await HttpUtil.post(`/server/setTunnel/${ip}/${port}/${user}/${encodeURIComponent(password)}`);
+                    await HttpUtil.post(`/panel/api/server/setTunnel/${ip}/${port}/${user}/${encodeURIComponent(password)}`);
                     this.loading(false);
                 }
             }
