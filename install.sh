@@ -116,34 +116,20 @@ config_after_install() {
     local existing_webBasePath=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'webBasePath: .+' | awk '{print $2}')
     local existing_port=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'port: .+' | awk '{print $2}')
     
-    # check for acme.sh first
-    if ! command -v ~/.acme.sh/acme.sh &>/dev/null; then
-        echo "acme.sh could not be found. we will install it"
-        LOGI "Installing acme.sh..."
-        cd ~ || return 1 # Ensure you can change to the home directory
-        curl -s https://get.acme.sh | sh
-        if [ $? -ne 0 ]; then
-            LOGE "Installation of acme.sh failed."
-        else
-            LOGI "Installation of acme.sh succeeded."
-        fi
-    fi
-
     if [[ ${#existing_webBasePath} -lt 4 ]]; then
         if [[ "$existing_hasDefaultCredential" == "true" ]]; then
             local config_webBasePath=$(gen_random_string 15)
             local config_username=$(gen_random_string 10)
             local config_password=$(gen_random_string 10)
 
-            # get the domain here, and we need to verify it
+            # get the ip here
             local server_ip=$(curl -s https://api.ipify.org)
-            local domain="${server_ip}.sslip.io"
-            LOGI "Using domain: ${domain}"
+            LOGI "Using IP address: ${server_ip}"
 
-            LOGD "Your domain is: ${domain}, trying to issue a certificate..."
+            LOGD "Generating self-signed certificate for IP: ${server_ip}..."
 
             # create a directory for the certificate
-            certPath="/root/cert/${domain}"
+            certPath="/root/cert/${server_ip}"
             if [ ! -d "$certPath" ]; then
                 mkdir -p "$certPath"
             else
@@ -151,58 +137,25 @@ config_after_install() {
                 mkdir -p "$certPath"
             fi
 
-            # issue the certificate
-            if command -v ~/.acme.sh/acme.sh &>/dev/null; then
-                ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
-                ~/.acme.sh/acme.sh --issue -d ${domain} --listen-v6 --standalone --httpport 80
-                if [ $? -ne 0 ]; then
-                    LOGE "Issuing certificate with acme.sh failed, falling back to self-signed certificate."
-                    rm -rf ~/.acme.sh/${domain}
-                    
-                    # generate self-signed cert
-                    openssl req -x509 -newkey rsa:4096 -keyout /root/cert/${domain}/privkey.pem -out /root/cert/${domain}/fullchain.pem -days 365 -nodes -subj "/CN=${domain}"
-                    if [ $? -ne 0 ]; then
-                        LOGE "Generating self-signed certificate failed."
-                    else
-                        LOGI "Generating self-signed certificate succeeded."
-                    fi
-                else
-                    LOGI "Issuing certificate succeeded, installing certificates..."
-                    # install the certificate
-                    ~/.acme.sh/acme.sh --installcert -d ${domain} \
-                        --key-file /root/cert/${domain}/privkey.pem \
-                        --fullchain-file /root/cert/${domain}/fullchain.pem
-
-                    if [ $? -ne 0 ]; then
-                        LOGE "Installing certificate failed."
-                        rm -rf ~/.acme.sh/${domain}
-                    else
-                        LOGI "Installing certificate succeeded, enabling auto renew..."
-                        # enable auto-renew
-                        ~/.acme.sh/acme.sh --upgrade --auto-upgrade
-                    fi
-                fi
+            # generate self-signed cert
+            openssl req -x509 -newkey rsa:4096 -keyout /root/cert/${server_ip}/privkey.pem -out /root/cert/${server_ip}/fullchain.pem -days 365 -nodes -subj "/CN=${server_ip}"
+            if [ $? -ne 0 ]; then
+                LOGE "Generating self-signed certificate failed."
             else
-                LOGE "acme.sh is not installed, falling back to self-signed certificate."
-                openssl req -x509 -newkey rsa:4096 -keyout /root/cert/${domain}/privkey.pem -out /root/cert/${domain}/fullchain.pem -days 365 -nodes -subj "/CN=${domain}"
-                if [ $? -ne 0 ]; then
-                    LOGE "Generating self-signed certificate failed."
-                else
-                    LOGI "Generating self-signed certificate succeeded."
-                fi
+                LOGI "Generating self-signed certificate succeeded."
             fi
 
             # Set panel paths after successful certificate installation
-            local webCertFile="/root/cert/${domain}/fullchain.pem"
-            local webKeyFile="/root/cert/${domain}/privkey.pem"
+            local webCertFile="/root/cert/${server_ip}/fullchain.pem"
+            local webKeyFile="/root/cert/${server_ip}/privkey.pem"
 
             if [[ -f "$webCertFile" && -f "$webKeyFile" ]]; then
                 /usr/local/x-ui/x-ui cert -webCert "$webCertFile" -webCertKey "$webKeyFile"
-                LOGI "Panel paths set for domain: $domain"
+                LOGI "Panel paths set for IP: $server_ip"
                 LOGI "  - Certificate File: $webCertFile"
                 LOGI "  - Private Key File: $webKeyFile"
             else
-                LOGE "Error: Certificate or private key file not found for domain: $domain."
+                LOGE "Error: Certificate or private key file not found for IP: $server_ip."
             fi
 
             local config_port
@@ -216,7 +169,7 @@ config_after_install() {
             echo -e "${green}Password: ${config_password}${plain}"
             echo -e "${green}Port: ${config_port}${plain}"
             echo -e "${green}WebBasePath: ${config_webBasePath}${plain}"
-            echo -e "${green}Access URL: https://${domain}:${config_port}/${config_webBasePath}${plain}"
+            echo -e "${green}Access URL: https://${server_ip}:${config_port}/${config_webBasePath}${plain}"
             echo -e "###############################################"
         else
             local config_webBasePath=$(gen_random_string 15)
