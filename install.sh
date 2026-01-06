@@ -282,7 +282,7 @@ config_after_install() {
                     # issue the certificate
                     if command -v ~/.acme.sh/acme.sh &>/dev/null; then
                         ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
-                        ~/.acme.sh/acme.sh --issue -d ${server_ip} --standalone --httpport 80
+                        ~/.acme.sh/acme.sh --issue -d ${server_ip} --standalone --server letsencrypt --certificate-profile shortlived --days 6 --httpport 80 --force
                         if [ $? -ne 0 ]; then
                             LOGE "Issuing certificate with acme.sh failed, falling back to self-signed certificate."
                             rm -rf ~/.acme.sh/${server_ip}
