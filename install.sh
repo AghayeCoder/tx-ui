@@ -281,10 +281,7 @@ config_after_install() {
 
                     # issue the certificate
                     if command -v ~/.acme.sh/acme.sh &>/dev/null; then
-                        ~/.acme.sh/acme.sh --set-default-ca --server zerossl
-                        # I need to register with an email for ZeroSSL
-                        read -p "Enter your email for ZeroSSL registration: " email
-                        ~/.acme.sh/acme.sh --register-account -m ${email}
+                        ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
                         ~/.acme.sh/acme.sh --issue -d ${server_ip} --standalone --httpport 80
                         if [ $? -ne 0 ]; then
                             LOGE "Issuing certificate with acme.sh failed, falling back to self-signed certificate."
