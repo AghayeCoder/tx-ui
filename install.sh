@@ -125,7 +125,8 @@ config_after_install() {
             echo -e "${yellow}Choose an option for SSL certificate:${plain}"
             echo -e "  1. Generate a self-signed certificate"
             echo -e "  2. Get a certificate from a domain name using acme.sh"
-            read -p "Enter your choice [1-2]: " choice
+            echo -e "  3. Get a certificate for an IP address using acme.sh"
+            read -p "Enter your choice [1-3]: " choice
 
             case $choice in
                 1)
@@ -248,6 +249,93 @@ config_after_install() {
                         LOGE "Error: Certificate or private key file not found for domain: $domain."
                     fi
                     local access_url="https://${domain}"
+                    ;;
+                3)
+                    # check for acme.sh first
+                    if ! command -v ~/.acme.sh/acme.sh &>/dev/null; then
+                        echo "acme.sh could not be found. we will install it"
+                        LOGI "Installing acme.sh..."
+                        cd ~ || return 1 # Ensure you can change to the home directory
+                        curl -s https://get.acme.sh | sh
+                        if [ $? -ne 0 ]; then
+                            LOGE "Installation of acme.sh failed."
+                        else
+                            LOGI "Installation of acme.sh succeeded."
+                        fi
+                    fi
+
+                    # get the ip here
+                    local server_ip=$(curl -s https://api.ipify.org)
+                    LOGI "Using IP address: ${server_ip}"
+
+                    LOGD "Your IP is: ${server_ip}, trying to issue a certificate..."
+
+                    # create a directory for the certificate
+                    certPath="/root/cert/${server_ip}"
+                    if [ ! -d "$certPath" ]; then
+                        mkdir -p "$certPath"
+                    else
+                        rm -rf "$certPath"
+                        mkdir -p "$certPath"
+                    fi
+
+                    # issue the certificate
+                    if command -v ~/.acme.sh/acme.sh &>/dev/null; then
+                        ~/.acme.sh/acme.sh --set-default-ca --server zerossl
+                        # I need to register with an email for ZeroSSL
+                        read -p "Enter your email for ZeroSSL registration: " email
+                        ~/.acme.sh/acme.sh --register-account -m ${email}
+                        ~/.acme.sh/acme.sh --issue -d ${server_ip} --standalone --httpport 80
+                        if [ $? -ne 0 ]; then
+                            LOGE "Issuing certificate with acme.sh failed, falling back to self-signed certificate."
+                            rm -rf ~/.acme.sh/${server_ip}
+
+                            # generate self-signed cert
+                            openssl req -x509 -newkey rsa:4096 -keyout /root/cert/${server_ip}/privkey.pem -out /root/cert/${server_ip}/fullchain.pem -days 365 -nodes -subj "/CN=${server_ip}"
+                            if [ $? -ne 0 ]; then
+                                LOGE "Generating self-signed certificate failed."
+                            else
+                                LOGI "Generating self-signed certificate succeeded."
+                            fi
+                        else
+                            LOGI "Issuing certificate succeeded, installing certificates..."
+                            # install the certificate
+                            ~/.acme.sh/acme.sh --installcert -d ${server_ip} \
+                                --key-file /root/cert/${server_ip}/privkey.pem \
+                                --fullchain-file /root/cert/${server_ip}/fullchain.pem
+
+                            if [ $? -ne 0 ]; then
+                                LOGE "Installing certificate failed."
+                                rm -rf ~/.acme.sh/${server_ip}
+                            else
+                                LOGI "Installing certificate succeeded, enabling auto renew..."
+                                # enable auto-renew
+                                ~/.acme_sh/acme.sh --upgrade --auto-upgrade
+                            fi
+                        fi
+                    else
+                        LOGE "acme.sh is not installed, falling back to self-signed certificate."
+                        openssl req -x509 -newkey rsa:4096 -keyout /root/cert/${server_ip}/privkey.pem -out /root/cert/${server_ip}/fullchain.pem -days 365 -nodes -subj "/CN=${server_ip}"
+                        if [ $? -ne 0 ]; then
+                            LOGE "Generating self-signed certificate failed."
+                        else
+                            LOGI "Generating self-signed certificate succeeded."
+                        fi
+                    fi
+
+                    # Set panel paths after successful certificate installation
+                    local webCertFile="/root/cert/${server_ip}/fullchain.pem"
+                    local webKeyFile="/root/cert/${server_ip}/privkey.pem"
+
+                    if [[ -f "$webCertFile" && -f "$webKeyFile" ]]; then
+                        /usr/local/x-ui/x-ui cert -webCert "$webCertFile" -webCertKey "$webKeyFile"
+                        LOGI "Panel paths set for IP: $server_ip"
+                        LOGI "  - Certificate File: $webCertFile"
+                        LOGI "  - Private Key File: $webKeyFile"
+                    else
+                        LOGE "Error: Certificate or private key file not found for IP: $server_ip."
+                    fi
+                    local access_url="https://${server_ip}"
                     ;;
                 *)
                     echo "Invalid choice. Exiting."
