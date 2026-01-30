@@ -165,7 +165,7 @@ class TcpStreamSettings extends CommonClass {
 
 class KcpStreamSettings extends CommonClass {
     constructor(
-        mtu = 1350,
+        mtu = 1420,
         tti = 50,
         uplinkCapacity = 5,
         downlinkCapacity = 20,

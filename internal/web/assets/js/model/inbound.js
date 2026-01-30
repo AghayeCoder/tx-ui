@@ -317,7 +317,7 @@ TcpStreamSettings.TcpResponse = class extends XrayCommonClass {
 
 class KcpStreamSettings extends XrayCommonClass {
     constructor(
-        mtu = 1350,
+        mtu = 1420,
         tti = 50,
         uplinkCapacity = 5,
         downlinkCapacity = 20,
