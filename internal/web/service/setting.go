@@ -52,6 +52,9 @@ var defaultValueMap = map[string]string{
 	"secretEnable":       "false",
 	"subEnable":          "false",
 	"subTitle":           "",
+	"subSupportUrl":      "",
+	"subProfileUrl":      "",
+	"subAnnounce":        "",
 	"subListen":          "",
 	"subPort":            "2096",
 	"subPath":            "/sub/",
@@ -431,6 +434,18 @@ func (s *SettingService) GetSubEnable() (bool, error) {
 
 func (s *SettingService) GetSubTitle() (string, error) {
 	return s.getString("subTitle")
+}
+
+func (s *SettingService) GetSubSupportUrl() (string, error) {
+	return s.getString("subSupportUrl")
+}
+
+func (s *SettingService) GetSubProfileUrl() (string, error) {
+	return s.getString("subProfileUrl")
+}
+
+func (s *SettingService) GetSubAnnounce() (string, error) {
+	return s.getString("subAnnounce")
 }
 
 func (s *SettingService) GetSubListen() (string, error) {

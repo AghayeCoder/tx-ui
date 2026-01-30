@@ -13,6 +13,9 @@ import (
 
 type SUBController struct {
 	subTitle       string
+	subSupportUrl  string
+	subProfileUrl  string
+	subAnnounce    string
 	subPath        string
 	subJsonPath    string
 	subEncrypt     bool
@@ -35,10 +38,16 @@ func NewSUBController(
 	jsonMux string,
 	jsonRules string,
 	subTitle string,
+	subSupportUrl string,
+	subProfileUrl string,
+	subAnnounce string,
 ) *SUBController {
 	sub := NewSubService(showInfo, rModel)
 	a := &SUBController{
 		subTitle:       subTitle,
+		subSupportUrl:  subSupportUrl,
+		subProfileUrl:  subProfileUrl,
+		subAnnounce:    subAnnounce,
 		subPath:        subPath,
 		subJsonPath:    jsonPath,
 		subEncrypt:     encrypt,
@@ -97,6 +106,9 @@ func (a *SUBController) subs(c *gin.Context) {
 		c.Writer.Header().Set("Subscription-Userinfo", header)
 		c.Writer.Header().Set("Profile-Update-Interval", a.updateInterval)
 		c.Writer.Header().Set("Profile-Title", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subTitle)))
+		c.Writer.Header().Set("Support-Url", a.subSupportUrl)
+		c.Writer.Header().Set("Profile-Web-Page-Url", a.subProfileUrl)
+		c.Writer.Header().Set("Announce", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subAnnounce)))
 
 		acceptHeader := c.GetHeader("Accept")
 		headerMap := parseHeaderString(header)
@@ -161,6 +173,9 @@ func (a *SUBController) subJsons(c *gin.Context) {
 		c.Writer.Header().Set("Subscription-Userinfo", header)
 		c.Writer.Header().Set("Profile-Update-Interval", a.updateInterval)
 		c.Writer.Header().Set("Profile-Title", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subTitle)))
+		c.Writer.Header().Set("Support-Url", a.subSupportUrl)
+		c.Writer.Header().Set("Profile-Web-Page-Url", a.subProfileUrl)
+		c.Writer.Header().Set("Announce", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subAnnounce)))
 
 		c.String(200, jsonSub)
 	}
@@ -202,6 +217,9 @@ func (a *SUBController) subsJson(c *gin.Context) {
 	c.Writer.Header().Set("Subscription-Userinfo", header)
 	c.Writer.Header().Set("Profile-Update-Interval", a.updateInterval)
 	c.Writer.Header().Set("Profile-Title", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subTitle)))
+	c.Writer.Header().Set("Support-Url", a.subSupportUrl)
+	c.Writer.Header().Set("Profile-Web-Page-Url", a.subProfileUrl)
+	c.Writer.Header().Set("Announce", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subAnnounce)))
 
 	c.JSON(200, gin.H{
 		"result":       resultSlice,

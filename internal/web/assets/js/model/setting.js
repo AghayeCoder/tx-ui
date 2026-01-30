@@ -27,6 +27,9 @@ class AllSetting {
         this.secretEnable = false;
         this.subEnable = false;
         this.subTitle = "";
+        this.subSupportUrl = "";
+        this.subProfileUrl = "";
+        this.subAnnounce = "";
         this.subListen = "";
         this.subPort = 2096;
         this.subPath = "/sub/";
