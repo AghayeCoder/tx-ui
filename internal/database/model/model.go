@@ -69,9 +69,10 @@ type HistoryOfSeeders struct {
 
 func (i *Inbound) GenXrayInboundConfig() *xray.InboundConfig {
 	listen := i.Listen
-	if listen != "" {
-		listen = fmt.Sprintf("\"%v\"", listen)
+	if listen == "" {
+		listen = "0.0.0.0"
 	}
+	listen = fmt.Sprintf("\"%v\"", listen)
 	return &xray.InboundConfig{
 		Listen:         json_util.RawMessage(listen),
 		Port:           i.Port,
