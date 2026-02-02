@@ -3,7 +3,10 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 
 	"x-ui/internal/database/model"
 	"x-ui/internal/web/service"
@@ -46,6 +49,7 @@ func (a *InboundController) initRouter(g *gin.RouterGroup) {
 	g.POST("/onlines", a.onlines)
 	g.POST("/depleted", a.depleted)
 	g.POST("/disabled", a.disabled)
+	g.POST("/reorder", a.reorderInbounds)
 }
 
 func (a *InboundController) getInbounds(c *gin.Context) {
@@ -394,4 +398,85 @@ func (a *InboundController) delInboundClientByEmail(c *gin.Context) {
 	if needRestart {
 		a.xrayService.SetToNeedRestart()
 	}
+}
+
+func (a *InboundController) reorderInbounds(c *gin.Context) {
+	var body struct {
+		Ids []int `json:"ids"`
+	}
+
+	// Try JSON bind first
+	if err := c.ShouldBindJSON(&body); err != nil {
+		// Fallback: read raw body and attempt to parse url-encoded or plain JSON
+		raw, _ := c.GetRawData()
+		rawStr := strings.TrimSpace(string(raw))
+		// Try url-encoded parsing (ids=1&ids=2 or ids=1,2)
+		if strings.Contains(rawStr, "=") {
+			vals, err := url.ParseQuery(rawStr)
+			if err == nil {
+				var ids []int
+				if arr, ok := vals["ids"]; ok && len(arr) > 0 {
+					for _, entry := range arr {
+						// entry could be "1" or "1,2,3"
+						parts := strings.Split(entry, ",")
+						for _, p := range parts {
+							p = strings.TrimSpace(p)
+							if p == "" {
+								continue
+							}
+							if n, perr := strconv.Atoi(p); perr == nil {
+								ids = append(ids, n)
+							}
+						}
+					}
+				} else if s := vals.Get("ids"); s != "" {
+					parts := strings.Split(s, ",")
+					for _, p := range parts {
+						p = strings.TrimSpace(p)
+						if p == "" {
+							continue
+						}
+						if n, perr := strconv.Atoi(p); perr == nil {
+							ids = append(ids, n)
+						}
+					}
+				}
+				body.Ids = ids
+			}
+		} else {
+			// Try parsing as JSON (in case GetRawData consumed earlier ShouldBindJSON)
+			_ = json.Unmarshal(raw, &body)
+		}
+	}
+	// If body still empty, error
+	if len(body.Ids) == 0 {
+		jsonMsg(c, "Reorder Inbounds", fmt.Errorf("ids cannot be empty or invalid: %v", body.Ids))
+		return
+	}
+
+	// Optional: verify that the ids belong to the current user
+	user := session.GetLoginUser(c)
+	// load user's inbounds ids
+	inbounds, err := a.inboundService.GetInbounds(user.Id)
+	if err != nil {
+		jsonMsg(c, "Reorder Inbounds", err)
+		return
+	}
+	validIds := make(map[int]bool)
+	for _, ib := range inbounds {
+		validIds[ib.Id] = true
+	}
+	for _, id := range body.Ids {
+		if !validIds[id] {
+			jsonMsg(c, "Reorder Inbounds", fmt.Errorf("inbound id %d not found or not owned by user", id))
+			return
+		}
+	}
+
+	err = a.inboundService.ReorderInbounds(body.Ids)
+	if err != nil {
+		jsonMsg(c, "Reorder Inbounds", err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": I18nWeb(c, "pages.inbounds.reordered")})
 }

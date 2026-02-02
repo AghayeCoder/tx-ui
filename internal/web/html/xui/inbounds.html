@@ -320,6 +320,21 @@
                                  :row-class-name="dbInbound => (dbInbound.isMultiUser() ? '' : 'hideExpandIcon')"
                                  style="margin-top: 10px">
                             <template slot="action" slot-scope="text, dbInbound">
+                                <!-- Reorder controls: move up/down (disabled at boundaries) -->
+                                <a-tooltip title='{{ i18n "moveUp" }}'>
+                                    <a-icon v-if="!isFirst(dbInbound.id)" type="arrow-up"
+                                            @click.stop="moveUp(dbInbound.id)"
+                                            style="margin-right:6px; cursor: pointer;"></a-icon>
+                                    <a-icon v-else type="arrow-up"
+                                            style="margin-right:6px; opacity:0.35; cursor: default;"></a-icon>
+                                </a-tooltip>
+                                <a-tooltip title='{{ i18n "moveDown" }}'>
+                                    <a-icon v-if="!isLast(dbInbound.id)" type="arrow-down"
+                                            @click.stop="moveDown(dbInbound.id)"
+                                            style="margin-right:6px; cursor: pointer;"></a-icon>
+                                    <a-icon v-else type="arrow-down"
+                                            style="margin-right:6px; opacity:0.35; cursor: default;"></a-icon>
+                                </a-tooltip>
                                 <a-dropdown :trigger="['click']">
                                     <a-icon @click="e => e.preventDefault()" type="more"
                                             style="font-size: 20px; text-decoration: solid;"></a-icon>
@@ -1597,7 +1612,74 @@
             },
             onResize() {
                 this.isMobile = window.innerWidth <= 768;
-            }
+            },
+            // Reorder helpers
+            moveUp(id) {
+                const idx = this.dbInbounds.findIndex(row => row.id === id);
+                if (idx > 0) {
+                    const tmpDb = this.dbInbounds[idx - 1];
+                    this.$set(this.dbInbounds, idx - 1, this.dbInbounds[idx]);
+                    this.$set(this.dbInbounds, idx, tmpDb);
+
+                    const tmp = this.inbounds[idx - 1];
+                    this.$set(this.inbounds, idx - 1, this.inbounds[idx]);
+                    this.$set(this.inbounds, idx, tmp);
+
+                    this.searchInbounds(this.searchKey);
+                    this.saveOrder();
+                }
+            },
+            moveDown(id) {
+                const idx = this.dbInbounds.findIndex(row => row.id === id);
+                if (idx >= 0 && idx < this.dbInbounds.length - 1) {
+                    const tmpDb = this.dbInbounds[idx + 1];
+                    this.$set(this.dbInbounds, idx + 1, this.dbInbounds[idx]);
+                    this.$set(this.dbInbounds, idx, tmpDb);
+
+                    const tmp = this.inbounds[idx + 1];
+                    this.$set(this.inbounds, idx + 1, this.inbounds[idx]);
+                    this.$set(this.inbounds, idx, tmp);
+
+                    this.searchInbounds(this.searchKey);
+                    this.saveOrder();
+                }
+            },
+            isFirst(id) {
+                const idx = this.dbInbounds.findIndex(row => row.id === id);
+                return idx <= 0;
+            },
+            isLast(id) {
+                const idx = this.dbInbounds.findIndex(row => row.id === id);
+                return idx === this.dbInbounds.length - 1;
+            },
+            collectIds() {
+                return this.dbInbounds.map(b => b.id);
+            },
+            async saveOrder() {
+                const ids = this.collectIds();
+                try {
+                    const resp = await fetch('/panel/api/inbounds/reorder', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ids: ids}),
+                    });
+                    const data = await resp.json().catch(() => null);
+                    if (data && data.success) {
+                        if (this.$message) this.$message.success('{{ i18n "pages.inbounds.reordered" }}');
+                    } else {
+                        const msgText = data && data.msg ? data.msg : 'Reorder failed';
+                        if (this.$message) this.$message.error(msgText);
+                        await this.getDBInbounds();
+                    }
+                } catch (e) {
+                    console.error('reorder error', e);
+                    if (this.$message) this.$message.error('{{ i18n "somethingWentWrong" }}');
+                    await this.getDBInbounds();
+                }
+            },
         },
         watch: {
             searchKey: debounce(function (newVal) {

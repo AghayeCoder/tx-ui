@@ -194,6 +194,7 @@
 "exportInbound" = "Експортувати вхідні"
 "import" = "Імпорт"
 "importInbound" = "Імпортувати вхідний"
+"reordered" = "Вхідні успішно впорядковані"
 
 [pages.client]
 "add" = "Додати клієнта"

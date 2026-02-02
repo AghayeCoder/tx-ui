@@ -46,6 +46,9 @@ type Inbound struct {
 	StreamSettings string   `json:"streamSettings" form:"streamSettings"`
 	Tag            string   `json:"tag" form:"tag" gorm:"unique"`
 	Sniffing       string   `json:"sniffing" form:"sniffing"`
+
+	// Sort order for UI listing. Lower numbers appear first.
+	Sort int `json:"sort" form:"sort" gorm:"column:sort;default:0"`
 }
 
 type OutboundTraffics struct {

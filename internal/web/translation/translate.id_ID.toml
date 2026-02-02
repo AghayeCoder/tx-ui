@@ -194,6 +194,7 @@
 "exportInbound" = "Ekspor Masuk"
 "import" = "Impor"
 "importInbound" = "Impor Masuk"
+"reordered" = "Masuk Dipesan Ulang"
 
 [pages.client]
 "add" = "Tambah Klien"

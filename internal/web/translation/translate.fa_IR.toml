@@ -195,6 +195,7 @@
 "exportInbound" = "استخراج ورودی"
 "import" = "افزودن"
 "importInbound" = "افزودن یک ورودی"
+"reordered" = "ورودی‌ها با موفقیت مرتب شدند"
 
 [pages.client]
 "add" = "کاربر جدید"

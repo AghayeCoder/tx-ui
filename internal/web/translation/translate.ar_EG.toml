@@ -204,6 +204,7 @@
 "exportInbound" = "تصدير الإدخال"
 "import" = "استيراد"
 "importInbound" = "استيراد إدخال"
+"reordered" = "إعادة ترتيب الإدخالات"
 
 [pages.client]
 "add" = "أضف عميل"

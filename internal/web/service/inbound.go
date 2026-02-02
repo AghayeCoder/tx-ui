@@ -1,6 +1,7 @@
 package service
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -23,7 +24,8 @@ type InboundService struct {
 func (s *InboundService) GetInbounds(userId int) ([]*model.Inbound, error) {
 	db := database.GetDB()
 	var inbounds []*model.Inbound
-	err := db.Model(model.Inbound{}).Preload("ClientStats").Where("user_id = ?", userId).Find(&inbounds).Error
+	// Order by sort (nullable) then id to provide stable ordering. Use COALESCE to handle NULLs.
+	err := db.Model(model.Inbound{}).Preload("ClientStats").Where("user_id = ?", userId).Order("COALESCE(sort, id) ASC, id ASC").Find(&inbounds).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
@@ -33,11 +35,43 @@ func (s *InboundService) GetInbounds(userId int) ([]*model.Inbound, error) {
 func (s *InboundService) GetAllInbounds() ([]*model.Inbound, error) {
 	db := database.GetDB()
 	var inbounds []*model.Inbound
-	err := db.Model(model.Inbound{}).Preload("ClientStats").Find(&inbounds).Error
+	err := db.Model(model.Inbound{}).Preload("ClientStats").Order("COALESCE(sort, id) ASC, id ASC").Find(&inbounds).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 	return inbounds, nil
+}
+
+// ReorderInbounds updates sort values for a list of inbound IDs in the order provided.
+// ids: slice of inbound IDs in desired order (first element gets sort = 0).
+func (s *InboundService) ReorderInbounds(ids []int) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	db := database.GetDB()
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	for idx, id := range ids {
+		res := tx.Model(&model.Inbound{}).Where("id = ?", id).Update("sort", idx)
+		if res.Error != nil {
+			tx.Rollback()
+			return res.Error
+		}
+		if res.RowsAffected == 0 {
+			tx.Rollback()
+			return fmt.Errorf("inbound id %d not found", id)
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *InboundService) checkPortExist(listen string, port int, ignoreId int) (bool, error) {
@@ -192,6 +226,19 @@ func (s *InboundService) AddInbound(inbound *model.Inbound) (*model.Inbound, boo
 	}
 
 	db := database.GetDB()
+	// If sort is not explicitly set (0), append to the end for the user
+	if inbound.Sort == 0 {
+		var maxSort sql.NullInt64
+		err := db.Model(model.Inbound{}).Where("user_id = ?", inbound.UserId).Select("MAX(COALESCE(sort, 0))").Scan(&maxSort).Error
+		if err == nil {
+			if maxSort.Valid {
+				inbound.Sort = int(maxSort.Int64) + 1
+			} else {
+				inbound.Sort = 0
+			}
+		}
+	}
+
 	tx := db.Begin()
 	defer func() {
 		if err == nil {
@@ -218,6 +265,7 @@ func (s *InboundService) AddInbound(inbound *model.Inbound) (*model.Inbound, boo
 		inboundJson, err1 := json.MarshalIndent(inbound.GenXrayInboundConfig(), "", "  ")
 		if err1 != nil {
 			logger.Debug("Unable to marshal inbound config:", err1)
+
 		}
 
 		err1 = s.xrayApi.AddInbound(inboundJson)

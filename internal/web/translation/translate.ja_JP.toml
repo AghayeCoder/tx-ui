@@ -182,6 +182,7 @@
 "exportInbound" = "インバウンドルールをエクスポート"
 "import" = "インポート"
 "importInbound" = "インバウンドルールをインポート"
+"reordered" = "インバウンドルールの順序が変更されました"
 
 [pages.client]
 "add" = "クライアント追加"

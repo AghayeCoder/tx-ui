@@ -194,6 +194,7 @@
 "exportInbound" = "导出入站规则"
 "import" = "导入"
 "importInbound" = "导入入站规则"
+"reordered" = "入站规则已重新排序"
 
 [pages.client]
 "add" = "添加客户端"

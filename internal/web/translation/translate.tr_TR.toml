@@ -194,6 +194,7 @@
 "exportInbound" = "Geleni Dışa Aktar"
 "import" = "İçe Aktar"
 "importInbound" = "Bir Gelen İçe Aktar"
+"reordered" = "Gelen yeniden sıralandı"
 
 [pages.client]
 "add" = "Müşteri Ekle"

@@ -195,6 +195,7 @@
 "exportInbound" = "Export Inbound"
 "import" = "Import"
 "importInbound" = "Import an Inbound"
+"reordered" = "Reordered Successfully"
 
 [pages.client]
 "add" = "Add Client"
