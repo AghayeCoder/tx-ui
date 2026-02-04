@@ -67,20 +67,6 @@
                             </td>
                         </tr>
                     </template>
-                    <template v-if="inbound.isKcp">
-                        <tr>
-                            <td>kcp {{ i18n "encryption" }}</td>
-                            <td>
-                                <a-tag>[[ inbound.kcpType ]]</a-tag>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>kcp {{ i18n "password" }}</td>
-                            <td>
-                                <a-tag>[[ inbound.kcpSeed ]]</a-tag>
-                            </td>
-                        </tr>
-                    </template>
                     <template v-if="inbound.isGrpc">
                         <tr>
                             <td>grpc serviceName</td>

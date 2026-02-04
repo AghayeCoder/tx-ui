@@ -319,14 +319,12 @@ TcpStreamSettings.TcpResponse = class extends XrayCommonClass {
 class KcpStreamSettings extends XrayCommonClass {
     constructor(
         mtu = 1420,
-        tti = 50,
+        tti = 20,
         uplinkCapacity = 5,
         downlinkCapacity = 20,
         congestion = false,
-        readBufferSize = 2,
-        writeBufferSize = 2,
-        type = 'none',
-        seed = RandomUtil.randomSeq(10),
+        readBufferSize = 1,
+        writeBufferSize = 1,
     ) {
         super();
         this.mtu = mtu;
@@ -336,8 +334,6 @@ class KcpStreamSettings extends XrayCommonClass {
         this.congestion = congestion;
         this.readBuffer = readBufferSize;
         this.writeBuffer = writeBufferSize;
-        this.type = type;
-        this.seed = seed;
     }
 
     static fromJson(json = {}) {
@@ -349,8 +345,6 @@ class KcpStreamSettings extends XrayCommonClass {
             json.congestion,
             json.readBufferSize,
             json.writeBufferSize,
-            ObjectUtil.isEmpty(json.header) ? 'none' : json.header.type,
-            json.seed,
         );
     }
 
@@ -363,10 +357,6 @@ class KcpStreamSettings extends XrayCommonClass {
             congestion: this.congestion,
             readBufferSize: this.readBuffer,
             writeBufferSize: this.writeBuffer,
-            header: {
-                type: this.type,
-            },
-            seed: this.seed,
         };
     }
 }
@@ -554,7 +544,7 @@ class TlsStreamSettings extends XrayCommonClass {
         maxVersion = TLS_VERSION_OPTION.TLS13,
         cipherSuites = '',
         rejectUnknownSni = false,
-        verifyPeerCertInNames = 'dns.google',
+        verifyPeerCertByName = 'dns.google',
         disableSystemRoot = false,
         enableSessionResumption = false,
         certificates = [new TlsStreamSettings.Cert()],
@@ -569,7 +559,7 @@ class TlsStreamSettings extends XrayCommonClass {
         this.maxVersion = maxVersion;
         this.cipherSuites = cipherSuites;
         this.rejectUnknownSni = rejectUnknownSni;
-        this.verifyPeerCertInNames = Array.isArray(verifyPeerCertInNames) ? verifyPeerCertInNames.join(",") : verifyPeerCertInNames;
+        this.verifyPeerCertByName = Array.isArray(verifyPeerCertByName) ? verifyPeerCertByName.join(",") : verifyPeerCertByName;
         this.disableSystemRoot = disableSystemRoot;
         this.enableSessionResumption = enableSessionResumption;
         this.certs = certificates;
@@ -603,7 +593,7 @@ class TlsStreamSettings extends XrayCommonClass {
             json.maxVersion,
             json.cipherSuites,
             json.rejectUnknownSni,
-            json.verifyPeerCertInNames,
+            json.verifyPeerCertByName,
             json.disableSystemRoot,
             json.enableSessionResumption,
             certs,
@@ -621,7 +611,7 @@ class TlsStreamSettings extends XrayCommonClass {
             maxVersion: this.maxVersion,
             cipherSuites: this.cipherSuites,
             rejectUnknownSni: this.rejectUnknownSni,
-            verifyPeerCertInNames: this.verifyPeerCertInNames.split(","),
+            verifyPeerCertByName: this.verifyPeerCertByName.split(","),
             disableSystemRoot: this.disableSystemRoot,
             enableSessionResumption: this.enableSessionResumption,
             certificates: TlsStreamSettings.toJsonArray(this.certs),
@@ -918,6 +908,68 @@ class SockoptStreamSettings extends XrayCommonClass {
     }
 }
 
+class UdpMask extends XrayCommonClass {
+    constructor(type = 'salamander', settings = {}) {
+        super();
+        this.type = type;
+        this.settings = this._getDefaultSettings(type, settings);
+    }
+
+    _getDefaultSettings(type, settings = {}) {
+        switch (type) {
+            case 'salamander':
+            case 'mkcp-aes128gcm':
+                return { password: settings.password || '' };
+            case 'header-dns':
+            case 'xdns':
+                return { domain: settings.domain || '' };
+            case 'xicmp':
+                return { ip: settings.ip || '', id: settings.id ?? 0 };
+            case 'mkcp-original':
+            case 'header-dtls':
+            case 'header-srtp':
+            case 'header-utp':
+            case 'header-wechat':
+            case 'header-wireguard':
+                return {};
+            default:
+                return settings;
+        }
+    }
+
+    static fromJson(json = {}) {
+        return new UdpMask(
+            json.type || 'salamander',
+            json.settings || {}
+        );
+    }
+
+    toJson() {
+        return {
+            type: this.type,
+            settings: (this.settings && Object.keys(this.settings).length > 0) ? this.settings : undefined
+        };
+    }
+}
+
+class FinalMaskStreamSettings extends XrayCommonClass {
+    constructor(udp = []) {
+        super();
+        this.udp = Array.isArray(udp) ? udp.map(u => new UdpMask(u.type, u.settings)) : [new UdpMask(udp.type, udp.settings)];
+    }
+
+    static fromJson(json = {}) {
+        return new FinalMaskStreamSettings(json.udp || []);
+    }
+
+    toJson() {
+        return {
+            udp: this.udp.map(udp => udp.toJson())
+        };
+
+    }
+}
+
 class StreamSettings extends XrayCommonClass {
     constructor(network = 'tcp',
                 security = 'none',
@@ -930,6 +982,7 @@ class StreamSettings extends XrayCommonClass {
                 grpcSettings = new GrpcStreamSettings(),
                 httpupgradeSettings = new HTTPUpgradeStreamSettings(),
                 xhttpSettings = new xHTTPStreamSettings(),
+                finalmask = new FinalMaskStreamSettings(),
                 sockopt = undefined,
     ) {
         super();
@@ -944,7 +997,22 @@ class StreamSettings extends XrayCommonClass {
         this.grpc = grpcSettings;
         this.httpupgrade = httpupgradeSettings;
         this.xhttp = xhttpSettings;
+        this.finalmask = finalmask;
         this.sockopt = sockopt;
+    }
+
+    addUdpMask(type = 'salamander') {
+        this.finalmask.udp.push(new UdpMask(type));
+    }
+
+    delUdpMask(index) {
+        if (this.finalmask.udp) {
+            this.finalmask.udp.splice(index, 1);
+        }
+    }
+
+    get hasFinalMask() {
+        return this.finalmask.udp && this.finalmask.udp.length > 0;
     }
 
     get isTls() {
@@ -993,6 +1061,7 @@ class StreamSettings extends XrayCommonClass {
             GrpcStreamSettings.fromJson(json.grpcSettings),
             HTTPUpgradeStreamSettings.fromJson(json.httpupgradeSettings),
             xHTTPStreamSettings.fromJson(json.xhttpSettings),
+            FinalMaskStreamSettings.fromJson(json.finalmask),
             SockoptStreamSettings.fromJson(json.sockopt),
         );
     }
@@ -1011,6 +1080,7 @@ class StreamSettings extends XrayCommonClass {
             grpcSettings: network === 'grpc' ? this.grpc.toJson() : undefined,
             httpupgradeSettings: network === 'httpupgrade' ? this.httpupgrade.toJson() : undefined,
             xhttpSettings: network === 'xhttp' ? this.xhttp.toJson() : undefined,
+            finalmask: this.hasFinalMask ? this.finalmask.toJson() : undefined,
             sockopt: this.sockopt != undefined ? this.sockopt.toJson() : undefined,
         };
     }
@@ -1189,14 +1259,6 @@ class Inbound extends XrayCommonClass {
         return null;
     }
 
-    get kcpType() {
-        return this.stream.kcp.type;
-    }
-
-    get kcpSeed() {
-        return this.stream.kcp.seed;
-    }
-
     get serviceName() {
         return this.stream.grpc.serviceName;
     }
@@ -1270,8 +1332,6 @@ class Inbound extends XrayCommonClass {
             }
         } else if (network === 'kcp') {
             const kcp = this.stream.kcp;
-            obj.type = kcp.type;
-            obj.path = kcp.seed;
         } else if (network === 'ws') {
             const ws = this.stream.ws;
             obj.path = ws.path;
@@ -1334,8 +1394,6 @@ class Inbound extends XrayCommonClass {
                 break;
             case "kcp":
                 const kcp = this.stream.kcp;
-                params.set("headerType", kcp.type);
-                params.set("seed", kcp.seed);
                 break;
             case "ws":
                 const ws = this.stream.ws;
@@ -1435,8 +1493,6 @@ class Inbound extends XrayCommonClass {
                 break;
             case "kcp":
                 const kcp = this.stream.kcp;
-                params.set("headerType", kcp.type);
-                params.set("seed", kcp.seed);
                 break;
             case "ws":
                 const ws = this.stream.ws;
@@ -1516,8 +1572,6 @@ class Inbound extends XrayCommonClass {
                 break;
             case "kcp":
                 const kcp = this.stream.kcp;
-                params.set("headerType", kcp.type);
-                params.set("seed", kcp.seed);
                 break;
             case "ws":
                 const ws = this.stream.ws;
@@ -1901,6 +1955,7 @@ Inbound.VLESSSettings = class extends Inbound.Settings {
         encryption = "none",
         fallbacks = [],
         selectedAuth = undefined,
+        testseed = [900, 500, 900, 256],
     ) {
         super(protocol);
         this.vlesses = vlesses;
@@ -1908,6 +1963,7 @@ Inbound.VLESSSettings = class extends Inbound.Settings {
         this.encryption = encryption;
         this.fallbacks = fallbacks;
         this.selectedAuth = selectedAuth;
+        this.testseed = testseed;
     }
 
     addFallback() {
@@ -1919,24 +1975,30 @@ Inbound.VLESSSettings = class extends Inbound.Settings {
     }
 
     static fromJson(json = {}) {
-        let clients = [];
-        if (Array.isArray(json.clients)) {
-            clients = json.clients.map(client => Inbound.VLESSSettings.VLESS.fromJson(client));
+        // Ensure testseed is always initialized as an array
+        let testseed = [900, 500, 900, 256];
+        if (json.testseed && Array.isArray(json.testseed) && json.testseed.length >= 4) {
+            testseed = json.testseed;
         }
+
         const obj = new Inbound.VLESSSettings(
             Protocols.VLESS,
-            clients,
+            (json.clients || []).map(client => Inbound.VLESSSettings.VLESS.fromJson(client)),
             json.decryption,
             json.encryption,
-            Inbound.VLESSSettings.Fallback.fromJson(json.fallbacks || []), json.selectedAuth
+            Inbound.VLESSSettings.Fallback.fromJson(json.fallbacks || []),
+            json.selectedAuth,
+            testseed
         );
         return obj;
     }
+
 
     toJson() {
         const json = {
             clients: Inbound.VLESSSettings.toJsonArray(this.vlesses),
         };
+
         if (this.decryption) {
             json.decryption = this.decryption;
         }
@@ -1952,8 +2014,16 @@ Inbound.VLESSSettings = class extends Inbound.Settings {
             json.selectedAuth = this.selectedAuth;
         }
 
+        // Only include testseed if at least one client has a flow set
+        const hasFlow = this.vlesses && this.vlesses.some(vless => vless.flow && vless.flow !== '');
+        if (hasFlow && this.testseed && this.testseed.length >= 4) {
+            json.testseed = this.testseed;
+        }
+
         return json;
     }
+
+
 };
 
 Inbound.VLESSSettings.VLESS = class extends XrayCommonClass {
