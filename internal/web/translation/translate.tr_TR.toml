@@ -63,6 +63,8 @@
 "secAlertPanelURI" = "Panel varsayılan URI yolu güvensiz. Karmaşık bir URI yolu yapılandırın."
 "secAlertSubURI" = "Abonelik varsayılan URI yolu güvensiz. Karmaşık bir URI yolu yapılandırın."
 "secAlertSubJsonURI" = "Abonelik JSON varsayılan URI yolu güvensiz. Karmaşık bir URI yolu yapılandırın."
+"moveUp" = "Yukarı Taşı"
+"moveDown" = "Aşağı Taşı"
 
 [menu]
 "dashboard" = "Genel Bakış"

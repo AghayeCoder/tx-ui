@@ -63,6 +63,8 @@
 "secAlertPanelURI" = "La ruta URI predeterminada del panel no es segura. Por favor, configure una ruta URI compleja."
 "secAlertSubURI" = "La ruta URI predeterminada de la suscripción no es segura. Por favor, configure una ruta URI compleja."
 "secAlertSubJsonURI" = "La ruta URI JSON predeterminada de la suscripción no es segura. Por favor, configure una ruta URI compleja."
+"moveUp" = "Mover arriba"
+"moveDown" = "Mover abajo"
 
 [menu]
 "dashboard" = "Estado del Sistema"

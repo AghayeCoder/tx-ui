@@ -68,6 +68,8 @@
 "emptyFakeDnsDesc" = "مفيش سيرفر Fake DNS مضاف."
 "emptyBalancersDesc" = "مفيش موازن تحميل مضاف."
 "emptyReverseDesc" = "مفيش بروكسي عكسي مضاف."
+"moveUp" = "انقل لفوق"
+"moveDown" = "انقل لتحت"
 
 [menu]
 "theme" = "الثيم"

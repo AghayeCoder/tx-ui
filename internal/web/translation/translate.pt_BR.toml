@@ -63,6 +63,8 @@
 "secAlertPanelURI" = "O caminho URI padrão do painel não é seguro. Configure um caminho URI complexo."
 "secAlertSubURI" = "O caminho URI padrão de inscrição não é seguro. Configure um caminho URI complexo."
 "secAlertSubJsonURI" = "O caminho URI JSON de inscrição padrão não é seguro. Configure um caminho URI complexo."
+"moveUp" = "Mover para Cima"
+"moveDown" = "Mover para Baixo"
 
 [menu]
 "dashboard" = "Visão Geral"

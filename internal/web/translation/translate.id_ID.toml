@@ -63,6 +63,8 @@
 "secAlertPanelURI" = "Jalur URI default panel tidak aman. Harap konfigurasi jalur URI kompleks."
 "secAlertSubURI" = "Jalur URI default langganan tidak aman. Harap konfigurasi jalur URI kompleks."
 "secAlertSubJsonURI" = "Jalur URI default JSON langganan tidak aman. Harap konfigurasikan jalur URI kompleks."
+"moveUp" = "Pindah ke Atas"
+"moveDown" = "Pindah ke Bawah"
 
 [menu]
 "dashboard" = "Ikhtisar"

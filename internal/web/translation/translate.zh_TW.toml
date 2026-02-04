@@ -63,6 +63,8 @@
 "secAlertPanelURI" = "面板預設 URI 路徑不安全。請配置複雜的 URI 路徑。"
 "secAlertSubURI" = "訂閱預設 URI 路徑不安全。請配置複雜的 URI 路徑。"
 "secAlertSubJsonURI" = "訂閱 JSON 預設 URI 路徑不安全。請配置複雜的 URI 路徑。"
+"moveUp" = "上移"
+"moveDown" = "下移"
 
 [menu]
 "dashboard" = "系統狀態"

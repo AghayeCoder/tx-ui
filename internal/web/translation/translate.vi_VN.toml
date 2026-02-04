@@ -63,6 +63,8 @@
 "secAlertPanelURI" = "Đường dẫn URI mặc định của bảng điều khiển không an toàn. Vui lòng cấu hình một đường dẫn URI phức tạp."
 "secAlertSubURI" = "Đường dẫn URI mặc định của đăng ký không an toàn. Vui lòng cấu hình một đường dẫn URI phức tạp."
 "secAlertSubJsonURI" = "Đường dẫn URI JSON mặc định của đăng ký không an toàn. Vui lòng cấu hình một đường dẫn URI phức tạp."
+"moveUp" = "Di chuyển lên"
+"moveDown" = "Di chuyển xuống"
 
 [menu]
 "dashboard" = "Trạng thái hệ thống"

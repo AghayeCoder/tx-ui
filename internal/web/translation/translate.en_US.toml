@@ -64,6 +64,8 @@
 "secAlertPanelURI" = "Panel default URI path is insecure. Please configure a complex URI path."
 "secAlertSubURI" = "Subscription default URI path is insecure. Please configure a complex URI path."
 "secAlertSubJsonURI" = "Subscription JSON default URI path is insecure. Please configure a complex URI path."
+"moveUp" = "Move Up"
+"moveDown" = "Move Down"
 
 [menu]
 "dashboard" = "Overview"

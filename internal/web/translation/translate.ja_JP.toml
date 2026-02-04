@@ -51,6 +51,8 @@
 "secAlertPanelURI" = "デフォルトのURIパスは安全ではありません。複雑なURIパスを設定してください。"
 "secAlertSubURI" = "サブスクリプションのデフォルトURIパスは安全ではありません。複雑なURIパスを設定してください。"
 "secAlertSubJsonURI" = "JSONサブスクリプションのデフォルトURIパスは安全ではありません。複雑なURIパスを設定してください。"
+"moveUp" = "上へ移動"
+"moveDown" = "下へ移動"
 
 [menu]
 "dashboard" = "ダッシュボード"

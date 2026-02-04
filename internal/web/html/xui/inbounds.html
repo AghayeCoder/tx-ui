@@ -1676,7 +1676,7 @@
                     }
                 } catch (e) {
                     console.error('reorder error', e);
-                    if (this.$message) this.$message.error('{{ i18n "somethingWentWrong" }}');
+                    if (this.$message) this.$message.error('somethingWentWrong');
                     await this.getDBInbounds();
                 }
             },
