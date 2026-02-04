@@ -2,28 +2,28 @@
 <template slot="actions" slot-scope="text, client, index">
     <a-tooltip>
         <template slot="title">{{ i18n "qrCode" }}</template>
-        <a-icon style="font-size: 24px;" class="normal-icon" type="qrcode" v-if="record.hasLink()"
-                @click="showQrcode(record.id,client);"></a-icon>
+        <a-icon @click="showQrcode(record.id,client);" class="normal-icon" style="font-size: 24px;" type="qrcode"
+                v-if="record.hasLink()"></a-icon>
     </a-tooltip>
     <a-tooltip>
         <template slot="title">{{ i18n "pages.client.edit" }}</template>
-        <a-icon style="font-size: 24px;" class="normal-icon" type="edit"
-                @click="openEditClient(record.id,client);"></a-icon>
+        <a-icon @click="openEditClient(record.id,client);" class="normal-icon" style="font-size: 24px;"
+                type="edit"></a-icon>
     </a-tooltip>
     <a-tooltip>
         <template slot="title">{{ i18n "info" }}</template>
-        <a-icon style="font-size: 24px;" class="normal-icon" type="info-circle"
-                @click="showInfo(record.id,client);"></a-icon>
+        <a-icon @click="showInfo(record.id,client);" class="normal-icon" style="font-size: 24px;"
+                type="info-circle"></a-icon>
     </a-tooltip>
     <a-tooltip>
         <template slot="title">{{ i18n "pages.inbounds.resetTraffic" }}</template>
-        <a-popconfirm @confirm="resetClientTraffic(client,record.id,false)"
-                      title='{{ i18n "pages.inbounds.resetTrafficContent"}}'
-                      :overlay-class-name="themeSwitcher.currentTheme" ok-text='{{ i18n "reset"}}'
-                      cancel-text='{{ i18n "cancel"}}'>
-            <a-icon slot="icon" type="question-circle-o"
-                    :style="themeSwitcher.isDarkTheme ? 'color: var(--color-primary-100)' : 'color: var(--color-primary-100)'"></a-icon>
-            <a-icon style="font-size: 24px; cursor: pointer;" class="normal-icon" type="retweet"
+        <a-popconfirm :overlay-class-name="themeSwitcher.currentTheme"
+                      @confirm="resetClientTraffic(client,record.id,false)"
+                      cancel-text='{{ i18n "cancel"}}' ok-text='{{ i18n "reset"}}'
+                      title='{{ i18n "pages.inbounds.resetTrafficContent"}}'>
+            <a-icon :style="themeSwitcher.isDarkTheme ? 'color: var(--color-primary-100)' : 'color: var(--color-primary-100)'" slot="icon"
+                    type="question-circle-o"></a-icon>
+            <a-icon class="normal-icon" style="font-size: 24px; cursor: pointer;" type="retweet"
                     v-if="client.email.length > 0"></a-icon>
         </a-popconfirm>
     </a-tooltip>
@@ -31,18 +31,18 @@
         <template slot="title">
             <span style="color: #FF4D4F"> {{ i18n "delete"}}</span>
         </template>
-        <a-popconfirm @confirm="delClient(record.id,client,false)"
-                      title='{{ i18n "pages.inbounds.deleteClientContent"}}'
-                      :overlay-class-name="themeSwitcher.currentTheme" ok-text='{{ i18n "delete"}}' ok-type="danger"
-                      cancel-text='{{ i18n "cancel"}}'>
-            <a-icon slot="icon" type="question-circle-o" style="color: #e04141"></a-icon>
-            <a-icon style="font-size: 24px; cursor: pointer;" class="delete-icon" type="delete"
+        <a-popconfirm :overlay-class-name="themeSwitcher.currentTheme"
+                      @confirm="delClient(record.id,client,false)"
+                      cancel-text='{{ i18n "cancel"}}' ok-text='{{ i18n "delete"}}' ok-type="danger"
+                      title='{{ i18n "pages.inbounds.deleteClientContent"}}'>
+            <a-icon slot="icon" style="color: #e04141" type="question-circle-o"></a-icon>
+            <a-icon class="delete-icon" style="font-size: 24px; cursor: pointer;" type="delete"
                     v-if="isRemovable(record.id)"></a-icon>
         </a-popconfirm>
     </a-tooltip>
 </template>
 <template slot="enable" slot-scope="text, client, index">
-    <a-switch v-model="client.enable" @change="switchEnableClient(record.id,client)"></a-switch>
+    <a-switch @change="switchEnableClient(record.id,client)" v-model="client.enable"></a-switch>
 </template>
 <template slot="online" slot-scope="text, client, index">
     <template v-if="client.enable && isClientOnline(client.email)">
@@ -82,20 +82,20 @@
             <tr class="tr-table-box">
                 <td class="tr-table-rt"> [[ sizeFormat(getSumStats(record, client.email)) ]]</td>
                 <td class="tr-table-bar" v-if="!client.enable">
-                    <a-progress :stroke-color="themeSwitcher.isDarkTheme ? 'rgb(72 84 105)' : '#bcbcbc'"
-                                :show-info="false" :percent="statsProgress(record, client.email)"/>
+                    <a-progress :percent="statsProgress(record, client.email)"
+                                :show-info="false" :stroke-color="themeSwitcher.isDarkTheme ? 'rgb(72 84 105)' : '#bcbcbc'"/>
                 </td>
                 <td class="tr-table-bar" v-else-if="client.totalGB > 0">
-                    <a-progress :stroke-color="clientStatsColor(record, client.email)" :show-info="false"
+                    <a-progress :percent="statsProgress(record, client.email)" :show-info="false"
                                 :status="isClientEnabled(record, client.email)? 'exception' : ''"
-                                :percent="statsProgress(record, client.email)"/>
+                                :stroke-color="clientStatsColor(record, client.email)"/>
                 </td>
-                <td v-else class="infinite-bar tr-table-bar">
-                    <a-progress :show-info="false" :percent="100"></a-progress>
+                <td class="infinite-bar tr-table-bar" v-else>
+                    <a-progress :percent="100" :show-info="false"></a-progress>
                 </td>
                 <td class="tr-table-lt">
                     <template v-if="client.totalGB > 0">[[ client._totalGB + "GB" ]]</template>
-                    <span v-else class="tr-infinity-ch">&infin;</span>
+                    <span class="tr-infinity-ch" v-else>&infin;</span>
                 </td>
             </tr>
         </table>
@@ -120,8 +120,8 @@
                 <tr class="tr-table-box">
                     <td class="tr-table-rt"> [[ remainedDays(client.expiryTime) ]]</td>
                     <td class="infinite-bar tr-table-bar">
-                        <a-progress :show-info="false" :status="isClientEnabled(record, client.email)? 'exception' : ''"
-                                    :percent="expireProgress(client.expiryTime, client.reset)"/>
+                        <a-progress :percent="expireProgress(client.expiryTime, client.reset)" :show-info="false"
+                                    :status="isClientEnabled(record, client.email)? 'exception' : ''"/>
                     </td>
                     <td class="tr-table-lt">[[ client.reset + "d" ]]</td>
                 </tr>
@@ -129,7 +129,7 @@
         </a-popover>
     </template>
     <template v-else>
-        <a-popover v-if="client.expiryTime != 0" :overlay-class-name="themeSwitcher.currentTheme">
+        <a-popover :overlay-class-name="themeSwitcher.currentTheme" v-if="client.expiryTime != 0">
             <template slot="content">
         <span v-if="client.expiryTime < 0">{{ i18n "pages.client.delayedStart" }}
         </span>
@@ -142,14 +142,14 @@
           </template>
         </span>
             </template>
-            <a-tag style="min-width: 50px; border: none;"
-                   :color="userExpiryColor(app.expireDiff, client, themeSwitcher.isDarkTheme)"> [[
+            <a-tag :color="userExpiryColor(app.expireDiff, client, themeSwitcher.isDarkTheme)"
+                   style="min-width: 50px; border: none;"> [[
                 remainedDays(client.expiryTime) ]]
             </a-tag>
         </a-popover>
-        <a-tag v-else :color="userExpiryColor(app.expireDiff, client, themeSwitcher.isDarkTheme)" style="border: none;"
-               class="infinite-tag">
-            <svg height="10px" width="14px" viewBox="0 0 640 512" fill="currentColor">
+        <a-tag :color="userExpiryColor(app.expireDiff, client, themeSwitcher.isDarkTheme)" class="infinite-tag" style="border: none;"
+               v-else>
+            <svg fill="currentColor" height="10px" viewBox="0 0 640 512" width="14px">
                 <path d="M484.4 96C407 96 349.2 164.1 320 208.5C290.8 164.1 233 96 155.6 96C69.75 96 0 167.8 0 256s69.75 160 155.6 160C233.1 416 290.8 347.9 320 303.5C349.2 347.9 407 416 484.4 416C570.3 416 640 344.2 640 256S570.3 96 484.4 96zM155.6 368C96.25 368 48 317.8 48 256s48.25-112 107.6-112c67.75 0 120.5 82.25 137.1 112C276 285.8 223.4 368 155.6 368zM484.4 368c-67.75 0-120.5-82.25-137.1-112C364 226.2 416.6 144 484.4 144C543.8 144 592 194.2 592 256S543.8 368 484.4 368z"
                       fill="currentColor"></path>
             </svg>
@@ -158,9 +158,9 @@
 </template>
 <template slot="actionMenu" slot-scope="text, client, index">
     <a-dropdown :trigger="['click']">
-        <a-icon @click="e => e.preventDefault()" type="ellipsis" style="font-size: 20px;"></a-icon>
-        <a-menu slot="overlay" :theme="themeSwitcher.currentTheme">
-            <a-menu-item v-if="record.hasLink()" @click="showQrcode(record.id,client);">
+        <a-icon @click="e => e.preventDefault()" style="font-size: 20px;" type="ellipsis"></a-icon>
+        <a-menu :theme="themeSwitcher.currentTheme" slot="overlay">
+            <a-menu-item @click="showQrcode(record.id,client);" v-if="record.hasLink()">
                 <a-icon style="font-size: 14px;" type="qrcode"></a-icon>
                 {{ i18n "qrCode" }}
             </a-menu-item>
@@ -176,34 +176,34 @@
                 <a-icon style="font-size: 14px;" type="retweet"></a-icon>
                 {{ i18n "pages.inbounds.resetTraffic" }}
             </a-menu-item>
-            <a-menu-item v-if="isRemovable(record.id)" @click="delClient(record.id,client)">
+            <a-menu-item @click="delClient(record.id,client)" v-if="isRemovable(record.id)">
                 <a-icon style="font-size: 14px;" type="delete"></a-icon>
                 <span style="color: #FF4D4F"> {{ i18n "delete"}}</span>
             </a-menu-item>
             <a-menu-item>
-                <a-switch v-model="client.enable" size="small"
-                          @change="switchEnableClient(record.id,client)"></a-switch>
+                <a-switch @change="switchEnableClient(record.id,client)" size="small"
+                          v-model="client.enable"></a-switch>
                 {{ i18n "enable"}}
             </a-menu-item>
         </a-menu>
     </a-dropdown>
 </template>
 <template slot="info" slot-scope="text, client, index">
-    <a-popover placement="bottomRight" :overlay-class-name="themeSwitcher.currentTheme" trigger="click">
+    <a-popover :overlay-class-name="themeSwitcher.currentTheme" placement="bottomRight" trigger="click">
         <template slot="content">
             <table>
                 <tr>
                     <td colspan="3" style="text-align: center;">{{ i18n "pages.inbounds.traffic" }}</td>
                 </tr>
                 <tr>
-                    <td width="80px" style="margin:0; text-align: right;font-size: 1em;"> [[
+                    <td style="margin:0; text-align: right;font-size: 1em;" width="80px"> [[
                         sizeFormat(getUpStats(record, client.email) + getDownStats(record, client.email)) ]]
                     </td>
-                    <td width="120px" v-if="!client.enable">
-                        <a-progress :stroke-color="themeSwitcher.isDarkTheme ? 'rgb(72 84 105)' : '#bcbcbc'"
-                                    :show-info="false" :percent="statsProgress(record, client.email)"/>
+                    <td v-if="!client.enable" width="120px">
+                        <a-progress :percent="statsProgress(record, client.email)"
+                                    :show-info="false" :stroke-color="themeSwitcher.isDarkTheme ? 'rgb(72 84 105)' : '#bcbcbc'"/>
                     </td>
-                    <td width="120px" v-else-if="client.totalGB > 0">
+                    <td v-else-if="client.totalGB > 0" width="120px">
                         <a-popover :overlay-class-name="themeSwitcher.currentTheme">
                             <template slot="content" v-if="client.email">
                                 <table cellpadding="2" width="100%">
@@ -217,18 +217,18 @@
                                     </tr>
                                 </table>
                             </template>
-                            <a-progress :stroke-color="clientStatsColor(record, client.email)" :show-info="false"
+                            <a-progress :percent="statsProgress(record, client.email)" :show-info="false"
                                         :status="isClientEnabled(record, client.email)? 'exception' : ''"
-                                        :percent="statsProgress(record, client.email)"/>
+                                        :stroke-color="clientStatsColor(record, client.email)"/>
                         </a-popover>
                     </td>
-                    <td width="120px" v-else class="infinite-bar">
-                        <a-progress :stroke-color="themeSwitcher.isDarkTheme ? '#2c1e32':'#F2EAF1'" :show-info="false"
-                                    :percent="100"></a-progress>
+                    <td class="infinite-bar" v-else width="120px">
+                        <a-progress :percent="100" :show-info="false"
+                                    :stroke-color="themeSwitcher.isDarkTheme ? '#2c1e32':'#F2EAF1'"></a-progress>
                     </td>
                     <td width="80px">
                         <template v-if="client.totalGB > 0">[[ client._totalGB + "GB" ]]</template>
-                        <span v-else class="tr-infinity-ch">&infin;</span>
+                        <span class="tr-infinity-ch" v-else>&infin;</span>
                     </td>
                 </tr>
                 <tr>
@@ -239,10 +239,10 @@
                 </tr>
                 <tr>
                     <template v-if="client.expiryTime !=0 && client.reset >0">
-                        <td width="80px" style="margin:0; text-align: right;font-size: 1em;"> [[
+                        <td style="margin:0; text-align: right;font-size: 1em;" width="80px"> [[
                             remainedDays(client.expiryTime) ]]
                         </td>
-                        <td width="120px" class="infinite-bar">
+                        <td class="infinite-bar" width="120px">
                             <a-popover :overlay-class-name="themeSwitcher.currentTheme">
                                 <template slot="content">
                   <span v-if="client.expiryTime < 0">{{ i18n "pages.client.delayedStart" }}
@@ -256,16 +256,16 @@
                     </template>
                   </span>
                                 </template>
-                                <a-progress :show-info="false"
-                                            :status="isClientEnabled(record, client.email)? 'exception' : ''"
-                                            :percent="expireProgress(client.expiryTime, client.reset)"/>
+                                <a-progress :percent="expireProgress(client.expiryTime, client.reset)"
+                                            :show-info="false"
+                                            :status="isClientEnabled(record, client.email)? 'exception' : ''"/>
                             </a-popover>
                         </td>
                         <td width="60px">[[ client.reset + "d" ]]</td>
                     </template>
                     <template v-else>
                         <td colspan="3" style="text-align: center;">
-                            <a-popover v-if="client.expiryTime != 0" :overlay-class-name="themeSwitcher.currentTheme">
+                            <a-popover :overlay-class-name="themeSwitcher.currentTheme" v-if="client.expiryTime != 0">
                                 <template slot="content">
                   <span v-if="client.expiryTime < 0">{{ i18n "pages.client.delayedStart" }}
                   </span>
@@ -278,15 +278,15 @@
                     </template>
                   </span>
                                 </template>
-                                <a-tag style="min-width: 50px; border: none;"
-                                       :color="userExpiryColor(app.expireDiff, client, themeSwitcher.isDarkTheme)"> [[
+                                <a-tag :color="userExpiryColor(app.expireDiff, client, themeSwitcher.isDarkTheme)"
+                                       style="min-width: 50px; border: none;"> [[
                                     remainedDays(client.expiryTime) ]]
                                 </a-tag>
                             </a-popover>
-                            <a-tag v-else
-                                   :color="client.enable ? 'purple' : themeSwitcher.isDarkTheme ? '#2c3950' : '#bcbcbc'"
-                                   class="infinite-tag">
-                                <svg height="10px" width="14px" viewBox="0 0 640 512" fill="currentColor">
+                            <a-tag :color="client.enable ? 'purple' : themeSwitcher.isDarkTheme ? '#2c3950' : '#bcbcbc'"
+                                   class="infinite-tag"
+                                   v-else>
+                                <svg fill="currentColor" height="10px" viewBox="0 0 640 512" width="14px">
                                     <path d="M484.4 96C407 96 349.2 164.1 320 208.5C290.8 164.1 233 96 155.6 96C69.75 96 0 167.8 0 256s69.75 160 155.6 160C233.1 416 290.8 347.9 320 303.5C349.2 347.9 407 416 484.4 416C570.3 416 640 344.2 640 256S570.3 96 484.4 96zM155.6 368C96.25 368 48 317.8 48 256s48.25-112 107.6-112c67.75 0 120.5 82.25 137.1 112C276 285.8 223.4 368 155.6 368zM484.4 368c-67.75 0-120.5-82.25-137.1-112C364 226.2 416.6 144 484.4 144C543.8 144 592 194.2 592 256S543.8 368 484.4 368z"
                                           fill="currentColor"></path>
                                 </svg>
@@ -297,8 +297,8 @@
             </table>
         </template>
         <a-badge>
-            <a-icon v-if="!client.enable" slot="count" type="pause-circle" theme="filled"
-                    :style="'color: ' + themeSwitcher.isDarkTheme ? '#2c3950' : '#bcbcbc'"></a-icon>
+            <a-icon :style="'color: ' + themeSwitcher.isDarkTheme ? '#2c3950' : '#bcbcbc'" slot="count" theme="filled" type="pause-circle"
+                    v-if="!client.enable"></a-icon>
             <a-button shape="round" size="small" style="font-size: 14px; padding: 0 10px;">
                 <a-icon type="solution"></a-icon>
             </a-button>

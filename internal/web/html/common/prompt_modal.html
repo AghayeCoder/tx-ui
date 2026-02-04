@@ -1,13 +1,13 @@
 {{define "promptModal"}}
-<a-modal id="prompt-modal" v-model="promptModal.visible" :title="promptModal.title"
-         :closable="true" @ok="promptModal.ok" :mask-closable="false"
-         :confirm-loading="promptModal.confirmLoading"
-         :ok-text="promptModal.okText" cancel-text='{{ i18n "cancel" }}' :class="themeSwitcher.currentTheme">
-    <a-input id="prompt-modal-input" :type="promptModal.type"
-             v-model="promptModal.value"
-             :autosize="{minRows: 10, maxRows: 20}"
+<a-modal :class="themeSwitcher.currentTheme" :closable="true" :confirm-loading="promptModal.confirmLoading"
+         :mask-closable="false" :ok-text="promptModal.okText" :title="promptModal.title"
+         @ok="promptModal.ok"
+         cancel-text='{{ i18n "cancel" }}' id="prompt-modal" v-model="promptModal.visible">
+    <a-input :autosize="{minRows: 10, maxRows: 20}" :type="promptModal.type"
+             @keydown.ctrl.83="promptModal.ctrlS"
              @keydown.enter.native="promptModal.keyEnter"
-             @keydown.ctrl.83="promptModal.ctrlS"></a-input>
+             id="prompt-modal-input"
+             v-model="promptModal.value"></a-input>
 </a-modal>
 
 <script>

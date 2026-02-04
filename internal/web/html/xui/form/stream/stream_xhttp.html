@@ -7,25 +7,25 @@
         <a-input v-model.trim="inbound.stream.xhttp.path"></a-input>
     </a-form-item>
     <a-form-item label='{{ i18n "pages.inbounds.stream.tcp.requestHeader" }}'>
-        <a-button icon="plus" size="small" @click="inbound.stream.xhttp.addHeader('', '')"></a-button>
+        <a-button @click="inbound.stream.xhttp.addHeader('', '')" icon="plus" size="small"></a-button>
     </a-form-item>
     <a-form-item :wrapper-col="{span:24}">
         <a-input-group compact v-for="(header, index) in inbound.stream.xhttp.headers">
-            <a-input style="width: 50%" v-model.trim="header.name"
-                     placeholder='{{ i18n "pages.inbounds.stream.general.name"}}'>
+            <a-input placeholder='{{ i18n "pages.inbounds.stream.general.name"}}' style="width: 50%"
+                     v-model.trim="header.name">
                 <template slot="addonBefore" style="margin: 0;">[[ index+1 ]]</template>
             </a-input>
-            <a-input style="width: 50%" v-model.trim="header.value"
-                     placeholder='{{ i18n "pages.inbounds.stream.general.value" }}'>
-                <a-button icon="minus" slot="addonAfter" size="small"
-                          @click="inbound.stream.xhttp.removeHeader(index)"></a-button>
+            <a-input placeholder='{{ i18n "pages.inbounds.stream.general.value" }}' style="width: 50%"
+                     v-model.trim="header.value">
+                <a-button @click="inbound.stream.xhttp.removeHeader(index)" icon="minus" size="small"
+                          slot="addonAfter"></a-button>
             </a-input>
         </a-input-group>
     </a-form-item>
     <a-form-item label='Mode'>
-        <a-select v-model="inbound.stream.xhttp.mode" style="width: 50%"
-                  :dropdown-class-name="themeSwitcher.currentTheme">
-            <a-select-option v-for="key in MODE_OPTION" :value="key">[[ key ]]</a-select-option>
+        <a-select :dropdown-class-name="themeSwitcher.currentTheme" style="width: 50%"
+                  v-model="inbound.stream.xhttp.mode">
+            <a-select-option :value="key" v-for="key in MODE_OPTION">[[ key ]]</a-select-option>
         </a-select>
     </a-form-item>
     <a-form-item label="Max Buffered Upload" v-if="inbound.stream.xhttp.mode === 'packet-up'">
@@ -45,25 +45,26 @@
     </a-form-item>
     <template v-if="inbound.stream.xhttp.xPaddingObfsMode">
         <a-form-item label="Padding Key">
-            <a-input v-model.trim="inbound.stream.xhttp.xPaddingKey"
-                     placeholder="x_padding"></a-input>
+            <a-input placeholder="x_padding"
+                     v-model.trim="inbound.stream.xhttp.xPaddingKey"></a-input>
         </a-form-item>
         <a-form-item label="Padding Header">
-            <a-input v-model.trim="inbound.stream.xhttp.xPaddingHeader"
-                     placeholder="X-Padding"></a-input>
+            <a-input placeholder="X-Padding"
+                     v-model.trim="inbound.stream.xhttp.xPaddingHeader"></a-input>
         </a-form-item>
         <a-form-item label="Padding Placement">
-            <a-select v-model="inbound.stream.xhttp.xPaddingPlacement"
-                      :dropdown-class-name="themeSwitcher.currentTheme">
+            <a-select :dropdown-class-name="themeSwitcher.currentTheme"
+                      v-model="inbound.stream.xhttp.xPaddingPlacement">
                 <a-select-option value>Default (queryInHeader)</a-select-option>
                 <a-select-option
-                        value="queryInHeader">queryInHeader</a-select-option>
+                        value="queryInHeader">queryInHeader
+                </a-select-option>
                 <a-select-option value="header">header</a-select-option>
             </a-select>
         </a-form-item>
         <a-form-item label="Padding Method">
-            <a-select v-model="inbound.stream.xhttp.xPaddingMethod"
-                      :dropdown-class-name="themeSwitcher.currentTheme">
+            <a-select :dropdown-class-name="themeSwitcher.currentTheme"
+                      v-model="inbound.stream.xhttp.xPaddingMethod">
                 <a-select-option value>Default (repeat-x)</a-select-option>
                 <a-select-option value="repeat-x">repeat-x</a-select-option>
                 <a-select-option value="tokenish">tokenish</a-select-option>
@@ -71,8 +72,8 @@
         </a-form-item>
     </template>
     <a-form-item label="Uplink HTTP Method">
-        <a-select v-model="inbound.stream.xhttp.uplinkHTTPMethod"
-                  :dropdown-class-name="themeSwitcher.currentTheme">
+        <a-select :dropdown-class-name="themeSwitcher.currentTheme"
+                  v-model="inbound.stream.xhttp.uplinkHTTPMethod">
             <a-select-option value>Default (POST)</a-select-option>
             <a-select-option value="POST">POST</a-select-option>
             <a-select-option value="PUT">PUT</a-select-option>
@@ -80,8 +81,8 @@
         </a-select>
     </a-form-item>
     <a-form-item label="Session Placement">
-        <a-select v-model="inbound.stream.xhttp.sessionPlacement"
-                  :dropdown-class-name="themeSwitcher.currentTheme">
+        <a-select :dropdown-class-name="themeSwitcher.currentTheme"
+                  v-model="inbound.stream.xhttp.sessionPlacement">
             <a-select-option value>Default (path)</a-select-option>
             <a-select-option value="path">path</a-select-option>
             <a-select-option value="header">header</a-select-option>
@@ -91,12 +92,12 @@
     </a-form-item>
     <a-form-item label="Session Key"
                  v-if="inbound.stream.xhttp.sessionPlacement && inbound.stream.xhttp.sessionPlacement !== 'path'">
-        <a-input v-model.trim="inbound.stream.xhttp.sessionKey"
-                 placeholder="x_session"></a-input>
+        <a-input placeholder="x_session"
+                 v-model.trim="inbound.stream.xhttp.sessionKey"></a-input>
     </a-form-item>
     <a-form-item label="Sequence Placement">
-        <a-select v-model="inbound.stream.xhttp.seqPlacement"
-                  :dropdown-class-name="themeSwitcher.currentTheme">
+        <a-select :dropdown-class-name="themeSwitcher.currentTheme"
+                  v-model="inbound.stream.xhttp.seqPlacement">
             <a-select-option value>Default (path)</a-select-option>
             <a-select-option value="path">path</a-select-option>
             <a-select-option value="header">header</a-select-option>
@@ -106,13 +107,13 @@
     </a-form-item>
     <a-form-item label="Sequence Key"
                  v-if="inbound.stream.xhttp.seqPlacement && inbound.stream.xhttp.seqPlacement !== 'path'">
-        <a-input v-model.trim="inbound.stream.xhttp.seqKey"
-                 placeholder="x_seq"></a-input>
+        <a-input placeholder="x_seq"
+                 v-model.trim="inbound.stream.xhttp.seqKey"></a-input>
     </a-form-item>
     <a-form-item label="Uplink Data Placement"
                  v-if="inbound.stream.xhttp.mode === 'packet-up'">
-        <a-select v-model="inbound.stream.xhttp.uplinkDataPlacement"
-                  :dropdown-class-name="themeSwitcher.currentTheme">
+        <a-select :dropdown-class-name="themeSwitcher.currentTheme"
+                  v-model="inbound.stream.xhttp.uplinkDataPlacement">
             <a-select-option value>Default (body)</a-select-option>
             <a-select-option value="body">body</a-select-option>
             <a-select-option value="header">header</a-select-option>
@@ -121,13 +122,13 @@
     </a-form-item>
     <a-form-item label="Uplink Data Key"
                  v-if="inbound.stream.xhttp.mode === 'packet-up' && inbound.stream.xhttp.uplinkDataPlacement && inbound.stream.xhttp.uplinkDataPlacement !== 'body'">
-        <a-input v-model.trim="inbound.stream.xhttp.uplinkDataKey"
-                 placeholder="x_data"></a-input>
+        <a-input placeholder="x_data"
+                 v-model.trim="inbound.stream.xhttp.uplinkDataKey"></a-input>
     </a-form-item>
     <a-form-item label="Uplink Chunk Size"
                  v-if="inbound.stream.xhttp.mode === 'packet-up' && inbound.stream.xhttp.uplinkDataPlacement && inbound.stream.xhttp.uplinkDataPlacement !== 'body'">
-        <a-input-number v-model.number="inbound.stream.xhttp.uplinkChunkSize"
-                        :min="0" placeholder="0 (unlimited)"></a-input-number>
+        <a-input-number :min="0"
+                        placeholder="0 (unlimited)" v-model.number="inbound.stream.xhttp.uplinkChunkSize"></a-input-number>
     </a-form-item>
     <a-form-item label="No SSE Header">
         <a-switch v-model="inbound.stream.xhttp.noSSEHeader"></a-switch>

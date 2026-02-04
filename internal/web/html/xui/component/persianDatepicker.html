@@ -1,11 +1,11 @@
 {{define "component/persianDatepickerTemplate"}}
 <template>
     <div>
-        <a-input :value="value" type="text" v-model="date" data-jdp class="persian-datepicker"
-                 @input="$emit('input', convertToGregorian($event.target.value)); jalaliDatepicker.hide();"
-                 :placeholder="placeholder">
+        <a-input :placeholder="placeholder" :value="value" @input="$emit('input', convertToGregorian($event.target.value)); jalaliDatepicker.hide();" class="persian-datepicker" data-jdp
+                 type="text"
+                 v-model="date">
             <template #addonAfter>
-                <a-icon type="calendar" style="font-size: 14px; opacity: 0.5;"/>
+                <a-icon style="font-size: 14px; opacity: 0.5;" type="calendar"/>
             </template>
         </a-input>
     </div>
@@ -13,7 +13,7 @@
 {{end}}
 
 {{define "component/persianDatepicker"}}
-<link rel="stylesheet" href="{{ .base_path }}assets/persian-datepicker/persian-datepicker.min.css?{{ .cur_ver }}"/>
+<link href="{{ .base_path }}assets/persian-datepicker/persian-datepicker.min.css?{{ .cur_ver }}" rel="stylesheet"/>
 <script src="{{ .base_path }}assets/moment/moment-jalali.min.js?{{ .cur_ver }}"></script>
 <script src="{{ .base_path }}assets/persian-datepicker/persian-datepicker.min.js?{{ .cur_ver }}"></script>
 <script>

@@ -1,41 +1,41 @@
 {{define "balancerModal"}}
 <a-modal
-        id="balancer-modal"
-        v-model="balancerModal.visible"
+        :class="themeSwitcher.currentTheme"
+        :closable="true"
+        :confirm-loading="balancerModal.confirmLoading"
+        :mask-closable="false"
+        :ok-button-props="{ props: { disabled: !balancerModal.isValid } }"
+        :ok-text="balancerModal.okText"
         :title="balancerModal.title"
         @ok="balancerModal.ok"
-        :confirm-loading="balancerModal.confirmLoading"
-        :ok-button-props="{ props: { disabled: !balancerModal.isValid } }"
-        :closable="true"
-        :mask-closable="false"
-        :ok-text="balancerModal.okText"
         cancel-text='{{ i18n "close" }}'
-        :class="themeSwitcher.currentTheme">
+        id="balancer-modal"
+        v-model="balancerModal.visible">
     <a-form :colon="false" :label-col="{ md: {span:8} }" :wrapper-col="{ md: {span:14} }">
-        <a-form-item label='{{ i18n "pages.xray.balancer.tag" }}' has-feedback
-                     :validate-status="balancerModal.duplicateTag? 'warning' : 'success'">
-            <a-input v-model.trim="balancerModal.balancer.tag" @change="balancerModal.check()"
-                     placeholder='{{ i18n "pages.xray.balancer.tagDesc" }}'></a-input>
+        <a-form-item :validate-status="balancerModal.duplicateTag? 'warning' : 'success'" has-feedback
+                     label='{{ i18n "pages.xray.balancer.tag" }}'>
+            <a-input @change="balancerModal.check()" placeholder='{{ i18n "pages.xray.balancer.tagDesc" }}'
+                     v-model.trim="balancerModal.balancer.tag"></a-input>
         </a-form-item>
         <a-form-item label='{{ i18n "pages.xray.balancer.balancerStrategy" }}'>
-            <a-select v-model="balancerModal.balancer.strategy" :dropdown-class-name="themeSwitcher.currentTheme">
+            <a-select :dropdown-class-name="themeSwitcher.currentTheme" v-model="balancerModal.balancer.strategy">
                 <a-select-option value="random">Random</a-select-option>
                 <a-select-option value="roundRobin">Round Robin</a-select-option>
                 <a-select-option value="leastLoad">Least Load</a-select-option>
                 <a-select-option value="leastPing">Least Ping</a-select-option>
             </a-select>
         </a-form-item>
-        <a-form-item label='{{ i18n "pages.xray.balancer.balancerSelectors" }}' has-feedback
-                     :validate-status="balancerModal.emptySelector? 'warning' : 'success'">
-            <a-select v-model="balancerModal.balancer.selector" mode="tags" @change="balancerModal.checkSelector()"
-                      :dropdown-class-name="themeSwitcher.currentTheme">
-                <a-select-option v-for="tag in balancerModal.outboundTags" :value="tag">[[ tag ]]</a-select-option>
+        <a-form-item :validate-status="balancerModal.emptySelector? 'warning' : 'success'" has-feedback
+                     label='{{ i18n "pages.xray.balancer.balancerSelectors" }}'>
+            <a-select :dropdown-class-name="themeSwitcher.currentTheme" @change="balancerModal.checkSelector()" mode="tags"
+                      v-model="balancerModal.balancer.selector">
+                <a-select-option :value="tag" v-for="tag in balancerModal.outboundTags">[[ tag ]]</a-select-option>
             </a-select>
         </a-form-item>
         <a-form-item label="Fallback">
-            <a-select v-model="balancerModal.balancer.fallbackTag" clearable
-                      :dropdown-class-name="themeSwitcher.currentTheme">
-                <a-select-option v-for="tag in [ '', ...balancerModal.outboundTags]" :value="tag">[[ tag ]]
+            <a-select :dropdown-class-name="themeSwitcher.currentTheme" clearable
+                      v-model="balancerModal.balancer.fallbackTag">
+                <a-select-option :value="tag" v-for="tag in [ '', ...balancerModal.outboundTags]">[[ tag ]]
                 </a-select-option>
             </a-select>
         </a-form-item>

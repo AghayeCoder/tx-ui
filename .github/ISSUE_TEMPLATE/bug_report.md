@@ -17,8 +17,9 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Version (please complete the following information):**
- - TX-UI Version : [e.g. 2.3.5]
- - Xray Version : [e.g. 1.8.13]
+
+- TX-UI Version : [e.g. 2.3.5]
+- Xray Version : [e.g. 1.8.13]
 
 **Additional context**
 Add any other context about the problem here.

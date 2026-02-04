@@ -1,11 +1,11 @@
 {{define "clientsModal"}}
-<a-modal id="client-modal" v-model="clientModal.visible" :title="clientModal.title" @ok="clientModal.ok"
-         :confirm-loading="clientModal.confirmLoading" :closable="true" :mask-closable="false"
-         :class="themeSwitcher.currentTheme"
-         :ok-text="clientModal.okText" cancel-text='{{ i18n "close" }}'>
+<a-modal :class="themeSwitcher.currentTheme" :closable="true" :confirm-loading="clientModal.confirmLoading" :mask-closable="false"
+         :ok-text="clientModal.okText" :title="clientModal.title" @ok="clientModal.ok"
+         cancel-text='{{ i18n "close" }}'
+         id="client-modal" v-model="clientModal.visible">
     <template v-if="isEdit">
-        <a-tag v-if="isExpiry || isTrafficExhausted" color="red"
-               style="margin-bottom: 10px;display: block;text-align: center;">Account is (Expired|Traffic Ended) And
+        <a-tag color="red" style="margin-bottom: 10px;display: block;text-align: center;"
+               v-if="isExpiry || isTrafficExhausted">Account is (Expired|Traffic Ended) And
             Disabled
         </a-tag>
     </template>

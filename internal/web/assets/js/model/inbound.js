@@ -141,14 +141,6 @@ class XrayCommonClass {
         return new XrayCommonClass();
     }
 
-    toJson() {
-        return this;
-    }
-
-    toString(format = true) {
-        return format ? JSON.stringify(this.toJson(), null, 2) : JSON.stringify(this.toJson());
-    }
-
     static toHeaders(v2Headers) {
         let newHeaders = [];
         if (v2Headers) {
@@ -185,6 +177,14 @@ class XrayCommonClass {
             }
         }
         return v2Headers;
+    }
+
+    toJson() {
+        return this;
+    }
+
+    toString(format = true) {
+        return format ? JSON.stringify(this.toJson(), null, 2) : JSON.stringify(this.toJson());
     }
 }
 
@@ -240,6 +240,15 @@ TcpStreamSettings.TcpRequest = class extends XrayCommonClass {
         this.headers = headers;
     }
 
+    static fromJson(json = {}) {
+        return new TcpStreamSettings.TcpRequest(
+            json.version,
+            json.method,
+            json.path,
+            XrayCommonClass.toHeaders(json.headers),
+        );
+    }
+
     addPath(path) {
         this.path.push(path);
     }
@@ -254,15 +263,6 @@ TcpStreamSettings.TcpRequest = class extends XrayCommonClass {
 
     removeHeader(index) {
         this.headers.splice(index, 1);
-    }
-
-    static fromJson(json = {}) {
-        return new TcpStreamSettings.TcpRequest(
-            json.version,
-            json.method,
-            json.path,
-            XrayCommonClass.toHeaders(json.headers),
-        );
     }
 
     toJson() {
@@ -289,14 +289,6 @@ TcpStreamSettings.TcpResponse = class extends XrayCommonClass {
         this.headers = headers;
     }
 
-    addHeader(name, value) {
-        this.headers.push({name: name, value: value});
-    }
-
-    removeHeader(index) {
-        this.headers.splice(index, 1);
-    }
-
     static fromJson(json = {}) {
         return new TcpStreamSettings.TcpResponse(
             json.version,
@@ -304,6 +296,14 @@ TcpStreamSettings.TcpResponse = class extends XrayCommonClass {
             json.reason,
             XrayCommonClass.toHeaders(json.headers),
         );
+    }
+
+    addHeader(name, value) {
+        this.headers.push({name: name, value: value});
+    }
+
+    removeHeader(index) {
+        this.headers.splice(index, 1);
     }
 
     toJson() {
@@ -377,14 +377,6 @@ class WsStreamSettings extends XrayCommonClass {
         this.heartbeatPeriod = heartbeatPeriod;
     }
 
-    addHeader(name, value) {
-        this.headers.push({name: name, value: value});
-    }
-
-    removeHeader(index) {
-        this.headers.splice(index, 1);
-    }
-
     static fromJson(json = {}) {
         return new WsStreamSettings(
             json.acceptProxyProtocol,
@@ -393,6 +385,14 @@ class WsStreamSettings extends XrayCommonClass {
             XrayCommonClass.toHeaders(json.headers),
             json.heartbeatPeriod,
         );
+    }
+
+    addHeader(name, value) {
+        this.headers.push({name: name, value: value});
+    }
+
+    removeHeader(index) {
+        this.headers.splice(index, 1);
     }
 
     toJson() {
@@ -449,14 +449,6 @@ class HTTPUpgradeStreamSettings extends XrayCommonClass {
         this.headers = headers;
     }
 
-    addHeader(name, value) {
-        this.headers.push({name: name, value: value});
-    }
-
-    removeHeader(index) {
-        this.headers.splice(index, 1);
-    }
-
     static fromJson(json = {}) {
         return new HTTPUpgradeStreamSettings(
             json.acceptProxyProtocol,
@@ -464,6 +456,14 @@ class HTTPUpgradeStreamSettings extends XrayCommonClass {
             json.host,
             XrayCommonClass.toHeaders(json.headers),
         );
+    }
+
+    addHeader(name, value) {
+        this.headers.push({name: name, value: value});
+    }
+
+    removeHeader(index) {
+        this.headers.splice(index, 1);
     }
 
     toJson() {
@@ -526,14 +526,6 @@ class xHTTPStreamSettings extends XrayCommonClass {
         this.uplinkChunkSize = uplinkChunkSize;
     }
 
-    addHeader(name, value) {
-        this.headers.push({name: name, value: value});
-    }
-
-    removeHeader(index) {
-        this.headers.splice(index, 1);
-    }
-
     static fromJson(json = {}) {
         return new xHTTPStreamSettings(
             json.path,
@@ -559,6 +551,14 @@ class xHTTPStreamSettings extends XrayCommonClass {
             json.uplinkDataKey,
             json.uplinkChunkSize,
         );
+    }
+
+    addHeader(name, value) {
+        this.headers.push({name: name, value: value});
+    }
+
+    removeHeader(index) {
+        this.headers.splice(index, 1);
     }
 
     toJson() {
@@ -619,14 +619,6 @@ class TlsStreamSettings extends XrayCommonClass {
         this.settings = settings;
     }
 
-    addCert() {
-        this.certs.push(new TlsStreamSettings.Cert());
-    }
-
-    removeCert(index) {
-        this.certs.splice(index, 1);
-    }
-
     static fromJson(json = {}) {
         let certs;
         let settings;
@@ -651,6 +643,14 @@ class TlsStreamSettings extends XrayCommonClass {
             json.echForceQuery,
             settings,
         );
+    }
+
+    addCert() {
+        this.certs.push(new TlsStreamSettings.Cert());
+    }
+
+    removeCert(index) {
+        this.certs.splice(index, 1);
     }
 
     toJson() {
@@ -963,16 +963,23 @@ class UdpMask extends XrayCommonClass {
         this.settings = this._getDefaultSettings(type, settings);
     }
 
+    static fromJson(json = {}) {
+        return new UdpMask(
+            json.type || 'salamander',
+            json.settings || {}
+        );
+    }
+
     _getDefaultSettings(type, settings = {}) {
         switch (type) {
             case 'salamander':
             case 'mkcp-aes128gcm':
-                return { password: settings.password || '' };
+                return {password: settings.password || ''};
             case 'header-dns':
             case 'xdns':
-                return { domain: settings.domain || '' };
+                return {domain: settings.domain || ''};
             case 'xicmp':
-                return { ip: settings.ip || '', id: settings.id ?? 0 };
+                return {ip: settings.ip || '', id: settings.id ?? 0};
             case 'mkcp-original':
             case 'header-dtls':
             case 'header-srtp':
@@ -983,13 +990,6 @@ class UdpMask extends XrayCommonClass {
             default:
                 return settings;
         }
-    }
-
-    static fromJson(json = {}) {
-        return new UdpMask(
-            json.type || 'salamander',
-            json.settings || {}
-        );
     }
 
     toJson() {
@@ -1049,16 +1049,6 @@ class StreamSettings extends XrayCommonClass {
         this.sockopt = sockopt;
     }
 
-    addUdpMask(type = 'salamander') {
-        this.finalmask.udp.push(new UdpMask(type));
-    }
-
-    delUdpMask(index) {
-        if (this.finalmask.udp) {
-            this.finalmask.udp.splice(index, 1);
-        }
-    }
-
     get hasFinalMask() {
         return this.finalmask.udp && this.finalmask.udp.length > 0;
     }
@@ -1112,6 +1102,16 @@ class StreamSettings extends XrayCommonClass {
             FinalMaskStreamSettings.fromJson(json.finalmask),
             SockoptStreamSettings.fromJson(json.sockopt),
         );
+    }
+
+    addUdpMask(type = 'salamander') {
+        this.finalmask.udp.push(new UdpMask(type));
+    }
+
+    delUdpMask(index) {
+        if (this.finalmask.udp) {
+            this.finalmask.udp.splice(index, 1);
+        }
     }
 
     toJson() {
@@ -1183,10 +1183,6 @@ class Inbound extends XrayCommonClass {
         this.tag = tag;
         this.sniffing = sniffing;
         this.clientStats = clientStats;
-    }
-
-    getClientStats() {
-        return this.clientStats;
     }
 
     get clients() {
@@ -1272,15 +1268,6 @@ class Inbound extends XrayCommonClass {
         return "";
     }
 
-    getHeader(obj, name) {
-        for (const header of obj.headers) {
-            if (header.name.toLowerCase() === name.toLowerCase()) {
-                return header.value;
-            }
-        }
-        return "";
-    }
-
     get host() {
         if (this.isTcp) {
             return this.getHeader(this.stream.tcp.request, 'host');
@@ -1309,6 +1296,32 @@ class Inbound extends XrayCommonClass {
 
     get serviceName() {
         return this.stream.grpc.serviceName;
+    }
+
+    static fromJson(json = {}) {
+        return new Inbound(
+            json.port,
+            json.listen,
+            json.protocol,
+            Inbound.Settings.fromJson(json.protocol, json.settings),
+            StreamSettings.fromJson(json.streamSettings),
+            json.tag,
+            Sniffing.fromJson(json.sniffing),
+            json.clientStats
+        )
+    }
+
+    getClientStats() {
+        return this.clientStats;
+    }
+
+    getHeader(obj, name) {
+        for (const header of obj.headers) {
+            if (header.name.toLowerCase() === name.toLowerCase()) {
+                return header.value;
+            }
+        }
+        return "";
     }
 
     isExpiry(index) {
@@ -1788,19 +1801,6 @@ class Inbound extends XrayCommonClass {
         }
     }
 
-    static fromJson(json = {}) {
-        return new Inbound(
-            json.port,
-            json.listen,
-            json.protocol,
-            Inbound.Settings.fromJson(json.protocol, json.settings),
-            StreamSettings.fromJson(json.streamSettings),
-            json.tag,
-            Sniffing.fromJson(json.sniffing),
-            json.clientStats
-        )
-    }
-
     toJson() {
         let streamSettings;
         if (this.canEnableStream() || this.stream?.sockopt) {
@@ -1887,6 +1887,17 @@ Inbound.VmessSettings = class extends Inbound.Settings {
         this.vmesses = vmesses;
     }
 
+    static fromJson(json = {}) {
+        let clients = [];
+        if (Array.isArray(json.clients)) {
+            clients = json.clients.map(client => Inbound.VmessSettings.VMESS.fromJson(client));
+        }
+        return new Inbound.VmessSettings(
+            Protocols.VMESS,
+            clients,
+        );
+    }
+
     indexOfVmessById(id) {
         return this.vmesses.findIndex(VMESS => VMESS.id === id);
     }
@@ -1903,17 +1914,6 @@ Inbound.VmessSettings = class extends Inbound.Settings {
         if (i >= 0) {
             this.vmesses.splice(i, 1);
         }
-    }
-
-    static fromJson(json = {}) {
-        let clients = [];
-        if (Array.isArray(json.clients)) {
-            clients = json.clients.map(client => Inbound.VmessSettings.VMESS.fromJson(client));
-        }
-        return new Inbound.VmessSettings(
-            Protocols.VMESS,
-            clients,
-        );
     }
 
     toJson() {
@@ -1951,22 +1951,6 @@ Inbound.VmessSettings.VMESS = class extends XrayCommonClass {
         this.reset = reset;
     }
 
-    static fromJson(json = {}) {
-        return new Inbound.VmessSettings.VMESS(
-            json.id,
-            json.security,
-            json.email,
-            json.limitIp,
-            json.totalGB,
-            json.expiryTime,
-            json.enable,
-            json.tgId,
-            json.subId,
-            json.comment,
-            json.reset,
-        );
-    }
-
     get _expiryTime() {
         if (this.expiryTime === 0 || this.expiryTime === "") {
             return null;
@@ -1993,6 +1977,22 @@ Inbound.VmessSettings.VMESS = class extends XrayCommonClass {
         this.totalGB = toFixed(gb * ONE_GB, 0);
     }
 
+    static fromJson(json = {}) {
+        return new Inbound.VmessSettings.VMESS(
+            json.id,
+            json.security,
+            json.email,
+            json.limitIp,
+            json.totalGB,
+            json.expiryTime,
+            json.enable,
+            json.tgId,
+            json.subId,
+            json.comment,
+            json.reset,
+        );
+    }
+
 };
 
 Inbound.VLESSSettings = class extends Inbound.Settings {
@@ -2014,14 +2014,6 @@ Inbound.VLESSSettings = class extends Inbound.Settings {
         this.testseed = testseed;
     }
 
-    addFallback() {
-        this.fallbacks.push(new Inbound.VLESSSettings.Fallback());
-    }
-
-    delFallback(index) {
-        this.fallbacks.splice(index, 1);
-    }
-
     static fromJson(json = {}) {
         // Ensure testseed is always initialized as an array
         let testseed = [900, 500, 900, 256];
@@ -2041,6 +2033,13 @@ Inbound.VLESSSettings = class extends Inbound.Settings {
         return obj;
     }
 
+    addFallback() {
+        this.fallbacks.push(new Inbound.VLESSSettings.Fallback());
+    }
+
+    delFallback(index) {
+        this.fallbacks.splice(index, 1);
+    }
 
     toJson() {
         const json = {
@@ -2102,22 +2101,6 @@ Inbound.VLESSSettings.VLESS = class extends XrayCommonClass {
         this.reset = reset;
     }
 
-    static fromJson(json = {}) {
-        return new Inbound.VLESSSettings.VLESS(
-            json.id,
-            json.flow,
-            json.email,
-            json.limitIp,
-            json.totalGB,
-            json.expiryTime,
-            json.enable,
-            json.tgId,
-            json.subId,
-            json.comment,
-            json.reset,
-        );
-    }
-
     get _expiryTime() {
         if (this.expiryTime === 0 || this.expiryTime === "") {
             return null;
@@ -2143,6 +2126,22 @@ Inbound.VLESSSettings.VLESS = class extends XrayCommonClass {
     set _totalGB(gb) {
         this.totalGB = toFixed(gb * ONE_GB, 0);
     }
+
+    static fromJson(json = {}) {
+        return new Inbound.VLESSSettings.VLESS(
+            json.id,
+            json.flow,
+            json.email,
+            json.limitIp,
+            json.totalGB,
+            json.expiryTime,
+            json.enable,
+            json.tgId,
+            json.subId,
+            json.comment,
+            json.reset,
+        );
+    }
 };
 Inbound.VLESSSettings.Fallback = class extends XrayCommonClass {
     constructor(name = "", alpn = '', path = '', dest = '', xver = 0) {
@@ -2152,20 +2151,6 @@ Inbound.VLESSSettings.Fallback = class extends XrayCommonClass {
         this.path = path;
         this.dest = dest;
         this.xver = xver;
-    }
-
-    toJson() {
-        let xver = this.xver;
-        if (!Number.isInteger(xver)) {
-            xver = 0;
-        }
-        return {
-            name: this.name,
-            alpn: this.alpn,
-            path: this.path,
-            dest: this.dest,
-            xver: xver,
-        }
     }
 
     static fromJson(json = []) {
@@ -2181,6 +2166,20 @@ Inbound.VLESSSettings.Fallback = class extends XrayCommonClass {
         }
         return fallbacks;
     }
+
+    toJson() {
+        let xver = this.xver;
+        if (!Number.isInteger(xver)) {
+            xver = 0;
+        }
+        return {
+            name: this.name,
+            alpn: this.alpn,
+            path: this.path,
+            dest: this.dest,
+            xver: xver,
+        }
+    }
 };
 
 Inbound.TrojanSettings = class extends Inbound.Settings {
@@ -2192,14 +2191,6 @@ Inbound.TrojanSettings = class extends Inbound.Settings {
         this.fallbacks = fallbacks;
     }
 
-    addFallback() {
-        this.fallbacks.push(new Inbound.TrojanSettings.Fallback());
-    }
-
-    delFallback(index) {
-        this.fallbacks.splice(index, 1);
-    }
-
     static fromJson(json = {}) {
         let clients = [];
         if (Array.isArray(json.clients)) {
@@ -2209,6 +2200,14 @@ Inbound.TrojanSettings = class extends Inbound.Settings {
             Protocols.TROJAN,
             clients,
             Inbound.TrojanSettings.Fallback.fromJson(json.fallbacks),);
+    }
+
+    addFallback() {
+        this.fallbacks.push(new Inbound.TrojanSettings.Fallback());
+    }
+
+    delFallback(index) {
+        this.fallbacks.splice(index, 1);
     }
 
     toJson() {
@@ -2245,36 +2244,6 @@ Inbound.TrojanSettings.Trojan = class extends XrayCommonClass {
         this.reset = reset;
     }
 
-    toJson() {
-        return {
-            password: this.password,
-            email: this.email,
-            limitIp: this.limitIp,
-            totalGB: this.totalGB,
-            expiryTime: this.expiryTime,
-            enable: this.enable,
-            tgId: this.tgId,
-            subId: this.subId,
-            comment: this.comment,
-            reset: this.reset,
-        };
-    }
-
-    static fromJson(json = {}) {
-        return new Inbound.TrojanSettings.Trojan(
-            json.password,
-            json.email,
-            json.limitIp,
-            json.totalGB,
-            json.expiryTime,
-            json.enable,
-            json.tgId,
-            json.subId,
-            json.comment,
-            json.reset,
-        );
-    }
-
     get _expiryTime() {
         if (this.expiryTime === 0 || this.expiryTime === "") {
             return null;
@@ -2301,6 +2270,36 @@ Inbound.TrojanSettings.Trojan = class extends XrayCommonClass {
         this.totalGB = toFixed(gb * ONE_GB, 0);
     }
 
+    static fromJson(json = {}) {
+        return new Inbound.TrojanSettings.Trojan(
+            json.password,
+            json.email,
+            json.limitIp,
+            json.totalGB,
+            json.expiryTime,
+            json.enable,
+            json.tgId,
+            json.subId,
+            json.comment,
+            json.reset,
+        );
+    }
+
+    toJson() {
+        return {
+            password: this.password,
+            email: this.email,
+            limitIp: this.limitIp,
+            totalGB: this.totalGB,
+            expiryTime: this.expiryTime,
+            enable: this.enable,
+            tgId: this.tgId,
+            subId: this.subId,
+            comment: this.comment,
+            reset: this.reset,
+        };
+    }
+
 };
 
 Inbound.TrojanSettings.Fallback = class extends XrayCommonClass {
@@ -2311,20 +2310,6 @@ Inbound.TrojanSettings.Fallback = class extends XrayCommonClass {
         this.path = path;
         this.dest = dest;
         this.xver = xver;
-    }
-
-    toJson() {
-        let xver = this.xver;
-        if (!Number.isInteger(xver)) {
-            xver = 0;
-        }
-        return {
-            name: this.name,
-            alpn: this.alpn,
-            path: this.path,
-            dest: this.dest,
-            xver: xver,
-        }
     }
 
     static fromJson(json = []) {
@@ -2339,6 +2324,20 @@ Inbound.TrojanSettings.Fallback = class extends XrayCommonClass {
             ))
         }
         return fallbacks;
+    }
+
+    toJson() {
+        let xver = this.xver;
+        if (!Number.isInteger(xver)) {
+            xver = 0;
+        }
+        return {
+            name: this.name,
+            alpn: this.alpn,
+            path: this.path,
+            dest: this.dest,
+            xver: xver,
+        }
     }
 };
 
@@ -2408,38 +2407,6 @@ Inbound.ShadowsocksSettings.Shadowsocks = class extends XrayCommonClass {
         this.reset = reset;
     }
 
-    toJson() {
-        return {
-            method: this.method,
-            password: this.password,
-            email: this.email,
-            limitIp: this.limitIp,
-            totalGB: this.totalGB,
-            expiryTime: this.expiryTime,
-            enable: this.enable,
-            tgId: this.tgId,
-            subId: this.subId,
-            comment: this.comment,
-            reset: this.reset,
-        };
-    }
-
-    static fromJson(json = {}) {
-        return new Inbound.ShadowsocksSettings.Shadowsocks(
-            json.method,
-            json.password,
-            json.email,
-            json.limitIp,
-            json.totalGB,
-            json.expiryTime,
-            json.enable,
-            json.tgId,
-            json.subId,
-            json.comment,
-            json.reset,
-        );
-    }
-
     get _expiryTime() {
         if (this.expiryTime === 0 || this.expiryTime === "") {
             return null;
@@ -2464,6 +2431,38 @@ Inbound.ShadowsocksSettings.Shadowsocks = class extends XrayCommonClass {
 
     set _totalGB(gb) {
         this.totalGB = toFixed(gb * ONE_GB, 0);
+    }
+
+    static fromJson(json = {}) {
+        return new Inbound.ShadowsocksSettings.Shadowsocks(
+            json.method,
+            json.password,
+            json.email,
+            json.limitIp,
+            json.totalGB,
+            json.expiryTime,
+            json.enable,
+            json.tgId,
+            json.subId,
+            json.comment,
+            json.reset,
+        );
+    }
+
+    toJson() {
+        return {
+            method: this.method,
+            password: this.password,
+            email: this.email,
+            limitIp: this.limitIp,
+            totalGB: this.totalGB,
+            expiryTime: this.expiryTime,
+            enable: this.enable,
+            tgId: this.tgId,
+            subId: this.subId,
+            comment: this.comment,
+            reset: this.reset,
+        };
     }
 
 };
@@ -2516,14 +2515,6 @@ Inbound.MixedSettings = class extends Inbound.Settings {
         this.ip = ip;
     }
 
-    addAccount(account) {
-        this.accounts.push(account);
-    }
-
-    delAccount(index) {
-        this.accounts.splice(index, 1);
-    }
-
     static fromJson(json = {}) {
         let accounts;
         if (json.auth === 'password') {
@@ -2538,6 +2529,14 @@ Inbound.MixedSettings = class extends Inbound.Settings {
             json.udp,
             json.ip,
         );
+    }
+
+    addAccount(account) {
+        this.accounts.push(account);
+    }
+
+    delAccount(index) {
+        this.accounts.splice(index, 1);
     }
 
     toJson() {
@@ -2572,20 +2571,20 @@ Inbound.HttpSettings = class extends Inbound.Settings {
         this.allowTransparent = allowTransparent;
     }
 
-    addAccount(account) {
-        this.accounts.push(account);
-    }
-
-    delAccount(index) {
-        this.accounts.splice(index, 1);
-    }
-
     static fromJson(json = {}) {
         return new Inbound.HttpSettings(
             Protocols.HTTP,
             json.accounts.map(account => Inbound.HttpSettings.HttpAccount.fromJson(account)),
             json.allowTransparent,
         );
+    }
+
+    addAccount(account) {
+        this.accounts.push(account);
+    }
+
+    delAccount(index) {
+        this.accounts.splice(index, 1);
     }
 
     toJson() {
@@ -2624,14 +2623,6 @@ Inbound.WireguardSettings = class extends XrayCommonClass {
         this.noKernelTun = noKernelTun;
     }
 
-    addPeer() {
-        this.peers.push(new Inbound.WireguardSettings.Peer(null, null, '', ['10.0.0.' + (this.peers.length + 2)]));
-    }
-
-    delPeer(index) {
-        this.peers.splice(index, 1);
-    }
-
     static fromJson(json = {}) {
         return new Inbound.WireguardSettings(
             Protocols.WIREGUARD,
@@ -2640,6 +2631,14 @@ Inbound.WireguardSettings = class extends XrayCommonClass {
             json.peers.map(peer => Inbound.WireguardSettings.Peer.fromJson(peer)),
             json.noKernelTun,
         );
+    }
+
+    addPeer() {
+        this.peers.push(new Inbound.WireguardSettings.Peer(null, null, '', ['10.0.0.' + (this.peers.length + 2)]));
+    }
+
+    delPeer(index) {
+        this.peers.splice(index, 1);
     }
 
     toJson() {

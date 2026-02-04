@@ -1,7 +1,7 @@
 {{define "ruleModal"}}
-<a-modal id="rule-modal" v-model="ruleModal.visible" :title="ruleModal.title" @ok="ruleModal.ok"
-         :confirm-loading="ruleModal.confirmLoading" :closable="true" :mask-closable="false" :ok-text="ruleModal.okText"
-         cancel-text='{{ i18n "close" }}' :class="themeSwitcher.currentTheme">
+<a-modal :class="themeSwitcher.currentTheme" :closable="true" :confirm-loading="ruleModal.confirmLoading" :mask-closable="false"
+         :ok-text="ruleModal.okText" :title="ruleModal.title" @ok="ruleModal.ok" cancel-text='{{ i18n "close" }}'
+         id="rule-modal" v-model="ruleModal.visible">
     <a-form :colon="false" :label-col="{ md: {span:8} }" :wrapper-col="{ md: {span:14} }">
         <a-form-item>
             <template slot="label">
@@ -13,7 +13,7 @@
                     <a-icon type="question-circle"></a-icon>
                 </a-tooltip>
             </template>
-            <a-input v-model.trim="ruleModal.rule.sourceIP" placeholder="e.g. 0.0.0.0/8, fc00::/7, geoip:ir"></a-input>
+            <a-input placeholder="e.g. 0.0.0.0/8, fc00::/7, geoip:ir" v-model.trim="ruleModal.rule.sourceIP"></a-input>
         </a-form-item>
         <a-form-item>
             <template slot="label">
@@ -25,7 +25,7 @@
                     <a-icon type="question-circle"></a-icon>
                 </a-tooltip>
             </template>
-            <a-input v-model.trim="ruleModal.rule.sourcePort" placeholder="e.g. 53,443,1000-2000"></a-input>
+            <a-input placeholder="e.g. 53,443,1000-2000" v-model.trim="ruleModal.rule.sourcePort"></a-input>
         </a-form-item>
         <a-form-item>
             <template slot="label">
@@ -37,33 +37,33 @@
                     <a-icon type="question-circle"></a-icon>
                 </a-tooltip>
             </template>
-            <a-input v-model.trim="ruleModal.rule.vlessRoute" placeholder="e.g. 53,443,1000-2000"></a-input>
+            <a-input placeholder="e.g. 53,443,1000-2000" v-model.trim="ruleModal.rule.vlessRoute"></a-input>
         </a-form-item>
         <a-form-item label='Network'>
-            <a-select v-model="ruleModal.rule.network" :dropdown-class-name="themeSwitcher.currentTheme">
-                <a-select-option v-for="x in ['','TCP','UDP','TCP,UDP']" :value="x">[[ x ]]</a-select-option>
+            <a-select :dropdown-class-name="themeSwitcher.currentTheme" v-model="ruleModal.rule.network">
+                <a-select-option :value="x" v-for="x in ['','TCP','UDP','TCP,UDP']">[[ x ]]</a-select-option>
             </a-select>
         </a-form-item>
         <a-form-item label='Protocol'>
-            <a-select v-model="ruleModal.rule.protocol" mode="multiple"
-                      :dropdown-class-name="themeSwitcher.currentTheme">
-                <a-select-option v-for="x in ['http','tls','bittorrent','quic']" :value="x">[[ x ]]</a-select-option>
+            <a-select :dropdown-class-name="themeSwitcher.currentTheme" mode="multiple"
+                      v-model="ruleModal.rule.protocol">
+                <a-select-option :value="x" v-for="x in ['http','tls','bittorrent','quic']">[[ x ]]</a-select-option>
             </a-select>
         </a-form-item>
         <a-form-item label='Attributes'>
-            <a-button icon="plus" size="small" style="margin-left: 10px"
-                      @click="ruleModal.rule.attrs.push(['', ''])"></a-button>
+            <a-button @click="ruleModal.rule.attrs.push(['', ''])" icon="plus" size="small"
+                      style="margin-left: 10px"></a-button>
         </a-form-item>
         <a-form-item :wrapper-col="{span: 24}">
             <a-input-group compact v-for="(attr,index) in ruleModal.rule.attrs">
-                <a-input style="width: 50%" v-model="attr[0]"
-                         placeholder='{{ i18n "pages.inbounds.stream.general.name" }}'>
+                <a-input placeholder='{{ i18n "pages.inbounds.stream.general.name" }}' style="width: 50%"
+                         v-model="attr[0]">
                     <template slot="addonBefore" style="margin: 0;">[[ index+1 ]]</template>
                 </a-input>
-                <a-input style="width: 50%" v-model="attr[1]"
-                         placeholder='{{ i18n "pages.inbounds.stream.general.value" }}'>
-                    <a-button icon="minus" slot="addonAfter" size="small"
-                              @click="ruleModal.rule.attrs.splice(index,1)"></a-button>
+                <a-input placeholder='{{ i18n "pages.inbounds.stream.general.value" }}' style="width: 50%"
+                         v-model="attr[1]">
+                    <a-button @click="ruleModal.rule.attrs.splice(index,1)" icon="minus" size="small"
+                              slot="addonAfter"></a-button>
                 </a-input>
             </a-input-group>
         </a-form-item>
@@ -77,7 +77,7 @@
                     <a-icon type="question-circle"></a-icon>
                 </a-tooltip>
             </template>
-            <a-input v-model.trim="ruleModal.rule.ip" placeholder="e.g. 0.0.0.0/8, fc00::/7, geoip:ir"></a-input>
+            <a-input placeholder="e.g. 0.0.0.0/8, fc00::/7, geoip:ir" v-model.trim="ruleModal.rule.ip"></a-input>
         </a-form-item>
         <a-form-item>
             <template slot="label">
@@ -89,7 +89,7 @@
                     <a-icon type="question-circle"></a-icon>
                 </a-tooltip>
             </template>
-            <a-input v-model.trim="ruleModal.rule.domain" placeholder="e.g. google.com, geosite:cn"></a-input>
+            <a-input placeholder="e.g. google.com, geosite:cn" v-model.trim="ruleModal.rule.domain"></a-input>
         </a-form-item>
         <a-form-item>
             <template slot="label">
@@ -101,7 +101,7 @@
                     <a-icon type="question-circle"></a-icon>
                 </a-tooltip>
             </template>
-            <a-input v-model.trim="ruleModal.rule.user" placeholder="e.g. email address"></a-input>
+            <a-input placeholder="e.g. email address" v-model.trim="ruleModal.rule.user"></a-input>
         </a-form-item>
         <a-form-item>
             <template slot="label">
@@ -113,17 +113,17 @@
                     <a-icon type="question-circle"></a-icon>
                 </a-tooltip>
             </template>
-            <a-input v-model.trim="ruleModal.rule.port" placeholder="e.g. 53,443,1000-2000"></a-input>
+            <a-input placeholder="e.g. 53,443,1000-2000" v-model.trim="ruleModal.rule.port"></a-input>
         </a-form-item>
         <a-form-item label='Inbound Tags'>
-            <a-select v-model="ruleModal.rule.inboundTag" mode="multiple"
-                      :dropdown-class-name="themeSwitcher.currentTheme">
-                <a-select-option v-for="tag in ruleModal.inboundTags" :value="tag">[[ tag ]]</a-select-option>
+            <a-select :dropdown-class-name="themeSwitcher.currentTheme" mode="multiple"
+                      v-model="ruleModal.rule.inboundTag">
+                <a-select-option :value="tag" v-for="tag in ruleModal.inboundTags">[[ tag ]]</a-select-option>
             </a-select>
         </a-form-item>
         <a-form-item label='Outbound Tag'>
-            <a-select v-model="ruleModal.rule.outboundTag" :dropdown-class-name="themeSwitcher.currentTheme">
-                <a-select-option v-for="tag in ruleModal.outboundTags" :value="tag">[[ tag ]]</a-select-option>
+            <a-select :dropdown-class-name="themeSwitcher.currentTheme" v-model="ruleModal.rule.outboundTag">
+                <a-select-option :value="tag" v-for="tag in ruleModal.outboundTags">[[ tag ]]</a-select-option>
             </a-select>
         </a-form-item>
         <a-form-item>
@@ -136,8 +136,8 @@
                     <a-icon type="question-circle"></a-icon>
                 </a-tooltip>
             </template>
-            <a-select v-model="ruleModal.rule.balancerTag" :dropdown-class-name="themeSwitcher.currentTheme">
-                <a-select-option v-for="tag in ruleModal.balancerTags" :value="tag">[[ tag ]]</a-select-option>
+            <a-select :dropdown-class-name="themeSwitcher.currentTheme" v-model="ruleModal.rule.balancerTag">
+                <a-select-option :value="tag" v-for="tag in ruleModal.balancerTags">[[ tag ]]</a-select-option>
             </a-select>
         </a-form-item>
     </a-form>

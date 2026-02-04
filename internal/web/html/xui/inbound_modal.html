@@ -1,7 +1,7 @@
 {{define "inboundModal"}}
-<a-modal id="inbound-modal" v-model="inModal.visible" :title="inModal.title" :dialog-style="{ top: '20px' }"
-         @ok="inModal.ok" :confirm-loading="inModal.confirmLoading" :closable="true" :mask-closable="false"
-         :class="themeSwitcher.currentTheme" :ok-text="inModal.okText" cancel-text='{{ i18n "close" }}'>
+<a-modal :class="themeSwitcher.currentTheme" :closable="true" :confirm-loading="inModal.confirmLoading" :dialog-style="{ top: '20px' }"
+         :mask-closable="false" :ok-text="inModal.okText" :title="inModal.title" @ok="inModal.ok"
+         cancel-text='{{ i18n "close" }}' id="inbound-modal" v-model="inModal.visible">
     {{template "form/inbound"}}
 </a-modal>
 <script>

@@ -1,12 +1,12 @@
 {{define "clientsBulkModal"}}
-<a-modal id="client-bulk-modal" v-model="clientsBulkModal.visible" :title="clientsBulkModal.title"
-         @ok="clientsBulkModal.ok" :confirm-loading="clientsBulkModal.confirmLoading" :closable="true"
-         :mask-closable="false"
-         :ok-text="clientsBulkModal.okText" cancel-text='{{ i18n "close" }}' :class="themeSwitcher.currentTheme">
+<a-modal :class="themeSwitcher.currentTheme" :closable="true" :confirm-loading="clientsBulkModal.confirmLoading"
+         :mask-closable="false" :ok-text="clientsBulkModal.okText" :title="clientsBulkModal.title"
+         @ok="clientsBulkModal.ok"
+         cancel-text='{{ i18n "close" }}' id="client-bulk-modal" v-model="clientsBulkModal.visible">
     <a-form :colon="false" :label-col="{ md: {span:8} }" :wrapper-col="{ md: {span:14} }">
         <a-form-item label='{{ i18n "pages.client.method" }}'>
-            <a-select v-model="clientsBulkModal.emailMethod" buttonStyle="solid"
-                      :dropdown-class-name="themeSwitcher.currentTheme">
+            <a-select :dropdown-class-name="themeSwitcher.currentTheme" buttonStyle="solid"
+                      v-model="clientsBulkModal.emailMethod">
                 <a-select-option :value="0">Random</a-select-option>
                 <a-select-option :value="1">Random+Prefix</a-select-option>
                 <a-select-option :value="2">Random+Prefix+Num</a-select-option>
@@ -15,10 +15,10 @@
             </a-select>
         </a-form-item>
         <a-form-item label='{{ i18n "pages.client.first" }}' v-if="clientsBulkModal.emailMethod>1">
-            <a-input-number v-model.number="clientsBulkModal.firstNum" :min="1"></a-input-number>
+            <a-input-number :min="1" v-model.number="clientsBulkModal.firstNum"></a-input-number>
         </a-form-item>
         <a-form-item label='{{ i18n "pages.client.last" }}' v-if="clientsBulkModal.emailMethod>1">
-            <a-input-number v-model.number="clientsBulkModal.lastNum" :min="clientsBulkModal.firstNum"></a-input-number>
+            <a-input-number :min="clientsBulkModal.firstNum" v-model.number="clientsBulkModal.lastNum"></a-input-number>
         </a-form-item>
         <a-form-item label='{{ i18n "pages.client.prefix" }}' v-if="clientsBulkModal.emailMethod>0">
             <a-input v-model.trim="clientsBulkModal.emailPrefix"></a-input>
@@ -27,17 +27,17 @@
             <a-input v-model.trim="clientsBulkModal.emailPostfix"></a-input>
         </a-form-item>
         <a-form-item label='{{ i18n "pages.client.clientCount" }}' v-if="clientsBulkModal.emailMethod < 2">
-            <a-input-number v-model.number="clientsBulkModal.quantity" :min="1" :max="100"></a-input-number>
+            <a-input-number :max="100" :min="1" v-model.number="clientsBulkModal.quantity"></a-input-number>
         </a-form-item>
         <a-form-item label='{{ i18n "security" }}' v-if="inbound.protocol === Protocols.VMESS">
-            <a-select v-model="clientsBulkModal.security" :dropdown-class-name="themeSwitcher.currentTheme">
-                <a-select-option v-for="key in USERS_SECURITY" :value="key">[[ key ]]</a-select-option>
+            <a-select :dropdown-class-name="themeSwitcher.currentTheme" v-model="clientsBulkModal.security">
+                <a-select-option :value="key" v-for="key in USERS_SECURITY">[[ key ]]</a-select-option>
             </a-select>
         </a-form-item>
         <a-form-item label='Flow' v-if="clientsBulkModal.inbound.canEnableTlsFlow()">
-            <a-select v-model="clientsBulkModal.flow" :dropdown-class-name="themeSwitcher.currentTheme">
-                <a-select-option value="" selected>{{ i18n "none" }}</a-select-option>
-                <a-select-option v-for="key in TLS_FLOW_CONTROL" :value="key">[[ key ]]</a-select-option>
+            <a-select :dropdown-class-name="themeSwitcher.currentTheme" v-model="clientsBulkModal.flow">
+                <a-select-option selected value="">{{ i18n "none" }}</a-select-option>
+                <a-select-option :value="key" v-for="key in TLS_FLOW_CONTROL">[[ key ]]</a-select-option>
             </a-select>
         </a-form-item>
         <a-form-item v-if="app.subSettings?.enable">
@@ -62,7 +62,7 @@
                     <a-icon type="question-circle"></a-icon>
                 </a-tooltip>
             </template>
-            <a-input-number style="width: 50%" v-model.number="clientsBulkModal.tgId" min="0"></a-input-number>
+            <a-input-number min="0" style="width: 50%" v-model.number="clientsBulkModal.tgId"></a-input-number>
         </a-form-item>
         <a-form-item v-if="app.ipLimitEnable">
             <template slot="label">
@@ -74,7 +74,7 @@
                     <a-icon type="question-circle"></a-icon>
                 </a-tooltip>
             </template>
-            <a-input-number v-model.number="clientsBulkModal.limitIp" min="0"></a-input-number>
+            <a-input-number min="0" v-model.number="clientsBulkModal.limitIp"></a-input-number>
         </a-form-item>
         <a-form-item>
             <template slot="label">
@@ -86,13 +86,13 @@
                     <a-icon type="question-circle"></a-icon>
                 </a-tooltip>
             </template>
-            <a-input-number v-model.number="clientsBulkModal.totalGB" :min="0"></a-input-number>
+            <a-input-number :min="0" v-model.number="clientsBulkModal.totalGB"></a-input-number>
         </a-form-item>
         <a-form-item label='{{ i18n "pages.client.delayedStart" }}'>
-            <a-switch v-model="clientsBulkModal.delayedStart" @click="clientsBulkModal.expiryTime=0"></a-switch>
+            <a-switch @click="clientsBulkModal.expiryTime=0" v-model="clientsBulkModal.delayedStart"></a-switch>
         </a-form-item>
         <a-form-item label='{{ i18n "pages.client.expireDays" }}' v-if="clientsBulkModal.delayedStart">
-            <a-input-number v-model.number="delayedExpireDays" :min="0"></a-input-number>
+            <a-input-number :min="0" v-model.number="delayedExpireDays"></a-input-number>
         </a-form-item>
         <a-form-item v-else>
             <template slot="label">
@@ -104,11 +104,11 @@
                     <a-icon type="question-circle"></a-icon>
                 </a-tooltip>
             </template>
-            <a-date-picker v-if="datepicker == 'gregorian'" :show-time="{ format: 'HH:mm:ss' }"
-                           format="YYYY-MM-DD HH:mm:ss" :dropdown-class-name="themeSwitcher.currentTheme"
+            <a-date-picker :dropdown-class-name="themeSwitcher.currentTheme" :show-time="{ format: 'HH:mm:ss' }"
+                           format="YYYY-MM-DD HH:mm:ss" v-if="datepicker == 'gregorian'"
                            v-model="clientsBulkModal.expiryTime"></a-date-picker>
-            <persian-datepicker v-else placeholder='{{ i18n "pages.settings.datepickerPlaceholder" }}'
-                                value="clientsBulkModal.expiryTime" v-model="clientsBulkModal.expiryTime">
+            <persian-datepicker placeholder='{{ i18n "pages.settings.datepickerPlaceholder" }}' v-else
+                                v-model="clientsBulkModal.expiryTime" value="clientsBulkModal.expiryTime">
             </persian-datepicker>
         </a-form-item>
         <a-form-item v-if="clientsBulkModal.expiryTime != 0">
@@ -121,7 +121,7 @@
                     <a-icon type="question-circle"></a-icon>
                 </a-tooltip>
             </template>
-            <a-input-number v-model.number="clientsBulkModal.reset" :min="0"></a-input-number>
+            <a-input-number :min="0" v-model.number="clientsBulkModal.reset"></a-input-number>
         </a-form-item>
     </a-form>
 </a-modal>

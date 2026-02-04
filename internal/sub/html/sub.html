@@ -1,20 +1,20 @@
 ﻿<!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html dir="rtl" lang="fa">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="renderer" content="webkit">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="webkit" name="renderer">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>{{ .sId }} - Sub Info</title>
     <script src="https://unpkg.com/tailwindcss-cdn@3.4.10/tailwindcss-with-all-plugins.js"></script>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@33.003/Vazirmatn-Variable-font-face.css"
           rel="stylesheet" type="text/css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+    <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
           integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
-          crossorigin="anonymous"/>
+          rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/jalaali-js/dist/jalaali.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"
-            integrity="sha256-25ncr0CpJhgbzkUiR3wu/Fkk9sSykRG2qX+upHfJUos=" crossorigin="anonymous"></script>
+    <script crossorigin="anonymous"
+            integrity="sha256-25ncr0CpJhgbzkUiR3wu/Fkk9sSykRG2qX+upHfJUos=" src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 </head>
 
 <body class="flex items-center justify-center min-h-screen bg-gray-900 text-white font-[Vazirmatn] mr-4 ml-4">
@@ -49,7 +49,7 @@
         از طریق هر یک از روش های زیر میتوانید به اشتراکتان متصل شوید
     </div>
     <div class="shadow-lg bg-gray-800 rounded-xl p-5 mt-3">
-        <canvas id="qrcode" class="rounded-lg inline mt-2 mb-3"></canvas>
+        <canvas class="rounded-lg inline mt-2 mb-3" id="qrcode"></canvas>
     </div>
     <script>
         function trimRemark(uri) {
@@ -102,8 +102,8 @@
         {{ range .result }}
         <div class="text-gray-400 text-sm">
             <script>document.write(trimRemark('{{ . }}'));</script>
-            <button onclick="copyToClipboard(trimRemark('{{ . }}'))"
-                    class="bg-gray-500 px-2 py-1 m-1 rounded-lg text-white"><i
+            <button class="bg-gray-500 px-2 py-1 m-1 rounded-lg text-white"
+                    onclick="copyToClipboard(trimRemark('{{ . }}'))"><i
                     class="fa-regular fa-copy"></i> کپی
             </button>
         </div>

@@ -150,50 +150,50 @@
 </style>
 
 <body>
-<a-layout id="app" v-cloak :class="themeSwitcher.currentTheme">
+<a-layout :class="themeSwitcher.currentTheme" id="app" v-cloak>
     {{ template "commonSider" . }}
     <a-layout id="content-layout">
         <a-layout-content>
-            <a-spin :spinning="spinning" :delay="500" tip='{{ i18n "loading"}}'>
-                <transition name="list" appear>
-                    <a-alert type="error" v-if="showAlert" style="margin-bottom: 10px"
+            <a-spin :delay="500" :spinning="spinning" tip='{{ i18n "loading"}}'>
+                <transition appear name="list">
+                    <a-alert closable color="red" description='{{ i18n "secAlertSsl" }}'
                              message='{{ i18n "secAlertTitle" }}'
-                             color="red"
-                             description='{{ i18n "secAlertSsl" }}'
-                             show-icon closable>
+                             show-icon
+                             style="margin-bottom: 10px"
+                             type="error" v-if="showAlert">
                     </a-alert>
                 </transition>
-                <transition name="list" appear>
+                <transition appear name="list">
                     <a-card hoverable>
                         <a-row>
-                            <a-col :xs="24" :sm="24" :lg="12">
+                            <a-col :lg="12" :sm="24" :xs="24">
                                 {{ i18n "pages.inbounds.totalDownUp" }}:
                                 <a-tag color="green">[[ sizeFormat(total.up) ]] / [[ sizeFormat(total.down) ]]</a-tag>
                             </a-col>
-                            <a-col :xs="24" :sm="24" :lg="12">
+                            <a-col :lg="12" :sm="24" :xs="24">
                                 {{ i18n "pages.inbounds.totalUsage" }}:
                                 <a-tag color="green">[[ sizeFormat(total.up + total.down) ]]</a-tag>
                             </a-col>
-                            <a-col :xs="24" :sm="24" :lg="12">
+                            <a-col :lg="12" :sm="24" :xs="24">
                                 {{ i18n "pages.inbounds.inboundCount" }}:
                                 <a-tag color="green">[[ dbInbounds.length ]]</a-tag>
                             </a-col>
-                            <a-col :xs="24" :sm="24" :lg="12">
+                            <a-col :lg="12" :sm="24" :xs="24">
                                 <template>
                                     <div>
                                         <a-back-top :target="() => document.getElementById('content-layout')"
                                                     visibility-height="200"></a-back-top>
                                         {{ i18n "clients" }}:
                                         <a-tag color="green">[[ total.clients ]]</a-tag>
-                                        <a-popover title='{{ i18n "disabled" }}'
-                                                   :overlay-class-name="themeSwitcher.currentTheme">
+                                        <a-popover :overlay-class-name="themeSwitcher.currentTheme"
+                                                   title='{{ i18n "disabled" }}'>
                                             <template slot="content">
                                                 <p v-for="clientEmail in total.deactive">[[ clientEmail ]]</p>
                                             </template>
                                             <a-tag v-if="total.deactive.length">[[ total.deactive.length ]]</a-tag>
                                         </a-popover>
-                                        <a-popover title='{{ i18n "depleted" }}'
-                                                   :overlay-class-name="themeSwitcher.currentTheme">
+                                        <a-popover :overlay-class-name="themeSwitcher.currentTheme"
+                                                   title='{{ i18n "depleted" }}'>
                                             <template slot="content">
                                                 <p v-for="clientEmail in total.depleted">[[ clientEmail ]]</p>
                                             </template>
@@ -201,8 +201,8 @@
                                                 ]]
                                             </a-tag>
                                         </a-popover>
-                                        <a-popover title='{{ i18n "depletingSoon" }}'
-                                                   :overlay-class-name="themeSwitcher.currentTheme">
+                                        <a-popover :overlay-class-name="themeSwitcher.currentTheme"
+                                                   title='{{ i18n "depletingSoon" }}'>
                                             <template slot="content">
                                                 <p v-for="clientEmail in total.expiring">[[ clientEmail ]]</p>
                                             </template>
@@ -210,8 +210,8 @@
                                                 ]]
                                             </a-tag>
                                         </a-popover>
-                                        <a-popover title='{{ i18n "online" }}'
-                                                   :overlay-class-name="themeSwitcher.currentTheme">
+                                        <a-popover :overlay-class-name="themeSwitcher.currentTheme"
+                                                   title='{{ i18n "online" }}'>
                                             <template slot="content">
                                                 <p v-for="clientEmail in onlineClients">[[ clientEmail ]]</p>
                                             </template>
@@ -224,21 +224,21 @@
                         </a-row>
                     </a-card>
                 </transition>
-                <transition name="list" appear>
+                <transition appear name="list">
                     <a-card hoverable>
                         <div slot="title">
                             <a-row>
-                                <a-col :xs="12" :sm="12" :lg="12">
-                                    <a-button type="primary" icon="plus" @click="openAddInbound">
+                                <a-col :lg="12" :sm="12" :xs="12">
+                                    <a-button @click="openAddInbound" icon="plus" type="primary">
                                         <template v-if="!isMobile">{{ i18n "pages.inbounds.addInbound" }}</template>
                                     </a-button>
                                     <a-dropdown :trigger="['click']">
-                                        <a-button type="primary" icon="menu">
+                                        <a-button icon="menu" type="primary">
                                             <template v-if="!isMobile">{{ i18n "pages.inbounds.generalActions" }}
                                             </template>
                                         </a-button>
-                                        <a-menu slot="overlay" @click="a => generalActions(a)"
-                                                :theme="themeSwitcher.currentTheme">
+                                        <a-menu :theme="themeSwitcher.currentTheme" @click="a => generalActions(a)"
+                                                slot="overlay">
                                             <a-menu-item key="import">
                                                 <a-icon type="import"></a-icon>
                                                 {{ i18n "pages.inbounds.importInbound" }}
@@ -267,40 +267,40 @@
                                         </a-menu>
                                     </a-dropdown>
                                     <a-dropdown :trigger="['click']">
-                                        <a-button type="primary" icon="sort-ascending"></a-button>
-                                        <a-menu slot="overlay" @click="a => sortClients(a.key)"
-                                                :theme="themeSwitcher.currentTheme" :selected-keys="[clientSortBy]">
+                                        <a-button icon="sort-ascending" type="primary"></a-button>
+                                        <a-menu :selected-keys="[clientSortBy]" :theme="themeSwitcher.currentTheme"
+                                                @click="a => sortClients(a.key)" slot="overlay">
                                             <a-menu-item key="default">{{ i18n "default" }}</a-menu-item>
                                             <a-menu-item key="alphabet">{{ i18n "alphabet" }}</a-menu-item>
                                             <a-menu-item key="remainingTime">{{ i18n "remained" }}</a-menu-item>
                                         </a-menu>
                                     </a-dropdown>
                                 </a-col>
-                                <a-col :xs="12" :sm="12" :lg="12" style="text-align: right;">
-                                    <a-select v-model="refreshInterval"
+                                <a-col :lg="12" :sm="12" :xs="12" style="text-align: right;">
+                                    <a-select :dropdown-class-name="themeSwitcher.currentTheme"
+                                              @change="changeRefreshInterval"
                                               style="width: 65px;"
                                               v-if="isRefreshEnabled"
-                                              @change="changeRefreshInterval"
-                                              :dropdown-class-name="themeSwitcher.currentTheme">
-                                        <a-select-option v-for="key in [5,10,15,20,25,30,60]" :value="key*1000">[[ key
+                                              v-model="refreshInterval">
+                                        <a-select-option :value="key*1000" v-for="key in [5,10,15,20,25,30,60]">[[ key
                                             ]]s
                                         </a-select-option>
                                     </a-select>
-                                    <a-icon type="sync" :spin="refreshing" @click="manualRefresh"
-                                            style="margin: 0 5px;"></a-icon>
-                                    <a-switch v-model="isRefreshEnabled" @change="toggleRefresh"></a-switch>
+                                    <a-icon :spin="refreshing" @click="manualRefresh" style="margin: 0 5px;"
+                                            type="sync"></a-icon>
+                                    <a-switch @change="toggleRefresh" v-model="isRefreshEnabled"></a-switch>
                                 </a-col>
                             </a-row>
                         </div>
                         <div :style="isMobile ? '' : 'display: flex; align-items: center; justify-content: flex-start;'">
-                            <a-switch v-model="enableFilter" style="margin-right: .5rem;">
+                            <a-switch style="margin-right: .5rem;" v-model="enableFilter">
                                 <a-icon slot="checkedChildren" type="search"></a-icon>
                                 <a-icon slot="unCheckedChildren" type="filter"></a-icon>
                             </a-switch>
-                            <a-input v-if="!enableFilter" v-model.lazy="searchKey" placeholder='{{ i18n "search" }}'
-                                     autofocus style="max-width: 250px" :size="isMobile ? 'small' : ''"></a-input>
-                            <a-radio-group v-if="enableFilter" v-model="filterBy" @change="filterInbounds"
-                                           button-style="solid" :size="isMobile ? 'small' : ''">
+                            <a-input :size="isMobile ? 'small' : ''" autofocus placeholder='{{ i18n "search" }}'
+                                     style="max-width: 250px" v-if="!enableFilter" v-model.lazy="searchKey"></a-input>
+                            <a-radio-group :size="isMobile ? 'small' : ''" @change="filterInbounds" button-style="solid"
+                                           v-if="enableFilter" v-model="filterBy">
                                 <a-radio-button value="">{{ i18n "none" }}</a-radio-button>
                                 <a-radio-button value="deactive">{{ i18n "disabled" }}</a-radio-button>
                                 <a-radio-button value="depleted">{{ i18n "depleted" }}</a-radio-button>
@@ -309,37 +309,37 @@
                             </a-radio-group>
                         </div>
                         <a-back-top></a-back-top>
-                        <a-table :columns="isMobile ? mobileColumns : columns" :row-key="dbInbound => dbInbound.id"
-                                 :data-source="searchedInbounds"
-                                 :scroll="isMobile ? {} : { x: 1000 }"
-                                 :pagination=pagination(searchedInbounds)
+                        <a-table :columns="isMobile ? mobileColumns : columns" :data-source="searchedInbounds"
                                  :expand-icon-as-cell="false"
-                                 :expand-row-by-click="false"
                                  :expand-icon-column-index="0"
+                                 :expand-row-by-click="false"
                                  :indent-size="0"
+                                 :pagination=pagination(searchedInbounds)
                                  :row-class-name="dbInbound => (dbInbound.isMultiUser() ? '' : 'hideExpandIcon')"
+                                 :row-key="dbInbound => dbInbound.id"
+                                 :scroll="isMobile ? {} : { x: 1000 }"
                                  style="margin-top: 10px">
                             <template slot="action" slot-scope="text, dbInbound">
                                 <!-- Reorder controls: move up/down (disabled at boundaries) -->
                                 <a-tooltip title='{{ i18n "moveUp" }}'>
-                                    <a-icon v-if="!isFirst(dbInbound.id)" type="arrow-up"
-                                            @click.stop="moveUp(dbInbound.id)"
-                                            style="margin-right:6px; cursor: pointer;"></a-icon>
-                                    <a-icon v-else type="arrow-up"
-                                            style="margin-right:6px; opacity:0.35; cursor: default;"></a-icon>
+                                    <a-icon @click.stop="moveUp(dbInbound.id)" style="margin-right:6px; cursor: pointer;"
+                                            type="arrow-up"
+                                            v-if="!isFirst(dbInbound.id)"></a-icon>
+                                    <a-icon style="margin-right:6px; opacity:0.35; cursor: default;" type="arrow-up"
+                                            v-else></a-icon>
                                 </a-tooltip>
                                 <a-tooltip title='{{ i18n "moveDown" }}'>
-                                    <a-icon v-if="!isLast(dbInbound.id)" type="arrow-down"
-                                            @click.stop="moveDown(dbInbound.id)"
-                                            style="margin-right:6px; cursor: pointer;"></a-icon>
-                                    <a-icon v-else type="arrow-down"
-                                            style="margin-right:6px; opacity:0.35; cursor: default;"></a-icon>
+                                    <a-icon @click.stop="moveDown(dbInbound.id)" style="margin-right:6px; cursor: pointer;"
+                                            type="arrow-down"
+                                            v-if="!isLast(dbInbound.id)"></a-icon>
+                                    <a-icon style="margin-right:6px; opacity:0.35; cursor: default;" type="arrow-down"
+                                            v-else></a-icon>
                                 </a-tooltip>
                                 <a-dropdown :trigger="['click']">
-                                    <a-icon @click="e => e.preventDefault()" type="more"
-                                            style="font-size: 20px; text-decoration: solid;"></a-icon>
-                                    <a-menu slot="overlay" @click="a => clickAction(a, dbInbound)"
-                                            :theme="themeSwitcher.currentTheme">
+                                    <a-icon @click="e => e.preventDefault()" style="font-size: 20px; text-decoration: solid;"
+                                            type="more"></a-icon>
+                                    <a-menu :theme="themeSwitcher.currentTheme" @click="a => clickAction(a, dbInbound)"
+                                            slot="overlay">
                                         <a-menu-item key="edit">
                                             <a-icon type="edit"></a-icon>
                                             {{ i18n "edit" }}
@@ -400,33 +400,33 @@
                       </span>
                                         </a-menu-item>
                                         <a-menu-item v-if="isMobile">
-                                            <a-switch size="small" v-model="dbInbound.enable"
-                                                      @change="switchEnable(dbInbound.id,dbInbound.enable)"></a-switch>
+                                            <a-switch @change="switchEnable(dbInbound.id,dbInbound.enable)" size="small"
+                                                      v-model="dbInbound.enable"></a-switch>
                                             {{ i18n "pages.inbounds.enable" }}
                                         </a-menu-item>
                                     </a-menu>
                                 </a-dropdown>
                             </template>
                             <template slot="protocol" slot-scope="text, dbInbound">
-                                <a-tag style="margin:0;" color="purple">[[ dbInbound.protocol ]]</a-tag>
+                                <a-tag color="purple" style="margin:0;">[[ dbInbound.protocol ]]</a-tag>
                                 <template
                                         v-if="dbInbound.isVMess || dbInbound.isVLess || dbInbound.isTrojan || dbInbound.isSS">
-                                    <a-tag style="margin:0;" color="green">[[ dbInbound.toInbound().stream.network ]]
+                                    <a-tag color="green" style="margin:0;">[[ dbInbound.toInbound().stream.network ]]
                                     </a-tag>
-                                    <a-tag style="margin:0;" v-if="dbInbound.toInbound().stream.isTls" color="blue">
+                                    <a-tag color="blue" style="margin:0;" v-if="dbInbound.toInbound().stream.isTls">
                                         TLS
                                     </a-tag>
-                                    <a-tag style="margin:0;" v-if="dbInbound.toInbound().stream.isReality" color="blue">
+                                    <a-tag color="blue" style="margin:0;" v-if="dbInbound.toInbound().stream.isReality">
                                         Reality
                                     </a-tag>
                                 </template>
                             </template>
                             <template slot="clients" slot-scope="text, dbInbound">
                                 <template v-if="clientCount[dbInbound.id]">
-                                    <a-tag style="margin:0;" color="green">[[ clientCount[dbInbound.id].clients ]]
+                                    <a-tag color="green" style="margin:0;">[[ clientCount[dbInbound.id].clients ]]
                                     </a-tag>
-                                    <a-popover title='{{ i18n "disabled" }}'
-                                               :overlay-class-name="themeSwitcher.currentTheme">
+                                    <a-popover :overlay-class-name="themeSwitcher.currentTheme"
+                                               title='{{ i18n "disabled" }}'>
                                         <template slot="content">
                                             <p v-for="clientEmail in clientCount[dbInbound.id].deactive">[[ clientEmail
                                                 ]]</p>
@@ -436,35 +436,35 @@
                                             clientCount[dbInbound.id].deactive.length ]]
                                         </a-tag>
                                     </a-popover>
-                                    <a-popover title='{{ i18n "depleted" }}'
-                                               :overlay-class-name="themeSwitcher.currentTheme">
+                                    <a-popover :overlay-class-name="themeSwitcher.currentTheme"
+                                               title='{{ i18n "depleted" }}'>
                                         <template slot="content">
                                             <p v-for="clientEmail in clientCount[dbInbound.id].depleted">[[ clientEmail
                                                 ]]</p>
                                         </template>
-                                        <a-tag style="margin:0; padding: 0 2px;" color="red"
+                                        <a-tag color="red" style="margin:0; padding: 0 2px;"
                                                v-if="clientCount[dbInbound.id].depleted.length">[[
                                             clientCount[dbInbound.id].depleted.length ]]
                                         </a-tag>
                                     </a-popover>
-                                    <a-popover title='{{ i18n "depletingSoon" }}'
-                                               :overlay-class-name="themeSwitcher.currentTheme">
+                                    <a-popover :overlay-class-name="themeSwitcher.currentTheme"
+                                               title='{{ i18n "depletingSoon" }}'>
                                         <template slot="content">
                                             <p v-for="clientEmail in clientCount[dbInbound.id].expiring">[[ clientEmail
                                                 ]]</p>
                                         </template>
-                                        <a-tag style="margin:0; padding: 0 2px;" color="orange"
+                                        <a-tag color="orange" style="margin:0; padding: 0 2px;"
                                                v-if="clientCount[dbInbound.id].expiring.length">[[
                                             clientCount[dbInbound.id].expiring.length ]]
                                         </a-tag>
                                     </a-popover>
-                                    <a-popover title='{{ i18n "online" }}'
-                                               :overlay-class-name="themeSwitcher.currentTheme">
+                                    <a-popover :overlay-class-name="themeSwitcher.currentTheme"
+                                               title='{{ i18n "online" }}'>
                                         <template slot="content">
                                             <p v-for="clientEmail in clientCount[dbInbound.id].online">[[ clientEmail
                                                 ]]</p>
                                         </template>
-                                        <a-tag style="margin:0; padding: 0 2px;" color="blue"
+                                        <a-tag color="blue" style="margin:0; padding: 0 2px;"
                                                v-if="clientCount[dbInbound.id].online.length">[[
                                             clientCount[dbInbound.id].online.length ]]
                                         </a-tag>
@@ -492,7 +492,7 @@
                                             [[ sizeFormat(dbInbound.total) ]]
                                         </template>
                                         <template v-else>
-                                            <svg height="10px" width="14px" viewBox="0 0 640 512" fill="currentColor">
+                                            <svg fill="currentColor" height="10px" viewBox="0 0 640 512" width="14px">
                                                 <path d="M484.4 96C407 96 349.2 164.1 320 208.5C290.8 164.1 233 96 155.6 96C69.75 96 0 167.8 0 256s69.75 160 155.6 160C233.1 416 290.8 347.9 320 303.5C349.2 347.9 407 416 484.4 416C570.3 416 640 344.2 640 256S570.3 96 484.4 96zM155.6 368C96.25 368 48 317.8 48 256s48.25-112 107.6-112c67.75 0 120.5 82.25 137.1 112C276 285.8 223.4 368 155.6 368zM484.4 368c-67.75 0-120.5-82.25-137.1-112C364 226.2 416.6 144 484.4 144C543.8 144 592 194.2 592 256S543.8 368 484.4 368z"
                                                       fill="currentColor"></path>
                                             </svg>
@@ -501,52 +501,52 @@
                                 </a-popover>
                             </template>
                             <template slot="enable" slot-scope="text, dbInbound">
-                                <a-switch v-model="dbInbound.enable"
-                                          @change="switchEnable(dbInbound.id,dbInbound.enable)"></a-switch>
+                                <a-switch @change="switchEnable(dbInbound.id,dbInbound.enable)"
+                                          v-model="dbInbound.enable"></a-switch>
                             </template>
                             <template slot="expiryTime" slot-scope="text, dbInbound">
-                                <a-popover v-if="dbInbound.expiryTime > 0"
-                                           :overlay-class-name="themeSwitcher.currentTheme">
+                                <a-popover :overlay-class-name="themeSwitcher.currentTheme"
+                                           v-if="dbInbound.expiryTime > 0">
                                     <template slot="content" v-if="app.datepicker === 'gregorian'">
                                         [[ DateUtil.formatMillis(dbInbound.expiryTime) ]]
                                     </template>
-                                    <template v-else slot="content">
+                                    <template slot="content" v-else>
                                         [[ DateUtil.convertToJalalian(moment(dbInbound.expiryTime)) ]]
                                     </template>
-                                    <a-tag style="min-width: 50px;"
-                                           :color="usageColor(new Date().getTime(), app.expireDiff, dbInbound._expiryTime)">
+                                    <a-tag :color="usageColor(new Date().getTime(), app.expireDiff, dbInbound._expiryTime)"
+                                           style="min-width: 50px;">
                                         [[ remainedDays(dbInbound._expiryTime) ]]
                                     </a-tag>
                                 </a-popover>
-                                <a-tag v-else color="purple" class="infinite-tag">
-                                    <svg height="10px" width="14px" viewBox="0 0 640 512" fill="currentColor">
+                                <a-tag class="infinite-tag" color="purple" v-else>
+                                    <svg fill="currentColor" height="10px" viewBox="0 0 640 512" width="14px">
                                         <path d="M484.4 96C407 96 349.2 164.1 320 208.5C290.8 164.1 233 96 155.6 96C69.75 96 0 167.8 0 256s69.75 160 155.6 160C233.1 416 290.8 347.9 320 303.5C349.2 347.9 407 416 484.4 416C570.3 416 640 344.2 640 256S570.3 96 484.4 96zM155.6 368C96.25 368 48 317.8 48 256s48.25-112 107.6-112c67.75 0 120.5 82.25 137.1 112C276 285.8 223.4 368 155.6 368zM484.4 368c-67.75 0-120.5-82.25-137.1-112C364 226.2 416.6 144 484.4 144C543.8 144 592 194.2 592 256S543.8 368 484.4 368z"
                                               fill="currentColor"></path>
                                     </svg>
                                 </a-tag>
                             </template>
                             <template slot="info" slot-scope="text, dbInbound">
-                                <a-popover placement="bottomRight" :overlay-class-name="themeSwitcher.currentTheme"
+                                <a-popover :overlay-class-name="themeSwitcher.currentTheme" placement="bottomRight"
                                            trigger="click">
                                     <template slot="content">
                                         <table cellpadding="2">
                                             <tr>
                                                 <td>{{ i18n "pages.inbounds.protocol" }}</td>
                                                 <td>
-                                                    <a-tag style="margin:0;" color="purple">[[ dbInbound.protocol ]]
+                                                    <a-tag color="purple" style="margin:0;">[[ dbInbound.protocol ]]
                                                     </a-tag>
                                                     <template
                                                             v-if="dbInbound.isVMess || dbInbound.isVLess || dbInbound.isTrojan || dbInbound.isSS">
-                                                        <a-tag style="margin:0;" color="blue">[[
+                                                        <a-tag color="blue" style="margin:0;">[[
                                                             dbInbound.toInbound().stream.network ]]
                                                         </a-tag>
-                                                        <a-tag style="margin:0;"
-                                                               v-if="dbInbound.toInbound().stream.isTls" color="green">
+                                                        <a-tag color="green"
+                                                               style="margin:0;" v-if="dbInbound.toInbound().stream.isTls">
                                                             tls
                                                         </a-tag>
-                                                        <a-tag style="margin:0;"
-                                                               v-if="dbInbound.toInbound().stream.isReality"
-                                                               color="green">reality
+                                                        <a-tag color="green"
+                                                               style="margin:0;"
+                                                               v-if="dbInbound.toInbound().stream.isReality">reality
                                                         </a-tag>
                                                     </template>
                                                 </td>
@@ -560,11 +560,11 @@
                                             <tr v-if="clientCount[dbInbound.id]">
                                                 <td>{{ i18n "clients" }}</td>
                                                 <td>
-                                                    <a-tag style="margin:0;" color="blue">[[
+                                                    <a-tag color="blue" style="margin:0;">[[
                                                         clientCount[dbInbound.id].clients ]]
                                                     </a-tag>
-                                                    <a-popover title='{{ i18n "disabled" }}'
-                                                               :overlay-class-name="themeSwitcher.currentTheme">
+                                                    <a-popover :overlay-class-name="themeSwitcher.currentTheme"
+                                                               title='{{ i18n "disabled" }}'>
                                                         <template slot="content">
                                                             <p v-for="clientEmail in clientCount[dbInbound.id].deactive">
                                                                 [[ clientEmail ]]</p>
@@ -574,35 +574,35 @@
                                                             clientCount[dbInbound.id].deactive.length ]]
                                                         </a-tag>
                                                     </a-popover>
-                                                    <a-popover title='{{ i18n "depleted" }}'
-                                                               :overlay-class-name="themeSwitcher.currentTheme">
+                                                    <a-popover :overlay-class-name="themeSwitcher.currentTheme"
+                                                               title='{{ i18n "depleted" }}'>
                                                         <template slot="content">
                                                             <p v-for="clientEmail in clientCount[dbInbound.id].depleted">
                                                                 [[ clientEmail ]]</p>
                                                         </template>
-                                                        <a-tag style="margin:0; padding: 0 2px;" color="red"
+                                                        <a-tag color="red" style="margin:0; padding: 0 2px;"
                                                                v-if="clientCount[dbInbound.id].depleted.length">[[
                                                             clientCount[dbInbound.id].depleted.length ]]
                                                         </a-tag>
                                                     </a-popover>
-                                                    <a-popover title='{{ i18n "depletingSoon" }}'
-                                                               :overlay-class-name="themeSwitcher.currentTheme">
+                                                    <a-popover :overlay-class-name="themeSwitcher.currentTheme"
+                                                               title='{{ i18n "depletingSoon" }}'>
                                                         <template slot="content">
                                                             <p v-for="clientEmail in clientCount[dbInbound.id].expiring">
                                                                 [[ clientEmail ]]</p>
                                                         </template>
-                                                        <a-tag style="margin:0; padding: 0 2px;" color="orange"
+                                                        <a-tag color="orange" style="margin:0; padding: 0 2px;"
                                                                v-if="clientCount[dbInbound.id].expiring.length">[[
                                                             clientCount[dbInbound.id].expiring.length ]]
                                                         </a-tag>
                                                     </a-popover>
-                                                    <a-popover title='{{ i18n "online" }}'
-                                                               :overlay-class-name="themeSwitcher.currentTheme">
+                                                    <a-popover :overlay-class-name="themeSwitcher.currentTheme"
+                                                               title='{{ i18n "online" }}'>
                                                         <template slot="content">
                                                             <p v-for="clientEmail in clientCount[dbInbound.id].online">
                                                                 [[ clientEmail ]]</p>
                                                         </template>
-                                                        <a-tag style="margin:0; padding: 0 2px;" color="green"
+                                                        <a-tag color="green" style="margin:0; padding: 0 2px;"
                                                                v-if="clientCount[dbInbound.id].online.length">[[
                                                             clientCount[dbInbound.id].online.length ]]
                                                         </a-tag>
@@ -633,8 +633,8 @@
                                                                 [[ sizeFormat(dbInbound.total) ]]
                                                             </template>
                                                             <template v-else>
-                                                                <svg height="10px" width="14px" viewBox="0 0 640 512"
-                                                                     fill="currentColor">
+                                                                <svg fill="currentColor" height="10px" viewBox="0 0 640 512"
+                                                                     width="14px">
                                                                     <path d="M484.4 96C407 96 349.2 164.1 320 208.5C290.8 164.1 233 96 155.6 96C69.75 96 0 167.8 0 256s69.75 160 155.6 160C233.1 416 290.8 347.9 320 303.5C349.2 347.9 407 416 484.4 416C570.3 416 640 344.2 640 256S570.3 96 484.4 96zM155.6 368C96.25 368 48 317.8 48 256s48.25-112 107.6-112c67.75 0 120.5 82.25 137.1 112C276 285.8 223.4 368 155.6 368zM484.4 368c-67.75 0-120.5-82.25-137.1-112C364 226.2 416.6 144 484.4 144C543.8 144 592 194.2 592 256S543.8 368 484.4 368z"
                                                                           fill="currentColor"></path>
                                                                 </svg>
@@ -646,9 +646,9 @@
                                             <tr>
                                                 <td>{{ i18n "pages.inbounds.expireDate" }}</td>
                                                 <td>
-                                                    <a-tag style="min-width: 50px; text-align: center;"
-                                                           v-if="dbInbound.expiryTime > 0"
-                                                           :color="dbInbound.isExpiry? 'red': 'blue'">
+                                                    <a-tag :color="dbInbound.isExpiry? 'red': 'blue'"
+                                                           style="min-width: 50px; text-align: center;"
+                                                           v-if="dbInbound.expiryTime > 0">
                                                         <template v-if="app.datepicker === 'gregorian'">
                                                             [[ DateUtil.formatMillis(dbInbound.expiryTime) ]]
                                                         </template>
@@ -657,10 +657,10 @@
                                                             ]]
                                                         </template>
                                                     </a-tag>
-                                                    <a-tag v-else style="text-align: center;" color="purple"
-                                                           class="infinite-tag">
-                                                        <svg height="10px" width="14px" viewBox="0 0 640 512"
-                                                             fill="currentColor">
+                                                    <a-tag class="infinite-tag" color="purple" style="text-align: center;"
+                                                           v-else>
+                                                        <svg fill="currentColor" height="10px" viewBox="0 0 640 512"
+                                                             width="14px">
                                                             <path d="M484.4 96C407 96 349.2 164.1 320 208.5C290.8 164.1 233 96 155.6 96C69.75 96 0 167.8 0 256s69.75 160 155.6 160C233.1 416 290.8 347.9 320 303.5C349.2 347.9 407 416 484.4 416C570.3 416 640 344.2 640 256S570.3 96 484.4 96zM155.6 368C96.25 368 48 317.8 48 256s48.25-112 107.6-112c67.75 0 120.5 82.25 137.1 112C276 285.8 223.4 368 155.6 368zM484.4 368c-67.75 0-120.5-82.25-137.1-112C364 226.2 416.6 144 484.4 144C543.8 144 592 194.2 592 256S543.8 368 484.4 368z"
                                                                   fill="currentColor"></path>
                                                         </svg>
@@ -670,8 +670,8 @@
                                         </table>
                                     </template>
                                     <a-badge>
-                                        <a-icon v-if="!dbInbound.enable" slot="count" type="pause-circle"
-                                                :style="'color: ' + themeSwitcher.isDarkTheme ? '#2c3950' : '#bcbcbc'"></a-icon>
+                                        <a-icon :style="'color: ' + themeSwitcher.isDarkTheme ? '#2c3950' : '#bcbcbc'" slot="count" type="pause-circle"
+                                                v-if="!dbInbound.enable"></a-icon>
                                         <a-button shape="round" size="small" style="font-size: 14px; padding: 0 10px;">
                                             <a-icon type="info"></a-icon>
                                         </a-button>
@@ -680,10 +680,10 @@
                             </template>
                             <template slot="expandedRowRender" slot-scope="record">
                                 <a-table
-                                        :row-key="client => client.id"
                                         :columns="isMobile ? innerMobileColumns : innerColumns"
                                         :data-source="getInboundClients(record)"
                                         :pagination=pagination(getInboundClients(record))
+                                        :row-key="client => client.id"
                                         :style="isMobile ? 'margin: -10px 2px -11px;' : 'margin: -10px 22px -11px;'">
                                     {{template "client_table"}}
                                 </a-table>

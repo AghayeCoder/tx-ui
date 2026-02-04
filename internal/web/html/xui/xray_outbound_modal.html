@@ -1,8 +1,8 @@
 {{define "outModal"}}
-<a-modal id="out-modal" v-model="outModal.visible" :title="outModal.title" @ok="outModal.ok"
-         :confirm-loading="outModal.confirmLoading" :closable="true" :mask-closable="false"
-         :ok-button-props="{ props: { disabled: !outModal.isValid } }" style="overflow: hidden;"
-         :ok-text="outModal.okText" cancel-text='{{ i18n "close" }}' :class="themeSwitcher.currentTheme">
+<a-modal :class="themeSwitcher.currentTheme" :closable="true" :confirm-loading="outModal.confirmLoading" :mask-closable="false"
+         :ok-button-props="{ props: { disabled: !outModal.isValid } }" :ok-text="outModal.okText" :title="outModal.title"
+         @ok="outModal.ok" cancel-text='{{ i18n "close" }}'
+         id="out-modal" style="overflow: hidden;" v-model="outModal.visible">
     {{template "form/outbound"}}
 </a-modal>
 <script>

@@ -14,8 +14,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
 	"x-ui/internal/util/random"
+
+	"github.com/google/uuid"
 
 	"x-ui/config"
 	"x-ui/internal/database"

@@ -1,26 +1,26 @@
 {{define "qrcodeModal"}}
-<a-modal id="qrcode-modal" v-model="qrModal.visible" :title="qrModal.title"
-         :dialog-style="isMobileQr ? { top: '18px' } : {}"
-         :closable="true"
-         :class="themeSwitcher.currentTheme"
-         :footer="null" width="fit-content">
+<a-modal :class="themeSwitcher.currentTheme" :closable="true" :dialog-style="isMobileQr ? { top: '18px' } : {}"
+         :footer="null"
+         :title="qrModal.title"
+         id="qrcode-modal"
+         v-model="qrModal.visible" width="fit-content">
     <tr-qr-modal class="qr-modal">
         <template v-if="app.subSettings?.enable && qrModal.subId">
             <tr-qr-box class="qr-box">
-                <a-tag color="purple" class="qr-tag"><span>{{ i18n "pages.settings.subSettings"}}</span></a-tag>
+                <a-tag class="qr-tag" color="purple"><span>{{ i18n "pages.settings.subSettings"}}</span></a-tag>
                 <tr-qr-bg class="qr-bg-sub">
                     <tr-qr-bg-inner class="qr-bg-sub-inner">
-                        <canvas @click="copyToClipboard('qrCode-sub',genSubLink(qrModal.client.subId))" id="qrCode-sub"
-                                class="qr-cv"></canvas>
+                        <canvas @click="copyToClipboard('qrCode-sub',genSubLink(qrModal.client.subId))" class="qr-cv"
+                                id="qrCode-sub"></canvas>
                     </tr-qr-bg-inner>
                 </tr-qr-bg>
             </tr-qr-box>
             <tr-qr-box class="qr-box">
-                <a-tag color="purple" class="qr-tag"><span>{{ i18n "pages.settings.subSettings"}} Json</span></a-tag>
+                <a-tag class="qr-tag" color="purple"><span>{{ i18n "pages.settings.subSettings"}} Json</span></a-tag>
                 <tr-qr-bg class="qr-bg-sub">
                     <tr-qr-bg-inner class="qr-bg-sub-inner">
                         <canvas @click="copyToClipboard('qrCode-subJson',genSubJsonLink(qrModal.client.subId))"
-                                id="qrCode-subJson" class="qr-cv"></canvas>
+                                class="qr-cv" id="qrCode-subJson"></canvas>
                     </tr-qr-bg-inner>
                 </tr-qr-bg>
             </tr-qr-box>
@@ -30,18 +30,18 @@
                 <div :style="{ display: 'flex', alignItems: 'center', marginBottom: '8px' }">
                     <span>{{ i18n "useIPv4ForHost" }}: </span>
                     <button
-                            type="button"
-                            role="switch"
                             :aria-checked="row.useIPv4"
                             :class="['ant-switch', 'ant-switch-small', { 'ant-switch-checked': row.useIPv4 }]"
+                            :style="{ marginLeft: '8px' }"
                             @click="toggleIPv4(index)"
-                            :style="{ marginLeft: '8px' }">
+                            role="switch"
+                            type="button">
                         <span class="ant-switch-inner"></span>
                     </button>
                 </div>
-                <a-tag color="green" class="qr-tag"><span>[[ row.remark ]]</span></a-tag>
+                <a-tag class="qr-tag" color="green"><span>[[ row.remark ]]</span></a-tag>
                 <tr-qr-bg class="qr-bg">
-                    <canvas @click="copyToClipboard('qrCode-'+index, row.link)" :id="'qrCode-'+index"
+                    <canvas :id="'qrCode-'+index" @click="copyToClipboard('qrCode-'+index, row.link)"
                             class="qr-cv"></canvas>
                 </tr-qr-bg>
             </tr-qr-box>

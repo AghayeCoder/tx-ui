@@ -1,10 +1,10 @@
 {{define "component/sortableTableTrigger"}}
-<a-icon type="drag"
+<a-icon @click="clickHandler"
+        @mousedown="mouseDownHandler"
+        @mouseup="mouseUpHandler"
         class="sortable-icon"
         style="cursor: move;"
-        @mouseup="mouseUpHandler"
-        @mousedown="mouseDownHandler"
-        @click="clickHandler"/>
+        type="drag"/>
 {{end}}
 
 {{define "component/sortableTable"}}
