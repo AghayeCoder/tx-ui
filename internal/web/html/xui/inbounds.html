@@ -1657,28 +1657,7 @@
             },
             async saveOrder() {
                 const ids = this.collectIds();
-                try {
-                    const resp = await fetch('/panel/api/inbounds/reorder', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        body: JSON.stringify({ids: ids}),
-                    });
-                    const data = await resp.json().catch(() => null);
-                    if (data && data.success) {
-                        if (this.$message) this.$message.success('{{ i18n "pages.inbounds.reordered" }}');
-                    } else {
-                        const msgText = data && data.msg ? data.msg : 'Reorder failed';
-                        if (this.$message) this.$message.error(msgText);
-                        await this.getDBInbounds();
-                    }
-                } catch (e) {
-                    console.error('reorder error', e);
-                    if (this.$message) this.$message.error('somethingWentWrong');
-                    await this.getDBInbounds();
-                }
+                await this.submit('/panel/api/inbounds/reorder', JSON.stringify({ids: ids}));
             },
         },
         watch: {
