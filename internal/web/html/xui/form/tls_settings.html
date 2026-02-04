@@ -61,6 +61,13 @@
         <a-form-item label="Verify Peer Cert By Names">
             <a-input v-model.trim="inbound.stream.tls.verifyPeerCertByName"></a-input>
         </a-form-item>
+        <a-form-item label="pinned Peer Cert Sha256">
+            <a-select mode="tags" v-model="inbound.stream.tls.pinnedPeerCertSha256"
+                      :dropdown-class-name="themeSwitcher.currentTheme"
+                      placeholder="Enter SHA256 fingerprints (base64)">
+            </a-select>
+        </a-form-item>
+        <a-divider :style="{ margin: '3px 0' }"></a-divider>
         <template v-for="cert,index in inbound.stream.tls.certs">
             <a-form-item label='{{ i18n "certificate" }}'>
                 <a-radio-group v-model="cert.useFile" button-style="solid">
