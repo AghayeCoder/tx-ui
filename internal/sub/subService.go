@@ -330,10 +330,13 @@ func (s *SubService) genVlessLink(inbound *model.Inbound, email string) string {
 	port := inbound.Port
 	streamNetwork := stream["network"].(string)
 	params := make(map[string]string)
-	if vlessSettings.Encryption != "" {
-		params["encryption"] = vlessSettings.Encryption
-	}
 	params["type"] = streamNetwork
+
+	var settings map[string]any
+	json.Unmarshal([]byte(inbound.Settings), &settings)
+	if encryption, ok := settings["encryption"].(string); ok {
+		params["encryption"] = encryption
+	}
 
 	switch streamNetwork {
 	case "tcp":
