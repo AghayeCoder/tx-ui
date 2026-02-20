@@ -105,10 +105,19 @@ func (a *SUBController) subs(c *gin.Context) {
 		// Add headers
 		c.Writer.Header().Set("Subscription-Userinfo", header)
 		c.Writer.Header().Set("Profile-Update-Interval", a.updateInterval)
-		c.Writer.Header().Set("Profile-Title", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subTitle)))
-		c.Writer.Header().Set("Support-Url", a.subSupportUrl)
-		c.Writer.Header().Set("Profile-Web-Page-Url", a.subProfileUrl)
-		c.Writer.Header().Set("Announce", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subAnnounce)))
+
+		if a.subTitle != "" {
+			c.Writer.Header().Set("Profile-Title", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subTitle)))
+		}
+		if a.subSupportUrl != "" {
+			c.Writer.Header().Set("Support-Url", a.subSupportUrl)
+		}
+		if a.subProfileUrl != "" {
+			c.Writer.Header().Set("Profile-Web-Page-Url", a.subProfileUrl)
+		}
+		if a.subAnnounce != "" {
+			c.Writer.Header().Set("Announce", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subAnnounce)))
+		}
 
 		acceptHeader := c.GetHeader("Accept")
 		headerMap := parseHeaderString(header)
@@ -172,10 +181,19 @@ func (a *SUBController) subJsons(c *gin.Context) {
 		// Add headers
 		c.Writer.Header().Set("Subscription-Userinfo", header)
 		c.Writer.Header().Set("Profile-Update-Interval", a.updateInterval)
-		c.Writer.Header().Set("Profile-Title", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subTitle)))
-		c.Writer.Header().Set("Support-Url", a.subSupportUrl)
-		c.Writer.Header().Set("Profile-Web-Page-Url", a.subProfileUrl)
-		c.Writer.Header().Set("Announce", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subAnnounce)))
+
+		if a.subTitle != "" {
+			c.Writer.Header().Set("Profile-Title", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subTitle)))
+		}
+		if a.subSupportUrl != "" {
+			c.Writer.Header().Set("Support-Url", a.subSupportUrl)
+		}
+		if a.subProfileUrl != "" {
+			c.Writer.Header().Set("Profile-Web-Page-Url", a.subProfileUrl)
+		}
+		if a.subAnnounce != "" {
+			c.Writer.Header().Set("Announce", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subAnnounce)))
+		}
 
 		c.String(200, jsonSub)
 	}
@@ -216,10 +234,19 @@ func (a *SUBController) subsJson(c *gin.Context) {
 
 	c.Writer.Header().Set("Subscription-Userinfo", header)
 	c.Writer.Header().Set("Profile-Update-Interval", a.updateInterval)
-	c.Writer.Header().Set("Profile-Title", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subTitle)))
-	c.Writer.Header().Set("Support-Url", a.subSupportUrl)
-	c.Writer.Header().Set("Profile-Web-Page-Url", a.subProfileUrl)
-	c.Writer.Header().Set("Announce", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subAnnounce)))
+
+	if a.subTitle != "" {
+		c.Writer.Header().Set("Profile-Title", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subTitle)))
+	}
+	if a.subSupportUrl != "" {
+		c.Writer.Header().Set("Support-Url", a.subSupportUrl)
+	}
+	if a.subProfileUrl != "" {
+		c.Writer.Header().Set("Profile-Web-Page-Url", a.subProfileUrl)
+	}
+	if a.subAnnounce != "" {
+		c.Writer.Header().Set("Announce", "base64:"+base64.StdEncoding.EncodeToString([]byte(a.subAnnounce)))
+	}
 
 	c.JSON(200, gin.H{
 		"result":       resultSlice,
