@@ -627,7 +627,7 @@ class TlsStreamSettings extends XrayCommonClass {
         }
 
         if (!ObjectUtil.isEmpty(json.settings)) {
-            settings = new TlsStreamSettings.Settings(json.settings.allowInsecure, json.settings.fingerprint, json.settings.echConfigList);
+            settings = new TlsStreamSettings.Settings(json.settings.fingerprint, json.settings.echConfigList);
         }
         return new TlsStreamSettings(
             json.serverName,
@@ -738,19 +738,16 @@ TlsStreamSettings.Cert = class extends XrayCommonClass {
 
 TlsStreamSettings.Settings = class extends XrayCommonClass {
     constructor(
-        allowInsecure = false,
         fingerprint = UTLS_FINGERPRINT.UTLS_CHROME,
         echConfigList = '',
     ) {
         super();
-        this.allowInsecure = allowInsecure;
         this.fingerprint = fingerprint;
         this.echConfigList = echConfigList;
     }
 
     static fromJson(json = {}) {
         return new TlsStreamSettings.Settings(
-            json.allowInsecure,
             json.fingerprint,
             json.echConfigList,
         );
@@ -758,7 +755,6 @@ TlsStreamSettings.Settings = class extends XrayCommonClass {
 
     toJson() {
         return {
-            allowInsecure: this.allowInsecure,
             fingerprint: this.fingerprint,
             echConfigList: this.echConfigList
         };
@@ -1424,9 +1420,6 @@ class Inbound extends XrayCommonClass {
             if (this.stream.tls.alpn.length > 0) {
                 obj.alpn = this.stream.tls.alpn.join(',');
             }
-            if (this.stream.tls.settings.allowInsecure) {
-                obj.allowInsecure = this.stream.tls.settings.allowInsecure;
-            }
         }
 
         return 'vmess://' + base64(JSON.stringify(obj, null, 2));
@@ -1487,9 +1480,6 @@ class Inbound extends XrayCommonClass {
             if (this.stream.isTls) {
                 params.set("fp", this.stream.tls.settings.fingerprint);
                 params.set("alpn", this.stream.tls.alpn);
-                if (this.stream.tls.settings.allowInsecure) {
-                    params.set("allowInsecure", "1");
-                }
                 if (!ObjectUtil.isEmpty(this.stream.tls.sni)) {
                     params.set("sni", this.stream.tls.sni);
                 }
@@ -1586,9 +1576,6 @@ class Inbound extends XrayCommonClass {
             if (this.stream.isTls) {
                 params.set("fp", this.stream.tls.settings.fingerprint);
                 params.set("alpn", this.stream.tls.alpn);
-                if (this.stream.tls.settings.allowInsecure) {
-                    params.set("allowInsecure", "1");
-                }
                 if (this.stream.tls.settings.echConfigList?.length > 0) {
                     params.set("ech", this.stream.tls.settings.echConfigList);
                 }
@@ -1665,9 +1652,6 @@ class Inbound extends XrayCommonClass {
             if (this.stream.isTls) {
                 params.set("fp", this.stream.tls.settings.fingerprint);
                 params.set("alpn", this.stream.tls.alpn);
-                if (this.stream.tls.settings.allowInsecure) {
-                    params.set("allowInsecure", "1");
-                }
                 if (this.stream.tls.settings.echConfigList?.length > 0) {
                     params.set("ech", this.stream.tls.settings.echConfigList);
                 }

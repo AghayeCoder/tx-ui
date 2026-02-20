@@ -347,7 +347,6 @@ class TlsStreamSettings extends CommonClass {
         serverName = '',
         alpn = [],
         fingerprint = '',
-        allowInsecure = false,
         echConfigList = '',
         verifyPeerCertByName = 'cloudflare-dns.com',
         pinnedPeerCertSha256 = '',
@@ -356,7 +355,6 @@ class TlsStreamSettings extends CommonClass {
         this.serverName = serverName;
         this.alpn = alpn;
         this.fingerprint = fingerprint;
-        this.allowInsecure = allowInsecure;
         this.echConfigList = echConfigList;
         this.verifyPeerCertByName = verifyPeerCertByName;
         this.pinnedPeerCertSha256 = pinnedPeerCertSha256;
@@ -367,7 +365,6 @@ class TlsStreamSettings extends CommonClass {
             json.serverName,
             json.alpn,
             json.fingerprint,
-            json.allowInsecure,
             json.echConfigList,
             json.verifyPeerCertByName,
             json.pinnedPeerCertSha256,
@@ -379,7 +376,6 @@ class TlsStreamSettings extends CommonClass {
             serverName: this.serverName,
             alpn: this.alpn,
             fingerprint: this.fingerprint,
-            allowInsecure: this.allowInsecure,
             echConfigList: this.echConfigList,
             verifyPeerCertByName: this.verifyPeerCertByName,
             pinnedPeerCertSha256: this.pinnedPeerCertSha256
@@ -837,8 +833,7 @@ class Outbound extends CommonClass {
             stream.tls = new TlsStreamSettings(
                 json.sni,
                 json.alpn ? json.alpn.split(',') : [],
-                json.fp,
-                json.allowInsecure);
+                json.fp);
         }
 
         const port = json.port * 1;
@@ -879,10 +874,9 @@ class Outbound extends CommonClass {
         if (security == 'tls') {
             let fp = url.searchParams.get('fp') ?? 'none';
             let alpn = url.searchParams.get('alpn');
-            let allowInsecure = url.searchParams.get('allowInsecure');
             let sni = url.searchParams.get('sni') ?? '';
             let ech = url.searchParams.get('ech') ?? '';
-            stream.tls = new TlsStreamSettings(sni, alpn ? alpn.split(',') : [], fp, allowInsecure == 1, ech);
+            stream.tls = new TlsStreamSettings(sni, alpn ? alpn.split(',') : [], fp, ech);
         }
 
         if (security == 'reality') {

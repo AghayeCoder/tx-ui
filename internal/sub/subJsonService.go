@@ -268,9 +268,6 @@ func (s *SubJsonService) tlsData(tData map[string]interface{}) map[string]interf
 
 	tlsData["serverName"] = tData["serverName"]
 	tlsData["alpn"] = tData["alpn"]
-	if allowInsecure, ok := tlsClientSettings["allowInsecure"].(bool); ok {
-		tlsData["allowInsecure"] = allowInsecure
-	}
 	if fingerprint, ok := tlsClientSettings["fingerprint"].(string); ok {
 		tlsData["fingerprint"] = fingerprint
 	}
