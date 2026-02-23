@@ -540,6 +540,8 @@
 "welcome" = "🤖 Bienvenido al bot de gestión de <b>{{ .Hostname }}</b>.\r\n"
 "status" = "✅ ¡El bot está bien!"
 "usage" = "❗ ¡Por favor proporciona un texto para buscar!"
+"config" = "❗ Por favor, proporciona el correo del cliente: <code>/config [Email]</code>"
+"qrcode" = "❗ Por favor, proporciona el correo del cliente: <code>/qrcode [Email]</code>"
 "getID" = "🆔 Tu ID: <code>{{ .ID }}</code>"
 "helpAdminCommands" = "Para reiniciar Xray Core:\r\n<code>/restart force</code>\r\n\r\nPara buscar un correo electrónico de cliente:\r\n<code>/usage [Correo electrónico]</code>\r\n\r\nPara buscar entradas (con estadísticas de cliente):\r\n<code>/inbound [Observación]</code>\r\n\r\nID de Chat de Telegram:\r\n<code>/id</code>"
 "helpClientCommands" = "Para buscar estadísticas, utiliza el siguiente comando:\r\n<code>/usage [Correo electrónico]</code>\r\n\r\nID de Chat de Telegram:\r\n<code>/id</code>"
@@ -595,6 +597,8 @@
 "refreshedOn" = "\r\n📋🔄 Actualizado en: {{ .Time }}\r\n\r\n"
 "yes" = "✅ Sí"
 "no" = "❌ No"
+"clientConfigs" = "🔗 Enlaces de configuración del cliente:\r\n"
+
 
 [tgbot.buttons]
 "addClient" = "Añadir cliente"
@@ -614,6 +618,8 @@
 "onlines" = "Clientes en línea"
 "commands" = "Comandos"
 "refresh" = "🔄 Actualizar"
+"getConfigs" = "🔗 Configuraciones"
+"getQRCodes" = "📱 Código QR"
 "clearIPs" = "❌ Limpiar IPs"
 "removeTGUser" = "❌ Eliminar Usuario de Telegram"
 "selectTGUser" = "👤 Seleccionar Usuario de Telegram"
@@ -653,6 +659,11 @@
 "removedTGUserSuccess" = "✅ {{ .Email }} : Usuario de Telegram eliminado exitosamente."
 "enableSuccess" = "✅ {{ .Email }} : Habilitado exitosamente."
 "disableSuccess" = "✅ {{ .Email }} : Deshabilitado exitosamente."
+"getClientConfigs" = "✅ {{ .Email }}: Obteniendo configuraciones del cliente."
+"getClientQRCodes" = "✅ {{ .Email }}: Obteniendo códigos QR del cliente."
+"getClientConfigsFailed" = "❌ {{ .Email }}: Error al obtener las configuraciones del cliente."
+"getClientQRCodesFailed" = "❌ {{ .Email }}: Error al obtener los códigos QR del cliente."
+"clientQRCode" = "📱 Código QR de {{ .Email }}"
 "askToAddUserId" = "¡No se encuentra su configuración!\r\nPor favor, pídale a su administrador que use su ChatID de usuario de Telegram en su(s) configuración(es).\r\n\r\nSu ChatID de usuario: <code>{{ .TgUserID }}</code>"
 "chooseClient" = "Elige un Cliente para Inbound {{ .Inbound }}"
 "chooseInbound" = "Elige un Inbound"

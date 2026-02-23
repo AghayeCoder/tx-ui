@@ -526,6 +526,8 @@
 "welcome" = "🤖 <b>{{ .Hostname }}</b> 管理ボットへようこそ。\r\n"
 "status" = "✅ ボットは正常に動作しています！"
 "usage" = "❗ 検索するテキストを入力してください！"
+"config" = "❗ クライアントのメールアドレスを入力してください: <code>/config [Email]</code>"
+"qrcode" = "❗ クライアントのメールアドレスを入力してください: <code>/qrcode [Email]</code>"
 "getID" = "🆔 あなたのIDは：<code>{{ .ID }}</code>"
 "helpAdminCommands" = "Xray Coreを再起動するには：\r\n<code>/restart force</code>\r\n\r\nクライアントの電子メールを検索するには：\r\n<code>/usage [電子メール]</code>\r\n\r\nインバウンド（クライアントの統計情報を含む）を検索するには：\r\n<code>/inbound [備考]</code>\r\n\r\nTelegramチャットID：\r\n<code>/id</code>"
 "helpClientCommands" = "統計情報を検索するには、次のコマンドを使用してください：\r\n<code>/usage [電子メール]</code>\r\n\r\nTelegramチャットID：\r\n<code>/id</code>"
@@ -581,6 +583,8 @@
 "refreshedOn" = "\r\n📋🔄 更新時間：{{ .Time }}\r\n\r\n"
 "yes" = "✅ はい"
 "no" = "❌ いいえ"
+"clientConfigs" = "🔗 クライアント設定リンク:\r\n"
+
 
 [tgbot.buttons]
 "addClient" = "クライアントを追加"
@@ -600,6 +604,8 @@
 "onlines" = "オンラインクライアント"
 "commands" = "コマンド"
 "refresh" = "🔄 更新"
+"getConfigs" = "🔗 設定"
+"getQRCodes" = "📱 QRコード"
 "clearIPs" = "❌ IPをクリア"
 "removeTGUser" = "❌ Telegramユーザーを削除"
 "selectTGUser" = "👤 Telegramユーザーを選択"
@@ -639,6 +645,11 @@
 "removedTGUserSuccess" = "✅ {{ .Email }}：Telegramユーザーが正常に削除されました。"
 "enableSuccess" = "✅ {{ .Email }}：正常に有効化されました。"
 "disableSuccess" = "✅ {{ .Email }}：正常に無効化されました。"
+"getClientConfigs" = "✅ {{ .Email }}: クライアント設定を取得中。"
+"getClientQRCodes" = "✅ {{ .Email }}: クライアントのQRコードを取得中。"
+"getClientConfigsFailed" = "❌ {{ .Email }}: クライアント設定の取得に失敗しました。"
+"getClientQRCodesFailed" = "❌ {{ .Email }}: クライアントのQRコードの取得に失敗しました。"
+"clientQRCode" = "📱 {{ .Email }} のQRコード"
 "askToAddUserId" = "設定が見つかりませんでした！\r\n管理者に問い合わせて、設定にTelegramユーザーのChatIDを使用してください。\r\n\r\nあなたのユーザーChatID：<code>{{ .TgUserID }}</code>"
 "chooseClient" = "インバウンド {{ .Inbound }} のクライアントを選択"
 "chooseInbound" = "インバウンドを選択"

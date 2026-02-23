@@ -538,6 +538,8 @@
 "welcome" = "🤖 Bem-vindo ao bot de gerenciamento do <b>{{ .Hostname }}</b>.\r\n"
 "status" = "✅ Bot está OK!"
 "usage" = "❗ Por favor, forneça um texto para pesquisar!"
+"config" = "❗ Informe o email do cliente: <code>/config [Email]</code>"
+"qrcode" = "❗ Informe o email do cliente: <code>/qrcode [Email]</code>"
 "getID" = "🆔 Seu ID: <code>{{ .ID }}</code>"
 "helpAdminCommands" = "Para reiniciar o Xray Core:\r\n<code>/restart force</code>\r\n\r\nPara pesquisar por um email de cliente:\r\n<code>/usage [Email]</code>\r\n\r\nPara pesquisar por inbounds (com estatísticas do cliente):\r\n<code>/inbound [Remark]</code>\r\n\r\nTelegram Chat ID:\r\n<code>/id</code>"
 "helpClientCommands" = "Para pesquisar por estatísticas, use o seguinte comando:\r\n\r\n<code>/usage [Email]</code>\r\n\r\nTelegram Chat ID:\r\n<code>/id</code>"
@@ -593,6 +595,8 @@
 "refreshedOn" = "\r\n📋🔄 Atualizado em: {{ .Time }}\r\n\r\n"
 "yes" = "✅ Sim"
 "no" = "❌ Não"
+"clientConfigs" = "🔗 Links de configuração do cliente:\r\n"
+
 
 [tgbot.buttons]
 "addClient" = "Adicionar Cliente"
@@ -612,6 +616,8 @@
 "onlines" = "Clientes online"
 "commands" = "Comandos"
 "refresh" = "🔄 Atualizar"
+"getConfigs" = "🔗 Configurações"
+"getQRCodes" = "📱 Código QR"
 "clearIPs" = "❌ Limpar IPs"
 "removeTGUser" = "❌ Remover usuário do Telegram"
 "selectTGUser" = "👤 Selecionar usuário do Telegram"
@@ -651,6 +657,11 @@
 "removedTGUserSuccess" = "✅ {{ .Email }}: Usuário do Telegram removido com sucesso."
 "enableSuccess" = "✅ {{ .Email }}: Ativado com sucesso."
 "disableSuccess" = "✅ {{ .Email }}: Desativado com sucesso."
+"getClientConfigs" = "✅ {{ .Email }}: Obtendo configurações do cliente."
+"getClientQRCodes" = "✅ {{ .Email }}: Obtendo códigos QR do cliente."
+"getClientConfigsFailed" = "❌ {{ .Email }}: Falha ao obter configurações do cliente."
+"getClientQRCodesFailed" = "❌ {{ .Email }}: Falha ao obter códigos QR do cliente."
+"clientQRCode" = "📱 Código QR de {{ .Email }}"
 "askToAddUserId" = "Sua configuração não foi encontrada!\r\nPeça ao seu administrador para usar seu Telegram ChatID em suas configurações.\r\n\r\nSeu ChatID: <code>{{ .TgUserID }}</code>"
 "chooseClient" = "Escolha um cliente para Inbound {{ .Inbound }}"
 "chooseInbound" = "Escolha um Inbound"

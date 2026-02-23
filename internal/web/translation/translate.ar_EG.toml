@@ -577,6 +577,8 @@
 "welcome" = "🤖 أهلا بيك في بوت إدارة <b>{{ .Hostname }}</b>.\r\n"
 "status" = "✅ البوت شغال!"
 "usage" = "❗ من فضلك ادخل نص للتبحث عنه!"
+"config" = "❗ يرجى إدخال بريد العميل: <code>/config [Email]</code>"
+"qrcode" = "❗ يرجى إدخال بريد العميل: <code>/qrcode [Email]</code>"
 "getID" = "🆔 الـ ID بتاعك: <code>{{ .ID }}</code>"
 "helpAdminCommands" = "عشان تعيد تشغيل Xray Core:\r\n<code>/restart</code>\r\n\r\nعشان تدور على إيميل عميل:\r\n<code>/usage [Email]</code>\r\n\r\nعشان تدور على إدخالات (مع إحصائيات العملاء):\r\n<code>/inbound [Remark]</code>\r\n\r\nID شات Telegram:\r\n<code>/id</code>"
 "helpClientCommands" = "عشان تدور على الإحصائيات، استخدم الأمر ده:\r\n\r\n<code>/usage [Email]</code>\r\n\r\nID شات Telegram:\r\n<code>/id</code>"
@@ -632,6 +634,8 @@
 "refreshedOn" = "\r\n📋🔄 اتحدّث في: {{ .Time }}\r\n\r\n"
 "yes" = "✅ أيوه"
 "no" = "❌ لأ"
+"clientConfigs" = "🔗 روابط إعدادات العميل:\r\n"
+
 
 "received_id" = "🔑📥 الـ ID اتحدث."
 "received_password" = "🔑📥 الباسورد اتحدث."
@@ -666,6 +670,8 @@
 "onlines" = "العملاء الأونلاين"
 "commands" = "الأوامر"
 "refresh" = "🔄 تجديد"
+"getConfigs" = "🔗 الإعدادات"
+"getQRCodes" = "📱 رمز QR"
 "clearIPs" = "❌ مسح الـ IPs"
 "removeTGUser" = "❌ حذف مستخدم Telegram"
 "selectTGUser" = "👤 اختار مستخدم Telegram"
@@ -712,6 +718,11 @@
 "removedTGUserSuccess" = "✅ {{ .Email }}: مستخدم Telegram اتحذف بنجاح."
 "enableSuccess" = "✅ {{ .Email }}: اتفعل بنجاح."
 "disableSuccess" = "✅ {{ .Email }}: اتعطل بنجاح."
+"getClientConfigs" = "✅ {{ .Email }}: جارٍ جلب إعدادات العميل."
+"getClientQRCodes" = "✅ {{ .Email }}: جارٍ جلب رموز QR للعميل."
+"getClientConfigsFailed" = "❌ {{ .Email }}: فشل جلب إعدادات العميل."
+"getClientQRCodesFailed" = "❌ {{ .Email }}: فشل جلب رموز QR للعميل."
+"clientQRCode" = "📱 رمز QR لـ {{ .Email }}"
 "askToAddUserId" = "مافيش إعدادات ليك!\r\nاطلب من الأدمن يضيف الـ Telegram ChatID الخاص بيك في إعداداتك.\r\n\r\nالـ ChatID بتاعك: <code>{{ .TgUserID }}</code>"
 "chooseClient" = "اختار عميل للإدخال {{ .Inbound }}"
 "chooseInbound" = "اختار الإدخال"

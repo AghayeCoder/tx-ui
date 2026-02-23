@@ -538,6 +538,8 @@
 "welcome" = "🤖 Chào mừng đến với bot quản lý của <b>{{ .Hostname }}</b>.\r\n"
 "status" = "✅ Bot hoạt động bình thường!"
 "usage" = "❗ Vui lòng cung cấp văn bản để tìm kiếm!"
+"config" = "❗ Vui lòng nhập email khách hàng: <code>/config [Email]</code>"
+"qrcode" = "❗ Vui lòng nhập email khách hàng: <code>/qrcode [Email]</code>"
 "getID" = "🆔 ID của bạn: <code>{{ .ID }}</code>"
 "helpAdminCommands" = "Để khởi động lại Xray Core:\r\n<code>/restart force</code>\r\n\r\nĐể tìm kiếm email của khách hàng:\r\n<code>/usage [Email]</code>\r\n\r\nĐể tìm kiếm các nhập (với số liệu thống kê của khách hàng):\r\n<code>/inbound [Ghi chú]</code>\r\n\r\nID Trò chuyện Telegram:\r\n<code>/id</code>"
 "helpClientCommands" = "Để tìm kiếm thống kê, sử dụng lệnh sau:\r\n<code>/usage [Email]</code>\r\n\r\nID Trò chuyện Telegram:\r\n<code>/id</code>"
@@ -593,6 +595,8 @@
 "refreshedOn" = "\r\n📋🔄 Đã cập nhật lần cuối vào: {{ .Time }}\r\n\r\n"
 "yes" = "✅ Có"
 "no" = "❌ Không"
+"clientConfigs" = "🔗 Liên kết cấu hình khách hàng:\r\n"
+
 
 [tgbot.buttons]
 "addClient" = "Thêm khách hàng"
@@ -612,6 +616,8 @@
 "onlines" = "Khách hàng trực tuyến"
 "commands" = "Lệnh"
 "refresh" = "🔄 Cập Nhật"
+"getConfigs" = "🔗 Cấu hình"
+"getQRCodes" = "📱 Mã QR"
 "clearIPs" = "❌ Xóa IP"
 "removeTGUser" = "❌ Xóa Người Dùng Telegram"
 "selectTGUser" = "👤 Chọn Người Dùng Telegram"
@@ -651,6 +657,11 @@
 "removedTGUserSuccess" = "✅ {{ .Email }} : Người Dùng Telegram Đã Được Xóa Thành Công."
 "enableSuccess" = "✅ {{ .Email }} : Đã Bật Thành Công."
 "disableSuccess" = "✅ {{ .Email }} : Đã Tắt Thành Công."
+"getClientConfigs" = "✅ {{ .Email }}: Đang lấy cấu hình khách hàng."
+"getClientQRCodes" = "✅ {{ .Email }}: Đang lấy mã QR khách hàng."
+"getClientConfigsFailed" = "❌ {{ .Email }}: Không thể lấy cấu hình khách hàng."
+"getClientQRCodesFailed" = "❌ {{ .Email }}: Không thể lấy mã QR khách hàng."
+"clientQRCode" = "📱 Mã QR cho {{ .Email }}"
 "askToAddUserId" = "Cấu hình của bạn không được tìm thấy!\r\nVui lòng yêu cầu Quản trị viên sử dụng ID người dùng telegram của bạn trong cấu hình của bạn.\r\n\r\nID người dùng của bạn: <code>{{ .TgUserID }}</code>"
 "chooseClient" = "Chọn một Khách hàng cho Inbound {{ .Inbound }}"
 "chooseInbound" = "Chọn một Inbound"

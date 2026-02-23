@@ -3,11 +3,15 @@ package service
 import (
 	"context"
 	"crypto/rand"
+	"crypto/tls"
 	"embed"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net"
+	"net/http"
 	"net/url"
 	"os"
 	"strconv"
@@ -366,6 +370,28 @@ func (t *Tgbot) answerCommand(message *telego.Message, chatId int64, isAdmin boo
 		} else {
 			msg += t.I18nBot("tgbot.commands.usage")
 		}
+	case "config":
+		onlyMessage = true
+		if len(commandArgs) > 0 {
+			if isAdmin {
+				t.sendClientConfigs(chatId, commandArgs[0])
+			} else {
+				t.sendClientConfigsByTgUser(chatId, int64(message.From.ID), commandArgs[0])
+			}
+		} else {
+			msg += t.I18nBot("tgbot.commands.config")
+		}
+	case "qrcode":
+		onlyMessage = true
+		if len(commandArgs) > 0 {
+			if isAdmin {
+				t.sendClientQRCodes(chatId, commandArgs[0])
+			} else {
+				t.sendClientQRCodesByTgUser(chatId, int64(message.From.ID), commandArgs[0])
+			}
+		} else {
+			msg += t.I18nBot("tgbot.commands.qrcode")
+		}
 	case "inbound":
 		onlyMessage = true
 		if isAdmin && len(commandArgs) > 0 {
@@ -432,6 +458,12 @@ func (t *Tgbot) answerCallback(callbackQuery *telego.CallbackQuery, isAdmin bool
 			case "client_get_usage":
 				t.sendCallbackAnswerTgBot(callbackQuery.ID, t.I18nBot("tgbot.messages.email", "Email=="+email))
 				t.searchClient(chatId, email)
+			case "client_get_configs":
+				t.sendCallbackAnswerTgBot(callbackQuery.ID, t.I18nBot("tgbot.answers.getClientConfigs", "Email=="+email))
+				t.sendClientConfigs(chatId, email)
+			case "client_get_qrcode":
+				t.sendCallbackAnswerTgBot(callbackQuery.ID, t.I18nBot("tgbot.answers.getClientQRCodes", "Email=="+email))
+				t.sendClientQRCodes(chatId, email)
 			case "client_refresh":
 				t.sendCallbackAnswerTgBot(callbackQuery.ID, t.I18nBot("tgbot.answers.clientRefreshSuccess", "Email=="+email))
 				t.searchClient(chatId, email, callbackQuery.Message.GetMessageID())
@@ -1555,6 +1587,10 @@ func (t *Tgbot) searchClient(chatId int64, email string, messageID ...int) {
 			tu.InlineKeyboardButton(t.I18nBot("tgbot.buttons.refresh")).WithCallbackData(t.encodeQuery("client_refresh "+email)),
 		),
 		tu.InlineKeyboardRow(
+			tu.InlineKeyboardButton(t.I18nBot("tgbot.buttons.getConfigs")).WithCallbackData(t.encodeQuery("client_get_configs "+email)),
+			tu.InlineKeyboardButton(t.I18nBot("tgbot.buttons.getQRCodes")).WithCallbackData(t.encodeQuery("client_get_qrcode "+email)),
+		),
+		tu.InlineKeyboardRow(
 			tu.InlineKeyboardButton(t.I18nBot("tgbot.buttons.resetTraffic")).WithCallbackData(t.encodeQuery("reset_traffic "+email)),
 			tu.InlineKeyboardButton(t.I18nBot("tgbot.buttons.limitTraffic")).WithCallbackData(t.encodeQuery("limit_traffic "+email)),
 		),
@@ -1948,4 +1984,214 @@ func (t *Tgbot) editMessageTgBot(chatId int64, messageID int, text string, inlin
 	if _, err := bot.EditMessageText(context.Background(), &params); err != nil {
 		logger.Warning(err)
 	}
+}
+
+func (t *Tgbot) getClientConfigLinksByEmail(email string) (string, []string, error) {
+	_, client, err := t.inboundService.GetClientByEmail(email)
+	if err != nil {
+		return "", nil, err
+	}
+	if client == nil {
+		return "", nil, common.NewError("client not found")
+	}
+	if client.SubID == "" {
+		return client.Email, nil, common.NewError("client subId not found")
+	}
+
+	subPort, err := t.settingService.GetSubPort()
+	if err != nil {
+		return client.Email, nil, err
+	}
+	subPath, err := t.settingService.GetSubPath()
+	if err != nil {
+		return client.Email, nil, err
+	}
+	subEncrypt, err := t.settingService.GetSubEncrypt()
+	if err != nil {
+		return client.Email, nil, err
+	}
+	subKeyFile, err := t.settingService.GetSubKeyFile()
+	if err != nil {
+		return client.Email, nil, err
+	}
+	subCertFile, err := t.settingService.GetSubCertFile()
+	if err != nil {
+		return client.Email, nil, err
+	}
+	subTLS := subKeyFile != "" && subCertFile != ""
+
+	scheme := "http"
+	if subTLS {
+		scheme = "https"
+	}
+	if !strings.HasPrefix(subPath, "/") {
+		subPath = "/" + subPath
+	}
+	subURL := fmt.Sprintf("%s://127.0.0.1:%d%s%s", scheme, subPort, subPath, client.SubID)
+
+	httpClient := &http.Client{Timeout: 10 * time.Second}
+	if subTLS {
+		httpClient.Transport = &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+	}
+
+	resp, err := httpClient.Get(subURL)
+	if err != nil {
+		return client.Email, nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return client.Email, nil, common.NewErrorf("subscription endpoint returned status %d", resp.StatusCode)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return client.Email, nil, err
+	}
+	content := strings.TrimSpace(string(body))
+	if content == "" {
+		return client.Email, nil, common.NewError("empty subscription response")
+	}
+	if subEncrypt {
+		if decoded, err := base64.StdEncoding.DecodeString(content); err == nil {
+			content = strings.TrimSpace(string(decoded))
+		}
+	}
+
+	lines := strings.Split(content, "\n")
+	links := make([]string, 0, len(lines))
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		if strings.Contains(line, "://") {
+			links = append(links, line)
+		}
+	}
+	if len(links) == 0 {
+		return client.Email, nil, common.NewError("no config links found in subscription response")
+	}
+
+	// Try to keep only this email's configs. If not detectable, return all links.
+	filtered := make([]string, 0, len(links))
+	for _, link := range links {
+		if t.linkMatchesEmail(link, client.Email) {
+			filtered = append(filtered, link)
+		}
+	}
+	if len(filtered) > 0 {
+		return client.Email, filtered, nil
+	}
+	return client.Email, links, nil
+}
+
+func (t *Tgbot) linkMatchesEmail(link string, email string) bool {
+	if email == "" {
+		return false
+	}
+
+	if strings.HasPrefix(link, "vmess://") {
+		raw := strings.TrimPrefix(link, "vmess://")
+		decoded, err := base64.StdEncoding.DecodeString(raw)
+		if err != nil {
+			return false
+		}
+		obj := map[string]any{}
+		if err := json.Unmarshal(decoded, &obj); err != nil {
+			return false
+		}
+		ps, _ := obj["ps"].(string)
+		return strings.Contains(ps, email)
+	}
+
+	u, err := url.Parse(link)
+	if err != nil {
+		return false
+	}
+	frag, err := url.QueryUnescape(u.Fragment)
+	if err != nil {
+		frag = u.Fragment
+	}
+	return strings.Contains(frag, email)
+}
+
+func (t *Tgbot) sendClientConfigs(chatId int64, email string) {
+	clientEmail, links, err := t.getClientConfigLinksByEmail(email)
+	if err != nil {
+		t.SendMsgToTgbot(chatId, t.I18nBot("tgbot.answers.getClientConfigsFailed", "Email=="+email))
+		return
+	}
+
+	output := t.I18nBot("tgbot.messages.email", "Email=="+clientEmail)
+	output += t.I18nBot("tgbot.messages.clientConfigs")
+	for _, link := range links {
+		output += "<code>" + link + "</code>\r\n"
+	}
+	t.SendMsgToTgbot(chatId, output)
+}
+
+func (t *Tgbot) sendClientConfigsByTgUser(chatId int64, tgUserID int64, email string) {
+	traffics, err := t.inboundService.GetClientTrafficTgBot(tgUserID)
+	if err != nil {
+		t.SendMsgToTgbot(chatId, t.I18nBot("tgbot.wentWrong"))
+		return
+	}
+
+	allowed := false
+	for _, traffic := range traffics {
+		if traffic.Email == email {
+			allowed = true
+			break
+		}
+	}
+	if !allowed {
+		t.SendMsgToTgbot(chatId, t.I18nBot("tgbot.noResult"))
+		return
+	}
+	t.sendClientConfigs(chatId, email)
+}
+
+func (t *Tgbot) sendClientQRCodes(chatId int64, email string) {
+	clientEmail, links, err := t.getClientConfigLinksByEmail(email)
+	if err != nil {
+		t.SendMsgToTgbot(chatId, t.I18nBot("tgbot.answers.getClientQRCodesFailed", "Email=="+email))
+		return
+	}
+
+	for _, link := range links {
+		qrURL := "https://api.qrserver.com/v1/create-qr-code/?size=512x512&format=png&data=" + url.QueryEscape(link)
+		photo := &telego.SendPhotoParams{
+			ChatID:    tu.ID(chatId),
+			Photo:     telego.InputFile{URL: qrURL},
+			Caption:   t.I18nBot("tgbot.answers.clientQRCode", "Email=="+clientEmail),
+			ParseMode: "HTML",
+		}
+		if _, err := bot.SendPhoto(context.Background(), photo); err != nil {
+			logger.Warning("Error sending Telegram QR code:", err)
+		}
+		t.SendMsgToTgbot(chatId, "<code>"+link+"</code>")
+	}
+}
+
+func (t *Tgbot) sendClientQRCodesByTgUser(chatId int64, tgUserID int64, email string) {
+	traffics, err := t.inboundService.GetClientTrafficTgBot(tgUserID)
+	if err != nil {
+		t.SendMsgToTgbot(chatId, t.I18nBot("tgbot.wentWrong"))
+		return
+	}
+
+	allowed := false
+	for _, traffic := range traffics {
+		if traffic.Email == email {
+			allowed = true
+			break
+		}
+	}
+	if !allowed {
+		t.SendMsgToTgbot(chatId, t.I18nBot("tgbot.noResult"))
+		return
+	}
+	t.sendClientQRCodes(chatId, email)
 }

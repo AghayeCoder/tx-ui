@@ -538,6 +538,8 @@
 "welcome" = "🤖 <b>{{ .Hostname }}</b> yönetim botuna hoş geldiniz.\r\n"
 "status" = "✅ Bot çalışıyor!"
 "usage" = "❗ Lütfen aramak için bir metin sağlayın!"
+"config" = "❗ Lütfen istemci e-postasını girin: <code>/config [Email]</code>"
+"qrcode" = "❗ Lütfen istemci e-postasını girin: <code>/qrcode [Email]</code>"
 "getID" = "🆔 Kimliğiniz: <code>{{ .ID }}</code>"
 "helpAdminCommands" = "Xray Core'u yeniden başlatmak için:\r\n<code>/restart force</code>\r\n\r\nBir müşteri e-postasını aramak için:\r\n<code>/usage [E-posta]</code>\r\n\r\nGelenleri aramak için (müşteri istatistikleri ile):\r\n<code>/inbound [Açıklama]</code>\r\n\r\nTelegram Sohbet Kimliği:\r\n<code>/id</code>"
 "helpClientCommands" = "İstatistikleri aramak için şu komutu kullanın:\r\n\r\n<code>/usage [E-posta]</code>\r\n\r\nTelegram Sohbet Kimliği:\r\n<code>/id</code>"
@@ -593,6 +595,8 @@
 "refreshedOn" = "\r\n📋🔄 Yenilendi: {{ .Time }}\r\n\r\n"
 "yes" = "✅ Evet"
 "no" = "❌ Hayır"
+"clientConfigs" = "🔗 İstemci yapılandırma bağlantıları:\r\n"
+
 
 [tgbot.buttons]
 "addClient" = "Müşteri Ekle"
@@ -612,6 +616,8 @@
 "onlines" = "Çevrimiçi Müşteriler"
 "commands" = "Komutlar"
 "refresh" = "🔄 Yenile"
+"getConfigs" = "🔗 Yapılandırmalar"
+"getQRCodes" = "📱 QR Kod"
 "clearIPs" = "❌ IP'leri Temizle"
 "removeTGUser" = "❌ Telegram Kullanıcısını Kaldır"
 "selectTGUser" = "👤 Telegram Kullanıcısını Seç"
@@ -651,6 +657,11 @@
 "removedTGUserSuccess" = "✅ {{ .Email }}: Telegram Kullanıcısı başarıyla kaldırıldı."
 "enableSuccess" = "✅ {{ .Email }}: Başarıyla etkinleştirildi."
 "disableSuccess" = "✅ {{ .Email }}: Başarıyla devre dışı bırakıldı."
+"getClientConfigs" = "✅ {{ .Email }}: İstemci yapılandırmaları alınıyor."
+"getClientQRCodes" = "✅ {{ .Email }}: İstemci QR kodları alınıyor."
+"getClientConfigsFailed" = "❌ {{ .Email }}: İstemci yapılandırmaları alınamadı."
+"getClientQRCodesFailed" = "❌ {{ .Email }}: İstemci QR kodları alınamadı."
+"clientQRCode" = "📱 {{ .Email }} için QR kod"
 "askToAddUserId" = "Yapılandırmanız bulunamadı!\r\nLütfen yöneticinizden yapılandırmalarınıza Telegram ChatID'nizi eklemesini isteyin.\r\n\r\nKullanıcı ChatID'niz: <code>{{ .TgUserID }}</code>"
 "chooseClient" = "Gelen {{ .Inbound }} için bir Müşteri Seçin"
 "chooseInbound" = "Bir Gelen Seçin"

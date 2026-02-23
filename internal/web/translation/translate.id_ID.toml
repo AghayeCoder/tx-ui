@@ -542,6 +542,8 @@
 "welcome" = "🤖 Selamat datang di <b>{{.Hostname }}</b> bot managemen.\r\n"
 "status" = "✅ Bot dalam keadaan baik!"
 "usage" = "❗ Harap berikan teks untuk mencari!"
+"config" = "❗ Harap masukkan email klien: <code>/config [Email]</code>"
+"qrcode" = "❗ Harap masukkan email klien: <code>/qrcode [Email]</code>"
 "getID" = "🆔 ID Anda: <code>{{ .ID }}</code>"
 "helpAdminCommands" = "Untuk memulai ulang Xray Core:\r\n<code>/restart force</code>\r\n\r\nUntuk mencari email klien:\r\n<code>/usage [Email]</code>\r\n\r\nUntuk mencari inbound (dengan statistik klien):\r\n<code>/inbound [Catatan]</code>\r\n\r\nID Obrolan Telegram:\r\n<code>/id</code>"
 "helpClientCommands" = "Untuk mencari statistik, gunakan perintah berikut:\r\n<code>/usage [Email]</code>\r\n\r\nID Obrolan Telegram:\r\n<code>/id</code>"
@@ -597,6 +599,8 @@
 "refreshedOn" = "\r\n📋🔄 Diperbarui Pada: {{ .Time }}\r\n\r\n"
 "yes" = "✅ Ya"
 "no" = "❌ Tidak"
+"clientConfigs" = "🔗 Tautan konfigurasi klien:\r\n"
+
 
 [tgbot.buttons]
 "addClient" = "Tambah Klien"
@@ -616,6 +620,8 @@
 "onlines" = "Klien Online"
 "commands" = "Perintah"
 "refresh" = "🔄 Perbarui"
+"getConfigs" = "🔗 Konfigurasi"
+"getQRCodes" = "📱 Kode QR"
 "clearIPs" = "❌ Hapus IPs"
 "removeTGUser" = "❌ Hapus Pengguna Telegram"
 "selectTGUser" = "👤 Pilih Pengguna Telegram"
@@ -655,6 +661,11 @@
 "removedTGUserSuccess" = "✅ {{ .Email }}: Pengguna Telegram dihapus dengan berhasil."
 "enableSuccess" = "✅ {{ .Email }}: Diaktifkan dengan berhasil."
 "disableSuccess" = "✅ {{ .Email }}: Dinonaktifkan dengan berhasil."
+"getClientConfigs" = "✅ {{ .Email }}: Mengambil konfigurasi klien."
+"getClientQRCodes" = "✅ {{ .Email }}: Mengambil kode QR klien."
+"getClientConfigsFailed" = "❌ {{ .Email }}: Gagal mengambil konfigurasi klien."
+"getClientQRCodesFailed" = "❌ {{ .Email }}: Gagal mengambil kode QR klien."
+"clientQRCode" = "📱 Kode QR untuk {{ .Email }}"
 "askToAddUserId" = "Konfigurasi Anda tidak ditemukan!\r\nSilakan minta admin Anda untuk menggunakan ChatID Telegram Anda dalam konfigurasi Anda.\r\n\r\nChatID Pengguna Anda: <code>{{ .TgUserID }}</code>"
 "chooseClient" = "Pilih Klien untuk Inbound {{ .Inbound }}"
 "chooseInbound" = "Pilih Inbound"
