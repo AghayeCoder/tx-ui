@@ -120,6 +120,13 @@
 "upgradeAvail" = "Hay una nueva actualización del panel disponible"
 "installingPanel" = "El panel comenzó a instalarse"
 "systemHost" = "Hostname"
+"geoData" = "Datos Geo"
+"geoUpdate" = "Actualizar"
+"geoMissing" = "Falta"
+"geoUnknown" = "desconocido"
+"geoVersion" = "Versión"
+"geoSize" = "Tamaño"
+"geoUpdated" = "Actualizado"
 
 [pages.inbounds]
 "title" = "Entradas"

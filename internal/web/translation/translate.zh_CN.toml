@@ -120,6 +120,13 @@
 "upgradeAvail" = "新面板更新可用"
 "installingPanel" = "面板已开始安装"
 "systemHost" = "Hostname"
+"geoData" = "地理数据"
+"geoUpdate" = "更新"
+"geoMissing" = "缺失"
+"geoUnknown" = "未知"
+"geoVersion" = "版本"
+"geoSize" = "大小"
+"geoUpdated" = "更新时间"
 
 [pages.inbounds]
 "title" = "入站列表"

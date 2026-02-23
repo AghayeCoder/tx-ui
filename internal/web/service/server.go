@@ -92,6 +92,20 @@ type Status struct {
 		IPv4 string `json:"ipv4"`
 		IPv6 string `json:"ipv6"`
 	} `json:"publicIP"`
+	GeoFiles struct {
+		GeoIP struct {
+			Exists    bool   `json:"exists"`
+			Size      uint64 `json:"size"`
+			UpdatedAt int64  `json:"updatedAt"`
+			Version   string `json:"version"`
+		} `json:"geoip"`
+		GeoSite struct {
+			Exists    bool   `json:"exists"`
+			Size      uint64 `json:"size"`
+			UpdatedAt int64  `json:"updatedAt"`
+			Version   string `json:"version"`
+		} `json:"geosite"`
+	} `json:"geoFiles"`
 	AppStats struct {
 		Threads      uint32 `json:"threads"`
 		Mem          uint64 `json:"mem"`
@@ -234,6 +248,27 @@ func (s *ServerService) GetStatus(lastStatus *Status) *Status {
 
 	status.PublicIP.IPv4 = getPublicIP("8.8.8.8:80")
 	status.PublicIP.IPv6 = getPublicIP("[2001:4860:4860::8888]:80")
+	fillGeoFileStatus := func(path string, dest *struct {
+		Exists    bool   `json:"exists"`
+		Size      uint64 `json:"size"`
+		UpdatedAt int64  `json:"updatedAt"`
+		Version   string `json:"version"`
+	}) {
+		info, err := os.Stat(path)
+		if err != nil {
+			dest.Exists = false
+			dest.Size = 0
+			dest.UpdatedAt = 0
+			dest.Version = ""
+			return
+		}
+		dest.Exists = true
+		dest.Size = uint64(info.Size())
+		dest.UpdatedAt = info.ModTime().Unix()
+		dest.Version = readGeoFileVersion(path)
+	}
+	fillGeoFileStatus(xray.GetGeoipPath(), &status.GeoFiles.GeoIP)
+	fillGeoFileStatus(xray.GetGeositePath(), &status.GeoFiles.GeoSite)
 
 	status.HostName, _ = os.Hostname()
 
@@ -466,6 +501,137 @@ func (s *ServerService) UpdateXray(version string) error {
 	}
 
 	return nil
+}
+
+func (s *ServerService) UpdateGeoFiles() error {
+	files := []struct {
+		url  string
+		path string
+		name string
+	}{
+		{
+			url:  "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat",
+			path: xray.GetGeoipPath(),
+			name: "geoip.dat",
+		},
+		{
+			url:  "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat",
+			path: xray.GetGeositePath(),
+			name: "geosite.dat",
+		},
+	}
+
+	client := &http.Client{Timeout: 2 * time.Minute}
+	for _, file := range files {
+		version, err := getLatestReleaseTag(file.url, file.name)
+		if err != nil {
+			logger.Warningf("failed to detect %s version: %v", file.name, err)
+			version = ""
+		}
+
+		req, err := http.NewRequest(http.MethodGet, file.url, nil)
+		if err != nil {
+			return fmt.Errorf("create request for %s: %w", file.name, err)
+		}
+		req.Header.Set("User-Agent", "tx-ui")
+
+		resp, err := client.Do(req)
+		if err != nil {
+			return fmt.Errorf("download %s: %w", file.name, err)
+		}
+		if resp.StatusCode != http.StatusOK {
+			resp.Body.Close()
+			return fmt.Errorf("download %s: unexpected status %s", file.name, resp.Status)
+		}
+
+		if err := os.MkdirAll(filepath.Dir(file.path), 0o755); err != nil {
+			resp.Body.Close()
+			return fmt.Errorf("prepare directory for %s: %w", file.name, err)
+		}
+
+		tmpPath := file.path + ".tmp"
+		tmpFile, err := os.OpenFile(tmpPath, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0o644)
+		if err != nil {
+			resp.Body.Close()
+			return fmt.Errorf("create temp file for %s: %w", file.name, err)
+		}
+
+		_, copyErr := io.Copy(tmpFile, resp.Body)
+		closeErr := tmpFile.Close()
+		resp.Body.Close()
+		if copyErr != nil {
+			_ = os.Remove(tmpPath)
+			return fmt.Errorf("write %s: %w", file.name, copyErr)
+		}
+		if closeErr != nil {
+			_ = os.Remove(tmpPath)
+			return fmt.Errorf("close temp file for %s: %w", file.name, closeErr)
+		}
+		if err := os.Rename(tmpPath, file.path); err != nil {
+			_ = os.Remove(tmpPath)
+			return fmt.Errorf("replace %s: %w", file.name, err)
+		}
+
+		if version != "" {
+			if err := os.WriteFile(file.path+".version", []byte(version), 0o644); err != nil {
+				logger.Warningf("failed to write %s version file: %v", file.name, err)
+			}
+		}
+	}
+
+	if err := s.xrayService.RestartXray(true); err != nil {
+		logger.Error("restart xray after geo files update failed:", err)
+		return err
+	}
+
+	return nil
+}
+
+func extractReleaseTag(path string, fileName string) string {
+	parts := strings.Split(path, "/")
+	for i := 0; i < len(parts)-2; i++ {
+		if parts[i] == "download" && parts[i+2] == fileName {
+			return strings.TrimSpace(parts[i+1])
+		}
+	}
+	return ""
+}
+
+func getLatestReleaseTag(assetURL string, assetName string) (string, error) {
+	noRedirectClient := &http.Client{
+		Timeout: 20 * time.Second,
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+
+	req, err := http.NewRequest(http.MethodGet, assetURL, nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("User-Agent", "tx-ui")
+
+	resp, err := noRedirectClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	location := resp.Header.Get("Location")
+	if location == "" {
+		// Some proxies may still follow redirects. Try current request URL path as fallback.
+		return extractReleaseTag(resp.Request.URL.Path, assetName), nil
+	}
+
+	return extractReleaseTag(location, assetName), nil
+}
+
+func readGeoFileVersion(path string) string {
+	data, err := os.ReadFile(path + ".version")
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(string(data))
 }
 
 func (s *ServerService) UpdatePanel(version string) {

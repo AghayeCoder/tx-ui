@@ -121,6 +121,13 @@
 "upgradeAvail" = "نسخه جدیدی از پنل موجود است"
 "installingPanel" = "نصب پنل شروع شد"
 "systemHost" = "میزبان"
+"geoData" = "داده‌های جئو"
+"geoUpdate" = "به‌روزرسانی"
+"geoMissing" = "موجود نیست"
+"geoUnknown" = "نامشخص"
+"geoVersion" = "نسخه"
+"geoSize" = "حجم"
+"geoUpdated" = "آخرین به‌روزرسانی"
 
 [pages.inbounds]
 "title" = "کاربران"

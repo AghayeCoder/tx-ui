@@ -121,6 +121,13 @@
 "upgradeAvail" = "New panel update is availabe"
 "installingPanel" = "Panel started to install"
 "systemHost" = "Hostname"
+"geoData" = "Geo Data"
+"geoUpdate" = "Update"
+"geoMissing" = "Missing"
+"geoUnknown" = "unknown"
+"geoVersion" = "Version"
+"geoSize" = "Size"
+"geoUpdated" = "Updated"
 
 [pages.inbounds]
 "title" = "Inbounds"

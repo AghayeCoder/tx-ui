@@ -120,6 +120,13 @@
 "upgradeAvail" = "Bản cập nhật bảng điều khiển mới đã có"
 "installingPanel" = "Bảng điều khiển đã bắt đầu cài đặt"
 "systemHost" = "Hostname"
+"geoData" = "Dữ liệu Geo"
+"geoUpdate" = "Cập nhật"
+"geoMissing" = "Thiếu"
+"geoUnknown" = "không xác định"
+"geoVersion" = "Phiên bản"
+"geoSize" = "Kích thước"
+"geoUpdated" = "Đã cập nhật"
 
 [pages.inbounds]
 "title" = "Điểm vào (Inbounds)"

@@ -120,6 +120,13 @@
 "upgradeAvail" = "Pembaruan panel baru tersedia"
 "installingPanel" = "Panel mulai diinstal"
 "systemHost" = "Hostname"
+"geoData" = "Data Geo"
+"geoUpdate" = "Perbarui"
+"geoMissing" = "Tidak ada"
+"geoUnknown" = "tidak diketahui"
+"geoVersion" = "Versi"
+"geoSize" = "Ukuran"
+"geoUpdated" = "Diperbarui"
 
 [pages.inbounds]
 "title" = "Masuk"

@@ -120,6 +120,13 @@
 "upgradeAvail" = "Nova atualização do painel disponível"
 "installingPanel" = "Painel começou a instalar"
 "systemHost" = "Hostname"
+"geoData" = "Dados Geo"
+"geoUpdate" = "Atualizar"
+"geoMissing" = "Ausente"
+"geoUnknown" = "desconhecido"
+"geoVersion" = "Versão"
+"geoSize" = "Tamanho"
+"geoUpdated" = "Atualizado"
 
 [pages.inbounds]
 "title" = "Inbounds"

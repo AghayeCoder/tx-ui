@@ -121,6 +121,13 @@
 "upgradeAvail" = "Доступно новое обновление панели"
 "installingPanel" = "Началась установка панели"
 "systemHost" = "Hostname"
+"geoData" = "Геоданные"
+"geoUpdate" = "Обновить"
+"geoMissing" = "Отсутствует"
+"geoUnknown" = "неизвестно"
+"geoVersion" = "Версия"
+"geoSize" = "Размер"
+"geoUpdated" = "Обновлено"
 
 [pages.inbounds]
 "title" = "Подключения"

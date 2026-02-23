@@ -120,6 +120,13 @@
 "upgradeAvail" = "Yeni panel güncellemesi mevcut"
 "installingPanel" = "Panel kurulumu başladı"
 "systemHost" = "Hostname"
+"geoData" = "Geo Verisi"
+"geoUpdate" = "Güncelle"
+"geoMissing" = "Eksik"
+"geoUnknown" = "bilinmiyor"
+"geoVersion" = "Sürüm"
+"geoSize" = "Boyut"
+"geoUpdated" = "Güncelleme"
 
 [pages.inbounds]
 "title" = "Gelenler"

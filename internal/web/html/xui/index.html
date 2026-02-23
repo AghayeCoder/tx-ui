@@ -172,6 +172,9 @@
                                 <a-tag @click="openBackup" color="purple" style="cursor: pointer;">{{ i18n
                                     "pages.index.backup" }}
                                 </a-tag>
+                                <a-tag @click="restartPanel" color="purple" style="cursor: pointer;">{{ i18n
+                                    "pages.settings.restartPanel" }}
+                                </a-tag>
                             </a-card>
                         </a-col>
                         <a-col :lg="12" :sm="24">
@@ -314,6 +317,28 @@
                                         </a-tag>
                                     </a-col>
                                 </a-row>
+                            </a-card>
+                        </a-col>
+                        <a-col :lg="12" :sm="24">
+                            <a-card hoverable>
+                                <b>{{ i18n "pages.index.geoData" }}:</b>
+                                <a-tag @click="updateGeoFiles" color="purple" style="cursor: pointer;">{{ i18n "pages.index.geoUpdate" }}</a-tag>
+                                <a-tag color="green">
+                                    <a-tooltip>
+                                        geoip.dat [[ geoVersion(status.geoFiles.geoip) ]]
+                                        <template slot="title">
+                                            [[ geoFileMeta(status.geoFiles.geoip) ]]
+                                        </template>
+                                    </a-tooltip>
+                                </a-tag>
+                                <a-tag color="green">
+                                    <a-tooltip>
+                                        geosite.dat [[ geoVersion(status.geoFiles.geosite) ]]
+                                        <template slot="title">
+                                            [[ geoFileMeta(status.geoFiles.geosite) ]]
+                                        </template>
+                                    </a-tooltip>
+                                </a-tag>
                             </a-card>
                         </a-col>
                     </a-row>
@@ -491,6 +516,10 @@
             this.netIO = {up: 0, down: 0};
             this.netTraffic = {sent: 0, recv: 0};
             this.publicIP = {ipv4: 0, ipv6: 0};
+            this.geoFiles = {
+                geoip: {exists: false, size: 0, updatedAt: 0, version: ''},
+                geosite: {exists: false, size: 0, updatedAt: 0, version: ''},
+            };
             this.hostname = 0;
             this.swap = new CurTotal(0, 0);
             this.tcpCount = 0;
@@ -513,6 +542,7 @@
             this.netIO = data.netIO;
             this.netTraffic = data.netTraffic;
             this.publicIP = data.publicIP;
+            this.geoFiles = data.geoFiles || this.geoFiles;
             this.hostName = data.hostname;
             this.swap = new CurTotal(data.swap.current, data.swap.total);
             this.tcpCount = data.tcpCount;
@@ -720,6 +750,20 @@
             onResize() {
                 this.isMobile = window.innerWidth <= 768;
             },
+            geoFileMeta(file) {
+                if (!file || !file.exists) {
+                    return '{{ i18n "pages.index.geoMissing" }}';
+                }
+                const updatedAt = file.updatedAt ? new Date(file.updatedAt * 1000).toLocaleString() : '{{ i18n "pages.index.geoUnknown" }}';
+                const version = file.version ? file.version : '{{ i18n "pages.index.geoUnknown" }}';
+                return `{{ i18n "pages.index.geoVersion" }}: ${version} | {{ i18n "pages.index.geoSize" }}: ${sizeFormat(file.size)} | {{ i18n "pages.index.geoUpdated" }}: ${updatedAt}`;
+            },
+            geoVersion(file) {
+                if (!file || !file.version) {
+                    return `({{ i18n "pages.index.geoUnknown" }})`;
+                }
+                return `(${file.version})`;
+            },
             async getStatus() {
                 try {
                     const msg = await HttpUtil.get('/panel/api/server/status');
@@ -783,6 +827,34 @@
                     await PromiseUtil.sleep(5000);
                     location.reload();
                 }
+            },
+            async updateGeoFiles() {
+                this.loading(true, '{{ i18n "pages.index.dontRefresh"}}');
+                const msg = await HttpUtil.post('/panel/api/server/updateGeoFiles');
+                this.loading(false);
+                if (!msg.success) {
+                    return;
+                }
+                await this.getStatus();
+            },
+            restartPanel() {
+                this.$confirm({
+                    title: '{{ i18n "pages.settings.restartPanel" }}',
+                    content: '{{ i18n "pages.settings.restartPanelDesc" }}',
+                    okText: '{{ i18n "confirm"}}',
+                    class: themeSwitcher.currentTheme,
+                    cancelText: '{{ i18n "cancel"}}',
+                    onOk: async () => {
+                        this.loading(true, '{{ i18n "pages.index.dontRefresh"}}');
+                        const restartMsg = await HttpUtil.post("/panel/setting/restartPanel");
+                        this.loading(false);
+                        if (restartMsg.success) {
+                            this.loading(true);
+                            await PromiseUtil.sleep(5000);
+                            location.reload();
+                        }
+                    },
+                });
             },
             async openLogs() {
                 logModal.loading = true;

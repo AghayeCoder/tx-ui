@@ -108,6 +108,13 @@
 "upgradeAvail" = "新しいパネルのアップデートが利用可能です"
 "installingPanel" = "パネルのインストールが開始されました"
 "systemHost" = "Hostname"
+"geoData" = "ジオデータ"
+"geoUpdate" = "更新"
+"geoMissing" = "未検出"
+"geoUnknown" = "不明"
+"geoVersion" = "バージョン"
+"geoSize" = "サイズ"
+"geoUpdated" = "更新日時"
 
 [pages.inbounds]
 "title" = "インバウンド一覧"
