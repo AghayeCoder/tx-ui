@@ -273,6 +273,7 @@
                                             <a-menu-item key="default">{{ i18n "default" }}</a-menu-item>
                                             <a-menu-item key="alphabet">{{ i18n "alphabet" }}</a-menu-item>
                                             <a-menu-item key="remainingTime">{{ i18n "remained" }}</a-menu-item>
+                                            <a-menu-item key="usage">{{ i18n "usage" }}</a-menu-item>
                                         </a-menu>
                                     </a-dropdown>
                                 </a-col>
@@ -1372,6 +1373,17 @@
                 const sortBy = this.clientSortBy || 'default';
                 if (sortBy === 'alphabet') {
                     return clients.sort((a, b) => a.email.localeCompare(b.email));
+                } else if (sortBy === 'usage') {
+                    return clients.sort((a, b) => {
+                        const aStat = dbInbound.clientStats.find(s => s.email === a.email) || {up: 0, down: 0};
+                        const bStat = dbInbound.clientStats.find(s => s.email === b.email) || {up: 0, down: 0};
+                        const aUsage = (aStat.up || 0) + (aStat.down || 0);
+                        const bUsage = (bStat.up || 0) + (bStat.down || 0);
+                        if (bUsage !== aUsage) {
+                            return bUsage - aUsage;
+                        }
+                        return (a.email || '').localeCompare(b.email || '');
+                    });
                 } else if (sortBy === 'remainingTime') {
                     return clients.sort((a, b) => {
                         const aStat = dbInbound.clientStats.find(s => s.email === a.email) || {expiryTime: 0};
