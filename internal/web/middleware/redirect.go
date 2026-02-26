@@ -8,22 +8,30 @@ import (
 )
 
 func RedirectMiddleware(basePath string) gin.HandlerFunc {
+	basePath = normalizeBasePath(basePath)
+
+	type redirectRule struct {
+		from string
+		to   string
+	}
+
+	// Keep routes ordered from most-specific to least-specific.
+	redirects := []redirectRule{
+		{from: "panel/API", to: "panel/api"},
+	}
+
 	return func(c *gin.Context) {
-		// Redirect from old '/xui' path to '/panel'
-		redirects := map[string]string{
-			"panel/API": "panel/api",
-			"xui/API":   "panel/api",
-			"xui":       "panel",
-		}
-
 		path := c.Request.URL.Path
-		for from, to := range redirects {
-			from, to = basePath+from, basePath+to
+		for _, rule := range redirects {
+			from, to := basePath+rule.from, basePath+rule.to
 
-			if strings.HasPrefix(path, from) {
+			if hasSegmentPrefix(path, from) {
 				newPath := to + path[len(from):]
+				if rawQuery := c.Request.URL.RawQuery; rawQuery != "" {
+					newPath += "?" + rawQuery
+				}
 
-				c.Redirect(http.StatusMovedPermanently, newPath)
+				c.Redirect(http.StatusPermanentRedirect, newPath)
 				c.Abort()
 				return
 			}
@@ -31,4 +39,27 @@ func RedirectMiddleware(basePath string) gin.HandlerFunc {
 
 		c.Next()
 	}
+}
+
+func hasSegmentPrefix(path string, prefix string) bool {
+	if !strings.HasPrefix(path, prefix) {
+		return false
+	}
+	if len(path) == len(prefix) {
+		return true
+	}
+	return path[len(prefix)] == '/'
+}
+
+func normalizeBasePath(basePath string) string {
+	if basePath == "" {
+		return "/"
+	}
+	if !strings.HasPrefix(basePath, "/") {
+		basePath = "/" + basePath
+	}
+	if !strings.HasSuffix(basePath, "/") {
+		basePath += "/"
+	}
+	return basePath
 }

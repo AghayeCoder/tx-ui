@@ -1,624 +1,504 @@
 <!DOCTYPE html>
 <html lang="en">
-{{template "head" .}}
-<style>
-    html * {
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-    }
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>{{ .host }}-{{ i18n .title}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem('panelThemeMode');
+                var mode = (saved === 'light' || saved === 'dark' || saved === 'system') ? saved : 'system';
+                var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var dark = mode === 'dark' || (mode === 'system' && prefersDark);
+                if (dark) {
+                    document.documentElement.classList.add('dark');
+                }
+            } catch (_) {
+                // Ignore storage/media errors.
+            }
 
-    h1 {
-        text-align: center;
-        /*    margin: 20px 0 50px 0;*/
-        height: 110px;
-    }
-
-    .ant-btn,
-    .ant-input {
-        height: 50px;
-        border-radius: 30px;
-    }
-
-    .ant-input-group-addon {
-        border-radius: 0 30px 30px 0;
-        width: 50px;
-        font-size: 18px;
-    }
-
-    .ant-input-affix-wrapper .ant-input-prefix {
-        left: 23px;
-    }
-
-    .ant-input-affix-wrapper .ant-input:not(:first-child) {
-        padding-left: 50px;
-    }
-
-    .centered {
-        display: flex;
-        text-align: center;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-    }
-
-    .title {
-        font-size: 32px;
-    }
-
-    .title b {
-        font-weight: bold !important;
-    }
-
-    #app {
-        overflow: hidden;
-    }
-
-    #login {
-        animation: charge 0.5s both;
-        background-color: #fff;
-        border-radius: 2rem;
-        padding: 3rem;
-        transition: all 0.3s;
-        user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-    }
-
-    #login:hover {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
-    }
-
-    @keyframes charge {
-        from {
-            transform: translateY(5rem);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-
-    .under {
-        background-color: #c7ebe2;
-        z-index: 0;
-    }
-
-    .dark .under {
-        background-color: var(--dark-color-login-wave);
-    }
-
-    .dark #login {
-        background-color: var(--dark-color-surface-100);
-    }
-
-    .dark h1 {
-        color: rgba(255, 255, 255);
-    }
-
-    .ant-form-item {
-        margin-bottom: 16px;
-    }
-
-    .ant-btn-primary-login {
-        width: 100%;
-    }
-
-    .ant-btn-primary-login:focus,
-    .ant-btn-primary-login:hover {
-        color: #fff;
-        background-color: #006655;
-        border-color: #006655;
-        background-image: linear-gradient(
-                270deg,
-                rgba(123, 199, 77, 0) 30%,
-                #009980,
-                rgba(123, 199, 77, 0) 100%
-        );
-        background-repeat: no-repeat;
-        animation: ma-bg-move ease-in-out 5s infinite;
-        background-position-x: -500px;
-        width: 95%;
-        animation-delay: -0.5s;
-        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
-    }
-
-    .ant-btn-primary-login.active,
-    .ant-btn-primary-login:active {
-        color: #fff;
-        background-color: #006655;
-        border-color: #006655;
-    }
-
-    @keyframes ma-bg-move {
-        0% {
-            background-position: -500px 0;
-        }
-        50% {
-            background-position: 1000px 0;
-        }
-        100% {
-            background-position: 1000px 0;
-        }
-    }
-
-    .wave-btn-bg {
-        position: relative;
-        border-radius: 25px;
-        width: 100%;
-        transition: all 0.3s cubic-bezier(.645, .045, .355, 1);
-    }
-
-    .dark .wave-btn-bg {
-        color: #fff;
-        position: relative;
-        background-color: #0a7557;
-        border: 2px double transparent;
-        background-origin: border-box;
-        background-clip: padding-box, border-box;
-        background-size: 300%;
-        width: 100%;
-        z-index: 1;
-    }
-
-    .dark .wave-btn-bg:hover {
-        animation: wave-btn-tara 4s ease infinite;
-    }
-
-    .dark .wave-btn-bg-cl {
-        background-image: linear-gradient(rgba(13, 14, 33, 0), rgba(13, 14, 33, 0)),
-        radial-gradient(circle at left top, #006655, #009980, #006655) !important;
-        border-radius: 3em;
-    }
-
-    .dark .wave-btn-bg-cl:hover {
-        width: 95%;
-    }
-
-    .dark .wave-btn-bg-cl:before {
-        position: absolute;
-        content: "";
-        top: -5px;
-        left: -5px;
-        bottom: -5px;
-        right: -5px;
-        z-index: -1;
-        background: inherit;
-        background-size: inherit;
-        border-radius: 4em;
-        opacity: 0;
-        transition: 0.5s;
-    }
-
-    .dark .wave-btn-bg-cl:hover::before {
-        opacity: 1;
-        filter: blur(20px);
-        animation: wave-btn-tara 8s linear infinite;
-    }
-
-    @keyframes wave-btn-tara {
-        to {
-            background-position: 300%;
-        }
-    }
-
-    .dark .ant-btn-primary-login {
-        font-size: 14px;
-        color: #fff;
-        text-align: center;
-        background-image: linear-gradient(
-                rgba(13, 14, 33, 0.45),
-                rgba(13, 14, 33, 0.35)
-        );
-        border-radius: 2rem;
-        border: none;
-        outline: none;
-        background-color: transparent;
-        height: 46px;
-        position: relative;
-        white-space: nowrap;
-        cursor: pointer;
-        touch-action: manipulation;
-        padding: 0 15px;
-        width: 100%;
-        animation: none;
-        background-position-x: 0;
-        box-shadow: none;
-    }
-
-    .waves-header {
-        position: fixed;
-        width: 100%;
-        text-align: center;
-        background-color: #dbf5ed;
-        color: white;
-        z-index: -1;
-    }
-
-    .dark .waves-header {
-        background-color: var(--dark-color-login-background);
-    }
-
-    .waves-inner-header {
-        height: 50vh;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-    }
-
-    .waves {
-        position: relative;
-        width: 100%;
-        height: 15vh;
-        margin-bottom: -8px; /*Fix for safari gap*/
-        min-height: 100px;
-        max-height: 150px;
-    }
-
-    .parallax > use {
-        animation: move-forever 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
-    }
-
-    .dark .parallax > use {
-        fill: var(--dark-color-login-wave);
-    }
-
-    .parallax > use:nth-child(1) {
-        animation-delay: -2s;
-        animation-duration: 4s;
-        opacity: 0.2;
-    }
-
-    .parallax > use:nth-child(2) {
-        animation-delay: -3s;
-        animation-duration: 7s;
-        opacity: 0.4;
-    }
-
-    .parallax > use:nth-child(3) {
-        animation-delay: -4s;
-        animation-duration: 10s;
-        opacity: 0.6;
-    }
-
-    .parallax > use:nth-child(4) {
-        animation-delay: -5s;
-        animation-duration: 13s;
-    }
-
-    @keyframes move-forever {
-        0% {
-            transform: translate3d(-90px, 0, 0);
-        }
-        100% {
-            transform: translate3d(85px, 0, 0);
-        }
-    }
-
-    @media (max-width: 768px) {
-        .waves {
-            height: 40px;
-            min-height: 40px;
-        }
-    }
-
-    .words-wrapper {
-        width: 100%;
-        display: inline-block;
-        position: relative;
-        text-align: center;
-    }
-
-    .words-wrapper b {
-        width: 100%;
-        display: inline-block;
-        position: absolute;
-        left: 0;
-        top: 0;
-    }
-
-    .words-wrapper b.is-visible {
-        position: relative;
-    }
-
-    .headline.zoom .words-wrapper {
-        -webkit-perspective: 300px;
-        -moz-perspective: 300px;
-        perspective: 300px;
-    }
-
-    .headline {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .headline.zoom b {
-        opacity: 0;
-    }
-
-    .headline.zoom b.is-visible {
-        opacity: 1;
-        -webkit-animation: zoom-in 0.8s;
-        -moz-animation: zoom-in 0.8s;
-        animation: cubic-bezier(0.215, 0.610, 0.355, 1.000) zoom-in 0.8s;
-    }
-
-    .headline.zoom b.is-hidden {
-        -webkit-animation: zoom-out 0.8s;
-        -moz-animation: zoom-out 0.8s;
-        animation: cubic-bezier(0.215, 0.610, 0.355, 1.000) zoom-out 0.4s;
-    }
-
-    @-webkit-keyframes zoom-in {
-        0% {
-            opacity: 0;
-            -webkit-transform: translateZ(100px);
+            try {
+                var html = document.documentElement;
+                var match = document.cookie.match(/(?:^|;\s*)lang=([^;]+)/);
+                var cookieLang = match ? decodeURIComponent(match[1]) : '';
+                if (cookieLang) {
+                    html.setAttribute('lang', cookieLang);
+                }
+                var explicitLang = (html.getAttribute('lang') || '').replace(/_/g, '-').toLowerCase();
+                var browserLang = ((navigator.language || navigator.userLanguage || '') + '').replace(/_/g, '-').toLowerCase();
+                var lang = explicitLang || browserLang;
+                var rtl = /^(fa|ar|he|ur)\b/.test(lang);
+                if (rtl) {
+                    html.setAttribute('dir', 'rtl');
+                    html.classList.add('rtl');
+                } else {
+                    html.setAttribute('dir', 'ltr');
+                    html.classList.remove('rtl');
+                }
+            } catch (_) {
+                // Ignore language detection errors.
+            }
+        })();
+    </script>
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: hsl(210 33% 98%);
+            --card: hsl(0 0% 100%);
+            --border: hsl(214.3 31.8% 91.4%);
+            --text: hsl(222.2 84% 4.9%);
+            --muted: hsl(215.4 16.3% 46.9%);
+            --primary: hsl(217.2 91.2% 59.8%);
+            --primary-hover: hsl(221.2 83.2% 53.3%);
+            --focus: hsla(217.2, 91.2%, 59.8%, 0.25);
+            --danger: #b91c1c;
+            --input-bg: hsl(0 0% 100%);
+            --shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+            --glow-a: hsla(217.2, 91.2%, 59.8%, 0.12);
+            --glow-b: hsla(210, 40%, 45%, 0.08);
         }
 
-        100% {
-            opacity: 1;
-            -webkit-transform: translateZ(0);
+        :root.dark {
+            color-scheme: dark;
+            --bg: hsl(222.2 84% 4.9%);
+            --card: hsl(222.2 84% 4.9%);
+            --border: hsl(217.2 32.6% 17.5%);
+            --text: hsl(210 40% 98%);
+            --muted: hsl(215 20.2% 65.1%);
+            --primary: hsl(217.2 91.2% 59.8%);
+            --primary-hover: hsl(221.2 83.2% 63.3%);
+            --focus: hsla(217.2, 91.2%, 59.8%, 0.28);
+            --danger: #f87171;
+            --input-bg: hsl(217.2 32.6% 17.5%);
+            --shadow: 0 20px 40px rgba(2, 6, 23, 0.55);
+            --glow-a: hsla(217.2, 91.2%, 59.8%, 0.16);
+            --glow-b: hsla(224.3, 76.3%, 48%, 0.2);
         }
-    }
 
-    @-moz-keyframes zoom-in {
-        0% {
-            opacity: 0;
-            -moz-transform: translateZ(100px);
+        * {
+            box-sizing: border-box;
         }
-        100% {
-            opacity: 1;
-            -moz-transform: translateZ(0);
-        }
-    }
 
-    @keyframes zoom-in {
-        0% {
-            opacity: 0;
-            -webkit-transform: translateZ(100px);
-            -moz-transform: translateZ(100px);
-            -ms-transform: translateZ(100px);
-            -o-transform: translateZ(100px);
-            transform: translateZ(100px);
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Vazirmatn', 'Segoe UI', Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+            background:
+                    radial-gradient(900px 280px at 20% -10%, var(--glow-a), transparent),
+                    radial-gradient(700px 240px at 90% 0%, var(--glow-b), transparent),
+                    var(--bg);
+            color: var(--text);
+            display: grid;
+            place-items: center;
+            padding: 24px;
         }
-        100% {
-            opacity: 1;
-            -webkit-transform: translateZ(0);
-            -moz-transform: translateZ(0);
-            -ms-transform: translateZ(0);
-            -o-transform: translateZ(0);
-            transform: translateZ(0);
-        }
-    }
 
-    @-webkit-keyframes zoom-out {
-        0% {
-            opacity: 1;
-            -webkit-transform: translateZ(0);
+        .shell {
+            width: min(460px, 100%);
+            display: grid;
+            gap: 10px;
         }
-        100% {
-            opacity: 0;
-            -webkit-transform: translateZ(-100px);
-        }
-    }
 
-    @-moz-keyframes zoom-out {
-        0% {
-            opacity: 1;
-            -moz-transform: translateZ(0);
+        .card {
+            width: 100%;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 26px;
+            position: relative;
+            overflow: hidden;
         }
-        100% {
-            opacity: 0;
-            -moz-transform: translateZ(-100px);
-        }
-    }
 
-    @keyframes zoom-out {
-        0% {
-            opacity: 1;
-            -webkit-transform: translateZ(0);
-            -moz-transform: translateZ(0);
-            -ms-transform: translateZ(0);
-            -o-transform: translateZ(0);
-            transform: translateZ(0);
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto auto 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), #0ea5a3);
         }
-        100% {
-            opacity: 0;
-            -webkit-transform: translateZ(-100px);
-            -moz-transform: translateZ(-100px);
-            -ms-transform: translateZ(-100px);
-            -o-transform: translateZ(-100px);
-            transform: translateZ(-100px);
+
+        .title {
+            margin: 0 0 2px;
+            font-size: 30px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            animation: title-in .45s ease-out both;
         }
-    }
 
-    .ant-menu-item .anticon {
-        margin-right: 4px;
-    }
+        .subtitle {
+            margin: 8px 0 22px;
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.5;
+            animation: subtitle-in .55s ease-out both;
+            animation-delay: .08s;
+        }
 
-    .ant-menu-inline .ant-menu-item {
-        padding: 0 16px !important;
-    }
-</style>
+        .field {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 13px;
+        }
+
+        .label {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .input {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 14px;
+            color: var(--text);
+            background: var(--input-bg);
+            outline: none;
+        }
+
+        .input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--focus);
+        }
+
+        .button {
+            width: 100%;
+            border: 0;
+            border-radius: 10px;
+            padding: 13px 14px;
+            font-size: 14px;
+            font-weight: 600;
+            background: var(--primary);
+            color: #fff;
+            cursor: pointer;
+            transition: background-color .15s ease, transform .08s ease;
+        }
+
+        .button:hover {
+            background: var(--primary-hover);
+        }
+
+        .button:active {
+            transform: translateY(1px);
+        }
+
+        .button:disabled {
+            opacity: 0.7;
+            cursor: wait;
+        }
+
+        .error {
+            min-height: 20px;
+            margin: 0 0 12px;
+            font-size: 13px;
+            color: var(--danger);
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .topbar-actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 0 4px var(--focus);
+        }
+
+        .lang-select {
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: var(--input-bg);
+            color: var(--text);
+            font-size: 12px;
+            padding: 6px 10px;
+            outline: none;
+        }
+
+        .theme-btn {
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: var(--input-bg);
+            color: var(--text);
+            font-size: 12px;
+            padding: 6px 10px;
+            cursor: pointer;
+        }
+
+        .theme-btn:hover {
+            background: color-mix(in srgb, var(--input-bg) 85%, var(--primary) 15%);
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        :root[dir="rtl"] body {
+            font-family: 'Vazirmatn', 'Segoe UI', Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        :root[dir="rtl"] .title,
+        :root[dir="rtl"] .subtitle,
+        :root[dir="rtl"] .error,
+        :root[dir="rtl"] .label {
+            text-align: right;
+        }
+
+        :root[dir="rtl"] .input {
+            text-align: right;
+        }
+
+        :root[dir="rtl"] .brand {
+            letter-spacing: 0;
+        }
+
+        @keyframes title-in {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes subtitle-in {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
 <body>
-<a-layout :class="themeSwitcher.currentTheme" id="app" v-cloak>
-    <transition appear name="list">
-        <a-layout-content class="under" style="min-height: 0;">
-            <div class="waves-header">
-                <div class="waves-inner-header"></div>
-                <svg class="waves" preserveAspectRatio="none" shape-rendering="auto"
-                     viewBox="0 24 150 28" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                    <defs>
-                        <path d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"
-                              id="gentle-wave"/>
-                    </defs>
-                    <g class="parallax">
-                        <use fill="rgba(0, 135, 113, 0.08)" x="48" xlink:href="#gentle-wave" y="0"/>
-                        <use fill="rgba(0, 135, 113, 0.08)" x="48" xlink:href="#gentle-wave" y="3"/>
-                        <use fill="rgba(0, 135, 113, 0.08)" x="48" xlink:href="#gentle-wave" y="5"/>
-                        <use fill="#c7ebe2" x="48" xlink:href="#gentle-wave" y="7"/>
-                    </g>
-                </svg>
+<div class="shell">
+    <div class="card">
+        <div class="topbar">
+            <div class="brand"><span class="dot"></span>TX-UI Panel</div>
+            <div class="topbar-actions">
+                <button class="theme-btn" id="themeToggle" type="button">System</button>
+                <select aria-label="Language" class="lang-select" id="languageSelect">
+                    <option value="en-US">🇺🇸 English</option>
+                    <option value="fa-IR">🇮🇷 فارسی</option>
+                    <option value="ar-EG">🇪🇬 العربية</option>
+                    <option value="es-ES">🇪🇸 Español</option>
+                    <option value="id-ID">🇮🇩 Bahasa Indonesia</option>
+                    <option value="ja-JP">🇯🇵 日本語</option>
+                    <option value="pt-BR">🇧🇷 Português (Brasil)</option>
+                    <option value="ru-RU">🇷🇺 Русский</option>
+                    <option value="tr-TR">🇹🇷 Türkçe</option>
+                    <option value="uk-UA">🇺🇦 Українська</option>
+                    <option value="vi-VN">🇻🇳 Tiếng Việt</option>
+                    <option value="zh-CN">🇨🇳 简体中文</option>
+                    <option value="zh-TW">🇹🇼 繁體中文</option>
+                </select>
             </div>
-            <a-row align="middle" justify="center" style="height: 100%; overflow: auto; overflow-x: hidden;"
-                   type="flex">
-                <a-col :lg="10" :md="14" :sm="20" :xl="8" :xs="22" :xxl="6" id="login" style="margin: 3rem 0;">
-                    <a-row justify="center" type="flex">
-                        <a-col style="width: 100%;">
-                            <h1 class="title headline zoom">
-                  <span class="words-wrapper">
-                    <b class="is-visible">{{ i18n "pages.login.hello" }}</b>
-                    <b>{{ i18n "pages.login.title" }}</b>
-                  </span>
-                            </h1>
-                        </a-col>
-                    </a-row>
-                    <a-row justify="center" type="flex">
-                        <a-col span="24">
-                            <a-form>
-                                <a-form-item>
-                                    <a-input @keydown.enter.native="login" autocomplete="username" autofocus
-                                             name="username"
-                                             placeholder='{{ i18n "username" }}' v-model.trim="user.username">
-                                        <a-icon slot="prefix" style="font-size: 16px;" type="user"></a-icon>
-                                    </a-input>
-                                </a-form-item>
-                                <a-form-item>
-                                    <password-input @keydown.enter.native="login" autocomplete="password" icon="lock"
-                                                    name="password"
-                                                    placeholder='{{ i18n "password" }}'
-                                                    v-model.trim="user.password">
-                                    </password-input>
-                                </a-form-item>
-                                <a-form-item v-if="secretEnable">
-                                    <password-input @keydown.enter.native="login" autocomplete="secret" icon="key"
-                                                    name="secret"
-                                                    placeholder='{{ i18n "secretToken" }}'
-                                                    v-model.trim="user.loginSecret">
-                                    </password-input>
-                                </a-form-item>
-                                <a-form-item>
-                                    <a-row class="centered" justify="center">
-                                        <div :style="loading ? { width: '52px' } : { display: 'inline-block' }" class="wave-btn-bg wave-btn-bg-cl"
-                                             style="height: 50px;">
-                                            <a-button :icon="loading ? 'poweroff' : undefined" :loading="loading"
-                                                      @click="login" class="ant-btn-primary-login"
-                                                      type="primary">
-                                                [[ loading ? '' : '{{ i18n "login" }}' ]]
-                                            </a-button>
-                                        </div>
-                                    </a-row>
-                                </a-form-item>
-                                <a-form-item>
-                                    <a-row class="centered" justify="center">
-                                        <a-col :span="24">
-                                            <a-select :dropdown-class-name="themeSwitcher.currentTheme" @change="setLang(lang)"
-                                                      ref="selectLang" style="width: 200px;"
-                                                      v-model="lang">
-                                                <a-select-option :value="l.value" label="English"
-                                                                 v-for="l in supportLangs">
-                                                    <span aria-label="l.name" role="img" v-text="l.icon"></span>
-                                                    &nbsp;&nbsp;<span v-text="l.name"></span>
-                                                </a-select-option>
-                                            </a-select>
-                                        </a-col>
-                                    </a-row>
-                                </a-form-item>
-                                <a-form-item>
-                                    <a-row class="centered" justify="center">
-                                        <theme-switch-login></theme-switch-login>
-                                    </a-row>
-                                </a-form-item>
-                            </a-form>
-                        </a-col>
-                    </a-row>
-                </a-col>
-            </a-row>
-        </a-layout-content>
-    </transition>
-</a-layout>
-{{template "js" .}}
-{{template "component/themeSwitcher" .}}
-{{template "component/password" .}}
+        </div>
+        <h1 class="title">{{ i18n "pages.login.title" }}</h1>
+        <p class="subtitle">{{ i18n "pages.login.hello" }}</p>
+        <p class="error" id="error"></p>
+
+        <form id="login-form">
+            <label class="field">
+                <span class="label">{{ i18n "username" }}</span>
+                <input autocomplete="username" class="input" id="username" name="username" required type="text">
+            </label>
+
+            <label class="field">
+                <span class="label">{{ i18n "password" }}</span>
+                <input autocomplete="current-password" class="input" id="password" name="password" required type="password">
+            </label>
+
+            <label class="field" hidden id="secret-field">
+                <span class="label">{{ i18n "secretToken" }}</span>
+                <input autocomplete="one-time-code" class="input" id="loginSecret" name="loginSecret" type="password">
+            </label>
+
+            <button class="button" id="submit" type="submit">{{ i18n "login" }}</button>
+        </form>
+    </div>
+</div>
+
 <script>
-    class User {
-        constructor() {
-            this.username = "";
-            this.password = "";
-        }
-    }
+    const basePath = '{{ .base_path }}';
+    const form = document.getElementById('login-form');
+    const submit = document.getElementById('submit');
+    const errorEl = document.getElementById('error');
+    const secretField = document.getElementById('secret-field');
+    const loginSecretInput = document.getElementById('loginSecret');
+    const languageSelect = document.getElementById('languageSelect');
+    const themeToggle = document.getElementById('themeToggle');
 
-    const app = new Vue({
-        delimiters: ['[[', ']]'],
-        el: '#app',
-        data: {
-            themeSwitcher,
-            loading: false,
-            user: new User(),
-            secretEnable: false,
-            lang: ""
-        },
-        async created() {
-            this.lang = getLang();
-            this.secretEnable = await this.getSecretStatus();
-        },
-        methods: {
-            async login() {
-                this.loading = true;
-                const msg = await HttpUtil.post('/login', this.user);
-                this.loading = false;
-                if (msg.success) {
-                    location.href = basePath + 'panel/';
-                }
+    const setError = (message) => {
+        errorEl.textContent = message || '';
+    };
+
+    const setLoading = (loading) => {
+        submit.disabled = loading;
+        submit.textContent = loading ? '{{ i18n "loading" }}' : '{{ i18n "login" }}';
+    };
+
+    const apiPost = async (path, body) => {
+        const response = await fetch(basePath + path.replace(/^\//, ''), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             },
-            async getSecretStatus() {
-                this.loading = true;
-                const msg = await HttpUtil.post('/getSecretStatus');
-                this.loading = false;
-                if (msg.success) {
-                    this.secretEnable = msg.obj;
-                    return msg.obj;
+            body: new URLSearchParams(body),
+            credentials: 'same-origin',
+        });
+        return response.json();
+    };
+
+    const initSecretField = async () => {
+        try {
+            const data = await apiPost('/getSecretStatus', {});
+            const enabled = !!(data && data.obj);
+            secretField.hidden = !enabled;
+            loginSecretInput.disabled = !enabled;
+            if (!enabled) {
+                loginSecretInput.value = '';
+            }
+        } catch (_) {
+            secretField.hidden = true;
+            loginSecretInput.disabled = true;
+            loginSecretInput.value = '';
+        }
+    };
+
+    const initLanguageSelect = () => {
+        try {
+            const htmlLang = (document.documentElement.getAttribute('lang') || '').trim();
+            const cookieMatch = document.cookie.match(/(?:^|;\s*)lang=([^;]+)/);
+            const cookieLang = cookieMatch ? decodeURIComponent(cookieMatch[1]) : '';
+            const current = (cookieLang || htmlLang || 'en-US').replace(/_/g, '-');
+            languageSelect.value = current;
+            if (!languageSelect.value) {
+                languageSelect.value = 'en-US';
+            }
+        } catch (_) {
+            languageSelect.value = 'en-US';
+        }
+
+        languageSelect.addEventListener('change', () => {
+            const value = (languageSelect.value || 'en-US').trim().replace(/_/g, '-');
+            const rtl = /^(fa|ar|he|ur)\b/i.test(value);
+            document.documentElement.setAttribute('lang', value);
+            document.documentElement.setAttribute('dir', rtl ? 'rtl' : 'ltr');
+            document.documentElement.classList.toggle('rtl', rtl);
+            document.cookie = 'lang=' + encodeURIComponent(value) + '; path=/; max-age=31536000; SameSite=Lax';
+            window.location.reload();
+        });
+    };
+
+    const getResolvedTheme = (mode) => {
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        return mode === 'system' ? (prefersDark ? 'dark' : 'light') : mode;
+    };
+
+    const applyThemeMode = (mode) => {
+        const resolved = getResolvedTheme(mode);
+        document.documentElement.classList.toggle('dark', resolved === 'dark');
+        themeToggle.textContent = mode === 'system' ? 'System' : mode === 'dark' ? 'Dark' : 'Light';
+        try {
+            localStorage.setItem('panelThemeMode', mode);
+        } catch (_) {
+            // Ignore storage errors.
+        }
+    };
+
+    const initThemeToggle = () => {
+        let mode = 'system';
+        try {
+            const saved = localStorage.getItem('panelThemeMode');
+            if (saved === 'light' || saved === 'dark' || saved === 'system') {
+                mode = saved;
+            }
+        } catch (_) {
+            // Ignore storage errors.
+        }
+        applyThemeMode(mode);
+        themeToggle.addEventListener('click', () => {
+            mode = mode === 'light' ? 'dark' : mode === 'dark' ? 'system' : 'light';
+            applyThemeMode(mode);
+        });
+        if (window.matchMedia) {
+            const mq = window.matchMedia('(prefers-color-scheme: dark)');
+            const listener = () => {
+                if (mode === 'system') {
+                    applyThemeMode(mode);
                 }
-            },
-        },
-    });
-    document.addEventListener("DOMContentLoaded", function () {
-        var animationDelay = 2000;
-        initHeadline();
-
-        function initHeadline() {
-            animateHeadline(document.querySelectorAll('.headline'));
+            };
+            if (typeof mq.addEventListener === 'function') {
+                mq.addEventListener('change', listener);
+            } else if (typeof mq.addListener === 'function') {
+                mq.addListener(listener);
+            }
         }
+    };
 
-        function animateHeadline(headlines) {
-            var duration = animationDelay;
-            headlines.forEach(function (headline) {
-                setTimeout(function () {
-                    hideWord(headline.querySelector('.is-visible'));
-                }, duration);
-            });
-        }
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        setError('');
+        setLoading(true);
 
-        function hideWord(word) {
-            var nextWord = takeNext(word);
-            switchWord(word, nextWord);
-            setTimeout(function () {
-                hideWord(nextWord);
-            }, animationDelay);
-        }
+        const payload = {
+            username: document.getElementById('username').value.trim(),
+            password: document.getElementById('password').value,
+            loginSecret: document.getElementById('loginSecret').value,
+        };
 
-        function takeNext(word) {
-            return (word.nextElementSibling) ? word.nextElementSibling : word.parentElement.firstElementChild;
-        }
-
-        function switchWord(oldWord, newWord) {
-            oldWord.classList.remove('is-visible');
-            oldWord.classList.add('is-hidden');
-            newWord.classList.remove('is-hidden');
-            newWord.classList.add('is-visible');
+        try {
+            const data = await apiPost('/login', payload);
+            if (data && data.success) {
+                window.location.href = basePath + 'panel/';
+                return;
+            }
+            setError((data && data.msg) || '{{ i18n "pages.login.toasts.wrongUsernameOrPassword" }}');
+        } catch (_) {
+            setError('{{ i18n "error" }}');
+        } finally {
+            setLoading(false);
         }
     });
+
+    initThemeToggle();
+    initLanguageSelect();
+    initSecretField();
 </script>
 </body>
 </html>

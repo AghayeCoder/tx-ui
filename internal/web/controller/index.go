@@ -109,8 +109,17 @@ func (a *IndexController) logout(c *gin.Context) {
 }
 
 func (a *IndexController) getSecretStatus(c *gin.Context) {
-	status, err := a.settingService.GetSecretStatus()
-	if err == nil {
-		jsonObj(c, status, nil)
+	enabled, err := a.settingService.GetSecretStatus()
+	if err != nil || !enabled {
+		jsonObj(c, false, nil)
+		return
 	}
+
+	hasSecret, err := a.userService.CheckSecretExistence()
+	if err != nil {
+		jsonObj(c, false, nil)
+		return
+	}
+
+	jsonObj(c, hasSecret, nil)
 }

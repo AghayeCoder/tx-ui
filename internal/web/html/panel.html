@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>{{ .host }}-{{ i18n .title}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{{ .base_path }}assets/panel-v2/app.css?{{ .cur_ver }}" rel="stylesheet">
+</head>
+<body>
+<div id="app"></div>
+<script>
+    window.__TXUI_BASE_PATH__ = '{{ .base_path }}';
+    window.__TXUI_PANEL_VERSION__ = '{{ .cur_ver }}';
+</script>
+<script src="{{ .base_path }}assets/panel-v2/app.js?{{ .cur_ver }}" type="module"></script>
+</body>
+</html>

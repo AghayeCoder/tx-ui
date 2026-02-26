@@ -97,7 +97,7 @@ func (s *UserService) CheckSecretExistence() (bool, error) {
 
 	var count int64
 	err := db.Model(model.User{}).
-		Where("login_secret IS NOT NULL").
+		Where("login_secret IS NOT NULL AND TRIM(login_secret) <> ''").
 		Count(&count).
 		Error
 	if err != nil {

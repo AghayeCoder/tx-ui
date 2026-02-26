@@ -35,7 +35,7 @@ import (
 //go:embed assets
 var assetsFS embed.FS
 
-//go:embed html/*
+//go:embed html/*.html
 var htmlFS embed.FS
 
 //go:embed translation/*
@@ -85,7 +85,7 @@ type Server struct {
 
 	index  *controller.IndexController
 	server *controller.ServerController
-	panel  *controller.XUIController
+	panel  *controller.PanelController
 	api    *controller.APIController
 
 	xrayService    service.XrayService
@@ -107,45 +107,32 @@ func NewServer() *Server {
 }
 
 func (s *Server) getHtmlFiles() ([]string, error) {
-	files := make([]string, 0)
-	dir, _ := os.Getwd()
-	err := fs.WalkDir(os.DirFS(dir), "web/html", func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() {
-			return nil
-		}
-		files = append(files, path)
-		return nil
-	})
-	if err != nil {
-		return nil, err
+	candidates := [][]string{
+		{"internal/web/html/login.html", "internal/web/html/panel.html"},
+		{"web/html/login.html", "web/html/panel.html"},
 	}
-	return files, nil
+	for _, files := range candidates {
+		allExist := true
+		for _, file := range files {
+			if _, err := os.Stat(file); err != nil {
+				allExist = false
+				break
+			}
+		}
+		if allExist {
+			return files, nil
+		}
+	}
+	return nil, fmt.Errorf("unable to locate panel templates in known paths")
 }
 
 func (s *Server) getHtmlTemplate(funcMap template.FuncMap) (*template.Template, error) {
 	t := template.New("").Funcs(funcMap)
-	err := fs.WalkDir(htmlFS, "html", func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if d.IsDir() {
-			newT, err := t.ParseFS(htmlFS, path+"/*.html")
-			if err != nil {
-				// ignore
-				return nil
-			}
-			t = newT
-		}
-		return nil
-	})
+	newT, err := t.ParseFS(htmlFS, "html/login.html", "html/panel.html")
 	if err != nil {
 		return nil, err
 	}
-	return t, nil
+	return newT, nil
 }
 
 func (s *Server) initRouter() (*gin.Engine, error) {
@@ -237,14 +224,14 @@ func (s *Server) initRouter() (*gin.Engine, error) {
 		engine.StaticFS(basePath+"assets", http.FS(&wrapAssetsFS{FS: assetsFS}))
 	}
 
-	// Apply the redirect middleware (`/xui` to `/panel`)
+	// Apply redirect middleware for canonical API path normalization.
 	engine.Use(middleware.RedirectMiddleware(basePath))
 
 	g := engine.Group(basePath)
 
 	s.index = controller.NewIndexController(g)
 	s.server = controller.NewServerController(g)
-	s.panel = controller.NewXUIController(g)
+	s.panel = controller.NewPanelController(g)
 	s.api = controller.NewAPIController(g)
 
 	return engine, nil
